@@ -1,3 +1,20 @@
 {
-  "extends": "next/core-web-vitals"
+  "plugins": ["lodash", "@typescript-eslint"],
+  "extends": ["plugin:lodash/recommended", "next/core-web-vitals", "plugin:prettier/recommended", "plugin:@typescript-eslint/recommended"],
+  "rules": {
+    "no-console": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "varsIgnorePattern": "_key"
+      }
+    ],
+    "import/no-anonymous-default-export": 0,
+    "lodash/import-scope": "error",
+    "lodash/prefer-lodash-method": 0,
+    "@typescript-eslint/no-unused-vars": 0,
+    "react/no-unescaped-entities": 0
+  }
 }

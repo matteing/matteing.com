@@ -1,3 +1,98 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.interactable {
+	@apply cursor-pointer select-none outline outline-[3px] outline-transparent hover:border-transparent hover:outline-purple-400;
+}
+
+.scalable {
+	@apply transition-all duration-300 hover:scale-105 active:scale-100;
+}
+
+@keyframes bounce {
+	10% {
+		transform: scaleY(0.3); /* start by scaling to 30% */
+	}
+
+	30% {
+		transform: scaleY(1); /* scale up to 100% */
+	}
+
+	60% {
+		transform: scaleY(0.5); /* scale down to 50% */
+	}
+
+	80% {
+		transform: scaleY(0.75); /* scale up to 75% */
+	}
+
+	100% {
+		transform: scaleY(0.6); /* scale down to 60% */
+	}
+}
+
+.now-playing-icon {
+	position: relative;
+	display: flex;
+	justify-content: space-between;
+	width: 13px;
+	height: 13px;
+}
+
+.now-playing-icon span {
+	@apply bg-green-500;
+	width: 3px;
+	height: 100%;
+	border-radius: 3px;
+	transform-origin: bottom;
+	animation: bounce 2.2s ease infinite alternate;
+	content: "";
+}
+
+.now-playing-icon span:nth-of-type(2) {
+	animation-delay: -2.2s; /* Start at the end of animation */
+}
+
+.now-playing-icon span:nth-of-type(3) {
+	animation-delay: -3.7s; /* Start mid-way of return of animation */
+}
+
+.radial {
+	background: rgb(0, 0, 0);
+	background: linear-gradient(
+		90deg,
+		rgba(0, 0, 0, 0.35) 0%,
+		rgba(0, 0, 0, 1) 50%,
+		rgba(0, 0, 0, 0.35) 100%
+	);
+}
+
+.radial-edges {
+	background: rgb(0, 0, 0);
+	background: linear-gradient(
+		90deg,
+		rgba(0, 0, 0, 1) 0%,
+		rgba(0, 0, 0, 0) 15%,
+		rgba(0, 0, 0, 0) 85%,
+		rgba(0, 0, 0, 1) 100%
+	);
+}
+
+@keyframes scroll {
+	0% {
+		transform: translateX(0);
+	}
+	100% {
+		transform: translateX(calc(((-210px + -2rem) * 10) + -2rem));
+	}
+}
+
+.slide-track {
+	animation: scroll 90s linear infinite;
+	width: calc((210px + 2rem) * 20);
+}
+
+.animation-paused {
+	animation-play-state: paused;
+}
