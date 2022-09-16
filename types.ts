@@ -1,3 +1,5 @@
+import { PropsWithChildren } from "react";
+
 export interface NowPlayingResponse extends Track {
 	isPlaying: boolean;
 }
@@ -13,3 +15,5 @@ export interface Track {
 	albumImageUrl: string;
 	blurAlbumImageUrl: string;
 }
+
+export type BaseProps = PropsWithChildren & { className?: string };

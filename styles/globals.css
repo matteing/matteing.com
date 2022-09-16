@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .interactable {
-	@apply cursor-pointer select-none outline outline-[3px] outline-transparent hover:border-transparent hover:outline-purple-400;
+	@apply cursor-pointer select-none outline outline-[3px] outline-transparent hover:border-transparent hover:outline-purple-400 dark:hover:outline-purple-600;
 }
 
 .scalable {
@@ -68,6 +68,15 @@
 	);
 }
 
+.top-gradient {
+	background: rgba(0, 0, 0, 0);
+	background: linear-gradient(
+		180deg,
+		rgba(180, 128, 196, 0.5) 0%,
+		rgba(180, 128, 196, 0) 100%
+	);
+}
+
 .radial-edges {
 	background: rgb(0, 0, 0);
 	background: linear-gradient(
@@ -95,4 +104,12 @@
 
 .animation-paused {
 	animation-play-state: paused;
+}
+
+.heading {
+	@apply font-medium uppercase tracking-wide;
+}
+
+.prose > figure > div {
+	@apply relative aspect-video overflow-hidden rounded-xl bg-gray-50 text-center;
 }
