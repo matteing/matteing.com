@@ -27,7 +27,7 @@
 		"plaiceholder": "^2.5.0",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"react-twitter-embed": "^4.0.4",
+		"react-twitter-widgets": "^1.11.0",
 		"reading-time": "^1.5.0",
 		"rehype-prism-plus": "^1.5.0",
 		"rehype-slug": "^5.0.1",

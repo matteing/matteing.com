@@ -1,7 +1,7 @@
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
-import { TwitterTweetEmbed } from "react-twitter-embed";
+import { Tweet } from "react-twitter-widgets";
 import { BaseProps } from "../types";
 
 export function TweetFigure({
@@ -34,7 +34,7 @@ export function TweetFigure({
 						</m.div>
 					)}
 					<div className="mx-auto max-w-[550px]">
-						<TwitterTweetEmbed
+						<Tweet
 							tweetId={tweetId}
 							onLoad={() => setTimeout(() => setReady(true), 200)}
 						/>

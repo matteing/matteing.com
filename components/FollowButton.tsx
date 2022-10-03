@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
-import { TwitterFollowButton } from "react-twitter-embed";
+import { Follow } from "react-twitter-widgets";
 
 export default function FollowButton() {
 	const [ready, setReady] = useState(false);
@@ -20,9 +20,9 @@ export default function FollowButton() {
 						</div>
 					</m.div>
 				)}
-				<TwitterFollowButton
+				<Follow
 					options={{ size: "large" }}
-					screenName={"matteing"}
+					username={"matteing"}
 					onLoad={() => setTimeout(() => setReady(true), 200)}
 				/>
 			</AnimatePresence>
