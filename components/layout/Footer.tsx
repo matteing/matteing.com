@@ -7,7 +7,7 @@ export default function Footer() {
 			<div className="mb-4 h-[72px] w-[72px] rounded-full ">
 				<Image
 					className="rounded-full"
-					layout="responsive"
+					layout="fixed"
 					width={72}
 					height={72}
 					src={avatar}
