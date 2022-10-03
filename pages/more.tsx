@@ -4,6 +4,7 @@ import Container from "../components/layout/Container";
 import Prose from "../components/Prose";
 import me from "../public/photos/me.jpeg";
 import { NextSeo } from "next-seo";
+import PageTitle from "../components/PageTitle";
 
 const More: NextPage = () => {
 	return (
@@ -12,9 +13,7 @@ const More: NextPage = () => {
 				title="More"
 				description="Where to find me, the stack for this website ⎯ and more."
 			/>
-			<div className="helvetica my-24 mx-auto flex flex-col items-center text-center text-4xl font-bold tracking-tighter md:text-6xl">
-				Other Stuff
-			</div>
+			<PageTitle>More</PageTitle>
 			<div className="mt-12">
 				<Prose>
 					<p>

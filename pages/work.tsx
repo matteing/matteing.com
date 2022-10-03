@@ -7,6 +7,9 @@ import roundparcel from "../public/work/roundparcel.png";
 import Prose from "../components/Prose";
 import Container from "../components/layout/Container";
 import { NextSeo } from "next-seo";
+import PageTitle from "../components/PageTitle";
+
+// TODO: Make project component with first one -- typography is responsive
 
 export default function Projects() {
 	return (
@@ -15,9 +18,7 @@ export default function Projects() {
 				title="Work"
 				description="Sergio Mattei's project portfolio."
 			/>
-			<div className="helvetica my-24 mx-auto flex flex-col items-center text-center text-4xl font-bold tracking-tighter md:text-6xl">
-				Work
-			</div>
+			<PageTitle>Work</PageTitle>
 			<div className="mt-12">
 				<AnimatePresence>
 					<m.div
@@ -30,10 +31,10 @@ export default function Projects() {
 								<div className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-400">
 									2022
 								</div>
-								<div className="mb-2 text-2xl font-semibold tracking-tight">
+								<div className="mb-2 text-base font-semibold tracking-tight lg:text-2xl">
 									Microsoft Azure
 								</div>
-								<div className="inter text-lg text-gray-500">
+								<div className="inter text-base text-gray-500 lg:text-lg">
 									Built major features for Azure Portal
 								</div>
 							</div>

@@ -4,6 +4,7 @@ import { getAllPosts } from "../../lib/blog";
 import PostList from "../../components/PostList";
 import { isPublished, isUnlisted } from "../../lib/filters";
 import { NextSeo } from "next-seo";
+import PageTitle from "../../components/PageTitle";
 
 export function PostsIndex({
 	posts,
@@ -14,9 +15,7 @@ export function PostsIndex({
 				title="Posts"
 				description="Sergio Mattei's personal blog"
 			/>
-			<div className="helvetica my-24 mx-auto flex flex-col items-center text-center text-4xl font-bold tracking-tighter md:text-6xl">
-				Posts
-			</div>
+			<PageTitle>Posts</PageTitle>
 			<PostList posts={posts} />
 		</Container>
 	);

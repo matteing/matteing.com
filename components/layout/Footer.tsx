@@ -3,7 +3,7 @@ import avatar from "../../public/avatar.jpeg";
 
 export default function Footer() {
 	return (
-		<div className="flex flex-col items-center py-32">
+		<div className="flex flex-col items-center py-12 lg:py-32">
 			<div className="mb-4 h-[72px] w-[72px] rounded-full ">
 				<Image
 					className="rounded-full"

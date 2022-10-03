@@ -15,6 +15,41 @@ import { AnimatePresence, m } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
+export interface RouteDefinition {
+	name: string;
+	href: string;
+	icon: JSX.Element;
+	basePath?: boolean;
+	className?: string;
+}
+
+const ROUTES: RouteDefinition[] = [
+	{
+		name: "Home",
+		href: "/",
+		icon: <HomeIcon />,
+		className: "rounded-l-full",
+	},
+	{
+		name: "Work",
+		href: "/work",
+		icon: <RectangleStackIcon />,
+	},
+	{
+		name: "Posts",
+		href: "/posts",
+		basePath: true,
+		icon: <PencilIcon />,
+	},
+	{
+		name: "More",
+		href: "/more",
+		basePath: false,
+		icon: <BoltIcon />,
+		className: "rounded-r-full",
+	},
+];
+
 const useScrollPosition = () => {
 	const [scrollPosition, setScrollPosition] = useState(0);
 
@@ -65,6 +100,40 @@ export function NavItem({
 	);
 }
 
+export function MobileNavItem({
+	icon,
+	children,
+	href,
+}: {
+	href: string;
+	icon?: JSX.Element;
+	basePath?: boolean;
+} & PropsWithChildren) {
+	const router = useRouter();
+
+	return (
+		<Link href={href}>
+			<div
+				className={
+					"group flex flex-1 shrink-0 cursor-pointer select-none flex-col items-center px-2 py-4 text-sm font-medium text-gray-700 transition-all hover:bg-purple-50 dark:text-gray-200 dark:hover:bg-purple-900 dark:hover:bg-opacity-30 " +
+					(router.pathname === href
+						? " text-purple-600 dark:text-purple-500"
+						: "")
+				}
+			>
+				{cloneElement((icon as ReactElement) ?? null, {
+					className: `mb-1 h-6 w-6 text-gray-500 ${
+						router.pathname === href
+							? " text-purple-600 dark:text-purple-500"
+							: ""
+					}`,
+				})}
+				{children}
+			</div>
+		</Link>
+	);
+}
+
 export function NavPills({
 	className,
 }: PropsWithChildren & { className?: string }) {
@@ -81,26 +150,11 @@ export function NavPills({
 					className
 				}
 			>
-				<NavItem
-					href="/"
-					icon={<HomeIcon />}
-					className={"rounded-l-full"}
-				>
-					Home
-				</NavItem>
-				<NavItem href="/work" icon={<RectangleStackIcon />}>
-					Work
-				</NavItem>
-				<NavItem href="/posts" basePath icon={<PencilIcon />}>
-					Posts
-				</NavItem>
-				<NavItem
-					href="/more"
-					icon={<BoltIcon />}
-					className={"rounded-r-full"}
-				>
-					More
-				</NavItem>
+				{ROUTES.map((routeProps) => (
+					<NavItem key={routeProps.name} {...routeProps}>
+						{routeProps.name}
+					</NavItem>
+				))}
 			</m.div>
 		</AnimatePresence>
 	);
@@ -143,33 +197,14 @@ function StaticNav() {
 	);
 }
 
-function MobileNavItem({ children }: PropsWithChildren) {
-	return (
-		<div className="flex flex-1 shrink-0 select-none flex-col items-center px-2 py-4 text-sm font-medium text-gray-700">
-			{children}
-		</div>
-	);
-}
-
 export function MobileNav() {
 	return (
 		<div className="fixed left-0 bottom-0 z-50 flex w-full border-t bg-white shadow-2xl md:hidden">
-			<MobileNavItem>
-				<HomeIcon className="mb-1 h-6 w-6 text-gray-500" />
-				Home
-			</MobileNavItem>
-			<MobileNavItem>
-				<RectangleStackIcon className="mb-1 h-6 w-6 text-gray-500" />
-				Work
-			</MobileNavItem>
-			<MobileNavItem>
-				<PencilIcon className="mb-1 h-6 w-6 text-gray-500" />
-				Posts
-			</MobileNavItem>
-			<MobileNavItem>
-				<BoltIcon className="mb-1 h-6 w-6 text-gray-500" />
-				More
-			</MobileNavItem>
+			{ROUTES.map((routeProps) => (
+				<MobileNavItem key={routeProps.name} {...routeProps}>
+					{routeProps.name}
+				</MobileNavItem>
+			))}
 		</div>
 	);
 }
