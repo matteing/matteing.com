@@ -43,11 +43,12 @@ export function parseFile(matter: RawPostMatter): Post {
 }
 
 /**
- * Gets paths for all compliant MDX files in a folder.
+ * Get a map with paths for all compliant MDX files in a folder.
  * @param path where posts are stored
- * @returns Promise<string>
+ * @returns Promise<ContentMap>
  */
 export interface ContentMap {
+	// slug -> absolute fs path
 	[slug: string]: string;
 }
 
@@ -70,10 +71,19 @@ export async function getContentMap(folderPath: string): Promise<ContentMap> {
 	);
 }
 
+/**
+ * Returns a ContentMap for all available posts.
+ * @returns Promise<ContentMap>
+ */
 export async function getPostMap(): Promise<ContentMap> {
 	return await getContentMap(POSTS_PATH);
 }
 
+/**
+ * Gets a post from the filesystem. Must be passed an absolute path.
+ * @param filePath
+ * @returns Promise<Post>
+ */
 export async function getPostByPath(filePath: string): Promise<Post> {
 	const rawFile = await fs.readFile(filePath);
 	const parse = flow(matter, ({ content, data }) =>
@@ -86,6 +96,9 @@ export async function getPostByPath(filePath: string): Promise<Post> {
 	return parse(rawFile);
 }
 
+/**
+ * Gets a post from its slug in the filesystem.
+ */
 export async function getPostBySlug(slug: string): Promise<Post> {
 	// First, get the file.
 	const contentMap = await getPostMap();
@@ -98,6 +111,9 @@ export async function getPostBySlug(slug: string): Promise<Post> {
 	}
 }
 
+/**
+ * Gets ALL posts in the posts/ folder, without filter.
+ */
 export async function getAllPosts(): Promise<Post[]> {
 	const contentMap = await getPostMap();
 	return await Promise.all(
