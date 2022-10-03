@@ -1,4 +1,5 @@
 import Image from "next/image";
+import avatar from "../../public/avatar.jpeg";
 
 export default function Footer() {
 	return (
@@ -8,8 +9,9 @@ export default function Footer() {
 					className="rounded-full"
 					width={72}
 					height={72}
-					src="/avatar.jpeg"
+					src={avatar}
 					alt="Sergio Mattei"
+					placeholder="blur"
 				/>
 			</div>
 			<span className="text-3xl font-medium text-gray-700">
