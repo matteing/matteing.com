@@ -38,7 +38,7 @@ Error.getLayout = (element: ReactNode) => (
 		className="bg-dark-500 flex h-screen flex-col bg-[#013C6E]"
 		style={{ backgroundImage: `url("/error/nyan-bg.jpeg")` }}
 	>
-		<div className="flex grow flex-col items-center justify-center font-mono text-white">
+		<div className="flex grow flex-col items-center justify-center px-6 text-center font-mono text-white">
 			{element}
 		</div>
 	</div>
