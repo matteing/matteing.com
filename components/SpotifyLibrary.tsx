@@ -11,9 +11,9 @@ function AlbumCover({
 }: { track: Track; nowPlaying?: boolean } & Partial<ImageProps>) {
 	return (
 		<div
-			className={`relative h-[225px] w-[225px] shrink-0 rounded-lg drop-shadow-2xl ${
+			className={`relative isolate h-[225px] w-[225px] shrink-0 rounded-lg drop-shadow-2xl ${
 				nowPlaying
-					? "outline outline-4 outline-offset-8 outline-green-500 drop-shadow-2xl"
+					? "ring-4 ring-green-500 ring-offset-8 ring-offset-gray-900 drop-shadow-2xl"
 					: ""
 			}`}
 		>
@@ -60,7 +60,7 @@ export default function SpotifyLibrary() {
 	if (nowPlayingError || topTracksError) return null;
 
 	return (
-		<div className="spotify-widget relative mb-24 flex h-[500px] justify-center gap-16 overflow-hidden rounded-xl border-gray-100 bg-gray-900">
+		<div className="spotify-widget relative isolate mb-24 flex h-[500px] justify-center gap-16 overflow-hidden rounded-xl border-gray-100 bg-gray-900">
 			<div className="absolute top-5 left-5 z-20 flex items-center gap-4">
 				<SpotifyLogo />
 				<div>
@@ -91,7 +91,7 @@ export default function SpotifyLibrary() {
 							href={nowPlaying.songUrl}
 							target="_blank"
 						>
-							<div className="scalable cursor-pointer rounded-lg">
+							<div className="scalable isolate cursor-pointer rounded-lg">
 								<div className="relative flex -rotate-6 flex-col gap-6 text-center">
 									<span className="absolute -right-6 -top-6 z-10 flex h-9 w-9">
 										<span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>

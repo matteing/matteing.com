@@ -71,10 +71,6 @@ export default function PostPage({
 					],
 					site_name: "matteing.com",
 				}}
-				twitter={{
-					handle: "@matteing",
-					cardType: "summary_large_image",
-				}}
 				noindex={post.status === "unlisted"}
 			/>
 			<Prose>
