@@ -2,7 +2,7 @@ import { InferGetStaticPropsType } from "next";
 import Container from "../../components/layout/Container";
 import { getAllPosts } from "../../lib/blog";
 import PostList from "../../components/PostList";
-import { isPublished, isUnlisted } from "../../lib/filters";
+import { isPublished, isUnlisted, orderPostsByDate } from "../../lib/filters";
 import { NextSeo } from "next-seo";
 import PageTitle from "../../components/PageTitle";
 
@@ -22,8 +22,10 @@ export function PostsIndex({
 }
 
 export async function getStaticProps() {
-	const posts = (await getAllPosts()).filter(
-		(post) => isPublished(post) && !isUnlisted(post)
+	const posts = orderPostsByDate(
+		(await getAllPosts()).filter(
+			(post) => isPublished(post) && !isUnlisted(post)
+		)
 	);
 
 	return {
