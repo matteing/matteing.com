@@ -3,7 +3,10 @@ import BaseLayout from "../components/layout/BaseLayout";
 import { AppPropsWithLayout } from "../types";
 import MDXProvider from "../components/MDXProvider";
 import { DefaultSeo } from "next-seo";
-import { LazyMotion, domAnimation } from "framer-motion";
+import { LazyMotion } from "framer-motion";
+
+const loadFeatures = () =>
+	import("../lib/framer.js").then((res) => res.default);
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 	const getLayout =
@@ -35,7 +38,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 					cardType: "summary_large_image",
 				}}
 			/>
-			<LazyMotion features={domAnimation}>
+			<LazyMotion strict features={loadFeatures}>
 				{getLayout(<Component {...pageProps} />)}
 			</LazyMotion>
 		</MDXProvider>
