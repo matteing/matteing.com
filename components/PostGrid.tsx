@@ -31,6 +31,7 @@ export default function PostGrid({
 							{post.featureImage && withImages && (
 								<div className="relative flex h-64 items-center overflow-hidden rounded-b-xl bg-gray-50">
 									<Image
+										priority
 										src={post.featureImage}
 										objectFit="cover"
 										className="z-10"

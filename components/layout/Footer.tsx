@@ -13,6 +13,7 @@ export default function Footer() {
 					src={avatar}
 					alt="Sergio Mattei"
 					placeholder="blur"
+					priority
 				/>
 			</div>
 			<span className="text-3xl font-medium text-gray-700">
