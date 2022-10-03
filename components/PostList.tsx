@@ -1,6 +1,6 @@
 import Link from "next/link";
-import format from "date-fns/format";
 import { Post } from "../types";
+import { formatShortDate } from "../lib/utils";
 
 export default function PostList({ posts }: { posts: Post[] }) {
 	return (
@@ -12,10 +12,7 @@ export default function PostList({ posts }: { posts: Post[] }) {
 							<div key={post.title}>
 								<p className="text-base text-gray-500">
 									<time dateTime={post.createdAt}>
-										{format(
-											new Date(post.createdAt),
-											"MMM d, yyyy"
-										)}
+										{formatShortDate(post.createdAt)}
 									</time>
 								</p>
 								<Link
