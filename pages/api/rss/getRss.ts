@@ -30,7 +30,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           <channel>
           <title>matteing.com</title>
           <description>Sergio Mattei's Blog</description>
-          <link>https://matteing.com</link>
+          <link>${process.env.NEXT_PUBLIC_URL}</link>
           <lastBuildDate>${posts[0].createdAt}</lastBuildDate>
           ${postItems}
           </channel>

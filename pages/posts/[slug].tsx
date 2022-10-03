@@ -42,16 +42,18 @@ export default function PostPage({
 			<NextSeo
 				title={`${post.title} · matteing.com`}
 				description={post.excerpt}
-				canonical={`https://matteing.com/posts/${post.slug}`}
+				canonical={`${process.env.NEXT_PUBLIC_URL}/posts/${post.slug}`}
 				openGraph={{
-					url: `https://matteing.com/posts/${post.slug}`,
+					url: `${process.env.NEXT_PUBLIC_URL}/posts/${post.slug}`,
 					title: post.title,
 					description: post.excerpt,
 					images: [
 						...(post.featureImage
 							? [
 									{
-										url: `https://matteing.com/${post.featureImage.replace(
+										url: `${
+											process.env.NEXT_PUBLIC_URL
+										}/${post.featureImage.replace(
 											/^\/+/g,
 											""
 										)}`,
@@ -60,7 +62,7 @@ export default function PostPage({
 							  ]
 							: []),
 						{
-							url: "https://matteing.com/og-image.png",
+							url: `${process.env.NEXT_PUBLIC_URL}/og-image.png`,
 							width: 1200,
 							height: 675,
 							alt: "Sergio Mattei",

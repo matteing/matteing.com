@@ -14,14 +14,14 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 				titleTemplate="%s · matteing.com"
 				defaultTitle="Sergio Mattei · matteing.com"
 				description="Founder and software engineer"
-				canonical="https://matteing.com/"
+				canonical={process.env.NEXT_PUBLIC_URL}
 				openGraph={{
-					url: "https://matteing.com/",
+					url: process.env.NEXT_PUBLIC_URL,
 					title: "Sergio Mattei · matteing.com",
 					description: "Founder and software engineer",
 					images: [
 						{
-							url: "https://matteing.com/og-image.png",
+							url: `${process.env.NEXT_PUBLIC_URL}/og-image.png`,
 							width: 1200,
 							height: 675,
 							alt: "Sergio Mattei",
