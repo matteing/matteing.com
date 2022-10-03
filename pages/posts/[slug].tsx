@@ -47,28 +47,27 @@ export default function PostPage({
 					url: `${process.env.NEXT_PUBLIC_URL}/posts/${post.slug}`,
 					title: post.title,
 					description: post.excerpt,
-					images: [
-						...(post.featureImage
-							? [
-									{
-										url: `${
-											process.env.NEXT_PUBLIC_URL
-										}/${post.featureImage.replace(
-											/^\/+/g,
-											""
-										)}`,
-										alt: post.title,
-									},
-							  ]
-							: []),
-						{
-							url: `${process.env.NEXT_PUBLIC_URL}/og-image.png`,
-							width: 1200,
-							height: 675,
-							alt: "Sergio Mattei",
-							type: "image/png",
-						},
-					],
+					images: post.featureImage
+						? [
+								{
+									url: `${
+										process.env.NEXT_PUBLIC_URL
+									}/${post.featureImage.replace(
+										/^\/+/g,
+										""
+									)}`,
+									alt: post.title,
+								},
+						  ]
+						: [
+								{
+									url: `${process.env.NEXT_PUBLIC_URL}/og-image.png`,
+									width: 1200,
+									height: 675,
+									alt: "Sergio Mattei",
+									type: "image/png",
+								},
+						  ],
 					site_name: "matteing.com",
 				}}
 				noindex={post.status === "unlisted"}
