@@ -41,7 +41,7 @@ export default function Footer() {
 				</a>
 				<a
 					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
-					href="/rss.xml"
+					href="/rss"
 					target="_blank"
 				>
 					RSS
