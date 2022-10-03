@@ -199,7 +199,7 @@ function StaticNav() {
 
 export function MobileNav() {
 	return (
-		<div className="fixed left-0 bottom-0 z-50 flex w-full border-t bg-white shadow-2xl md:hidden">
+		<div className="left-0 bottom-0 z-50 flex w-full bg-white md:hidden">
 			{ROUTES.map((routeProps) => (
 				<MobileNavItem key={routeProps.name} {...routeProps}>
 					{routeProps.name}
