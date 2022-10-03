@@ -3,13 +3,51 @@ import Image from "next/image";
 import workbooks from "../public/work/workbooks.png";
 import juneScreenshot from "../public/work/june-dark.png";
 import makerlogScreenshot from "../public/work/makerlog.png";
-import roundparcel from "../public/work/roundparcel.png";
+import roundparcel from "../public/work/roundparcel-logo.png";
 import Prose from "../components/Prose";
 import Container from "../components/layout/Container";
 import { NextSeo } from "next-seo";
 import PageTitle from "../components/PageTitle";
+import { PropsWithChildren } from "react";
+import Link from "next/link";
 
-// TODO: Make project component with first one -- typography is responsive
+function ProjectGridItem({
+	year,
+	title,
+	description,
+	children,
+	className,
+	featureImageClassName,
+}: PropsWithChildren & {
+	year: number;
+	title: string;
+	description: string;
+	featureImageClassName?: string;
+	className?: string;
+}) {
+	return (
+		<div
+			className={`interactable scalable flex cursor-pointer select-none flex-col rounded-xl border border-gray-100 ${className}`}
+		>
+			<div className="p-6 py-10">
+				<div className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-400">
+					{year}
+				</div>
+				<div className="mb-2 text-xl font-semibold tracking-tight lg:text-2xl">
+					{title}
+				</div>
+				<div className="inter text-base text-gray-500 lg:text-lg">
+					{description}
+				</div>
+			</div>
+			<div
+				className={`relative flex items-center justify-center overflow-hidden rounded-b-xl bg-gray-50 ${featureImageClassName}`}
+			>
+				{children}
+			</div>
+		</div>
+	);
+}
 
 export default function Projects() {
 	return (
@@ -24,101 +62,67 @@ export default function Projects() {
 					<m.div
 						initial={{ opacity: 0, scale: 0.9 }}
 						animate={{ opacity: 1, scale: 1 }}
-						className="inter mb-24 flex flex-col gap-12 lg:grid lg:grid-cols-2"
+						className="inter mb-24 flex flex-col gap-12 md:grid-cols-2 lg:grid"
 					>
-						<div className="interactable scalable flex cursor-pointer select-none flex-col rounded-xl border border-gray-100">
-							<div className="p-6 py-10">
-								<div className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-400">
-									2022
-								</div>
-								<div className="mb-2 text-base font-semibold tracking-tight lg:text-2xl">
-									Microsoft Azure
-								</div>
-								<div className="inter text-base text-gray-500 lg:text-lg">
-									Built major features for Azure Portal
-								</div>
-							</div>
-							<div className="relative flex aspect-square items-center overflow-hidden rounded-b-xl bg-gray-50">
-								<Image
-									layout="fill"
-									className="-rotate-6 rounded-lg object-cover"
-									placeholder="blur"
-									src={workbooks}
-									alt="Azure Workbooks Dashboard"
-								/>
-							</div>
-						</div>
-						<div className="interactable scalable relative flex cursor-pointer select-none flex-col rounded-xl border border-gray-100">
-							<div className="p-6 py-10">
-								<div className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-400">
-									2022
-								</div>
-								<div className="mb-2 text-2xl font-semibold tracking-tight">
-									June
-								</div>
-								<div className="inter text-lg text-gray-500">
-									Contract engineering for iOS widgets and
-									developer docs
-								</div>
-							</div>
-							<div className="relative flex aspect-square flex-col items-center justify-end overflow-hidden rounded-b-xl bg-gray-50">
-								<Image
-									className="z-10"
-									layout="fixed"
-									placeholder="blur"
-									width="520"
-									height="520"
-									src={juneScreenshot}
-									alt=""
-								/>
-							</div>
-						</div>
-						<div className="interactable scalable relative col-span-2 flex cursor-pointer select-none flex-col rounded-xl border border-gray-100">
-							<div className="p-6 py-10">
-								<div className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-400">
-									2022
-								</div>
-								<div className="text-2xl font-semibold tracking-tight">
-									Roundparcel
-								</div>
-								<div className="inter mt-2 text-lg text-gray-500">
-									A hosted webhooks SaaS solution⎯coming 2022
-								</div>
-							</div>
-							<div className="relative flex aspect-video flex-col items-center justify-end overflow-hidden rounded-b-xl bg-gray-50">
-								<Image
-									className="z-10"
-									objectFit="contain"
-									layout="fill"
-									src={roundparcel}
-									placeholder="blur"
-									alt=""
-								/>
-							</div>
-						</div>
-						<div className="interactable scalable relative col-span-2 flex cursor-pointer select-none flex-col rounded-xl border border-gray-100">
-							<div className="p-6 py-10">
-								<div className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-400">
-									2022
-								</div>
-								<div className="text-2xl font-semibold tracking-tight">
-									Makerlog
-								</div>
-								<div className="inter mt-2 text-lg text-gray-500">
-									A community of 6,000+ makers sharing their
-									daily tasks publicly
-								</div>
-							</div>
-							<div className="relative flex aspect-video flex-col items-center justify-end overflow-hidden rounded-b-xl bg-gray-50">
-								<Image
-									className="z-10 object-contain"
-									layout="fill"
-									placeholder="blur"
-									src={makerlogScreenshot}
-									alt=""
-								/>
-							</div>
-						</div>
+						<ProjectGridItem
+							year={2022}
+							title="Microsoft Azure"
+							description="Built major features for Azure Portal"
+							featureImageClassName="aspect-square"
+						>
+							<Image
+								layout="fill"
+								className="-rotate-6 scale-[140%]"
+								objectFit="cover"
+								placeholder="blur"
+								src={workbooks}
+								alt="Azure Workbooks Dashboard"
+							/>
+						</ProjectGridItem>
+						<ProjectGridItem
+							year={2022}
+							title="June"
+							description="Full-stack contract work"
+							featureImageClassName="aspect-square !items-end grow"
+						>
+							<Image
+								className="z-10"
+								objectFit="contain"
+								placeholder="blur"
+								src={juneScreenshot}
+								alt="June"
+							/>
+						</ProjectGridItem>
+						<ProjectGridItem
+							year={2022}
+							title="Roundparcel"
+							description="A hosted webhooks SaaS solution⎯coming 2022"
+							className="col-span-2"
+							featureImageClassName="aspect-video px-8 lg:px-64"
+						>
+							<Image
+								className="z-10"
+								objectFit="contain"
+								src={roundparcel}
+								placeholder="blur"
+								alt="Roundparcel"
+							/>
+						</ProjectGridItem>
+						<ProjectGridItem
+							year={2022}
+							title="Makerlog (sold 2022)"
+							description="A community of 6,000+ makers sharing their daily tasks publicly"
+							className="col-span-2"
+							featureImageClassName="!items-end"
+						>
+							<Image
+								className="z-10"
+								objectFit="contain"
+								src={makerlogScreenshot}
+								placeholder="blur"
+								alt="Makerlog"
+							/>
+						</ProjectGridItem>
 					</m.div>
 				</AnimatePresence>
 			</div>
@@ -138,8 +142,10 @@ export default function Projects() {
 					</li>
 					<li>Opsbot (2018): Business automation for indie makers</li>
 					<li>
-						WhatAForums (2010): Quite literally my first ever
-						website.
+						WhatAForums (2010):{" "}
+						<Link href="/posts/my-first-website">
+							Quite literally my first ever website.
+						</Link>
 					</li>
 				</ul>
 			</Prose>
