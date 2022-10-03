@@ -1,7 +1,7 @@
 import Image, { ImageProps } from "next/image";
 import { useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
-import { Tweet } from "react-twitter-widgets";
+import { Tweet } from "matteing-fork-react-twitter-widgets";
 import { BaseProps } from "../types";
 
 export function TweetFigure({

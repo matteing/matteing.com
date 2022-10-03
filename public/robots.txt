@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://matteing.com
+
+# Sitemaps
+Sitemap: https://matteing.com/sitemap.xml

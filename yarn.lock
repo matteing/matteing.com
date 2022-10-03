@@ -17,6 +17,11 @@
   dependencies:
     "regenerator-runtime" "^0.13.4"
 
+"@corex/deepmerge@^4.0.29":
+  "integrity" "sha512-q/yVUnqckA8Do+EvAfpy7RLdumnBy9ZsducMUtZTvpdbJC7azEf1hGtnYYxm0QfphYxjwggv6XtH64prvS1W+A=="
+  "resolved" "https://registry.npmjs.org/@corex/deepmerge/-/deepmerge-4.0.29.tgz"
+  "version" "4.0.29"
+
 "@emotion/is-prop-valid@^0.8.2":
   "integrity" "sha512-u5WtneEAr5IDG2Wv65yhunPSMLIpuKsbuOktRojfrEiEvRyC85LgPMZI63cr7NUqT8ZIGdSVg8ZKGxIug4lXcA=="
   "resolved" "https://registry.npmjs.org/@emotion/is-prop-valid/-/is-prop-valid-0.8.8.tgz"
@@ -212,7 +217,7 @@
   dependencies:
     "webpack-bundle-analyzer" "4.3.0"
 
-"@next/env@12.3.0":
+"@next/env@*", "@next/env@12.3.0":
   "integrity" "sha512-PTJpjAFVbzBQ9xXpzMTroShvD5YDIIy46jQ7d4LrWpY+/5a8H90Tm8hE3Hvkc5RBRspVo7kvEOnqQms0A+2Q6w=="
   "resolved" "https://registry.npmjs.org/@next/env/-/env-12.3.0.tgz"
   "version" "12.3.0"
@@ -2777,6 +2782,13 @@
   "resolved" "https://registry.npmjs.org/markdown-table/-/markdown-table-3.0.2.tgz"
   "version" "3.0.2"
 
+"matteing-fork-react-twitter-widgets@^1.15.0":
+  "integrity" "sha512-ZRdj+e0ukbxZig9D4KZZtnFrIzxIuUZwtGMRVTf+unYp3mCAHbPq/Y0gxDpPQqYW6juODQyxJh88pBc0esECKA=="
+  "resolved" "https://registry.npmjs.org/matteing-fork-react-twitter-widgets/-/matteing-fork-react-twitter-widgets-1.15.0.tgz"
+  "version" "1.15.0"
+  dependencies:
+    "loadjs" "^4.2.0"
+
 "mdast-util-definitions@^5.0.0":
   "integrity" "sha512-rQ+Gv7mHttxHOBx2dkF4HWTg+EE+UR78ptQWDylzPKaQuVGdG4HIoY3SrS/pCp80nZ04greFvXbVFHT+uf0JVQ=="
   "resolved" "https://registry.npmjs.org/mdast-util-definitions/-/mdast-util-definitions-5.1.1.tgz"
@@ -3457,7 +3469,15 @@
   "resolved" "https://registry.npmjs.org/next-seo/-/next-seo-5.5.0.tgz"
   "version" "5.5.0"
 
-"next@^8.1.1-canary.54 || >=9.0.0", "next@12.3.0":
+"next-sitemap@^3.1.23":
+  "integrity" "sha512-szQ5uvxn4/7P01U/rvzEccOcYk0Nm+kI3BGzHheREV+HDcj+IilrhXCuNqv4dBWy49eqsgCmjHuEDINx3/teMQ=="
+  "resolved" "https://registry.npmjs.org/next-sitemap/-/next-sitemap-3.1.23.tgz"
+  "version" "3.1.23"
+  dependencies:
+    "@corex/deepmerge" "^4.0.29"
+    "minimist" "^1.2.6"
+
+"next@*", "next@^8.1.1-canary.54 || >=9.0.0", "next@12.3.0":
   "integrity" "sha512-GpzI6me9V1+XYtfK0Ae9WD0mKqHyzQlGq1xH1rzNIYMASo4Tkl4rTe9jSqtBpXFhOS33KohXs9ZY38Akkhdciw=="
   "resolved" "https://registry.npmjs.org/next/-/next-12.3.0.tgz"
   "version" "12.3.0"
@@ -4149,13 +4169,6 @@
   "integrity" "sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ=="
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
   "version" "16.13.1"
-
-"react-twitter-widgets@^1.11.0":
-  "integrity" "sha512-PMCLJQc30iqy01y1b2+HnMfCX+ZkOxWaPKJb4BhHgOgjSjoZb68K5T0nq3q+3YbX9K7OH0bhptgDihtBG/BqRQ=="
-  "resolved" "https://registry.npmjs.org/react-twitter-widgets/-/react-twitter-widgets-1.11.0.tgz"
-  "version" "1.11.0"
-  dependencies:
-    "loadjs" "^4.2.0"
 
 "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18.0.0-0", "react@^18.0.0", "react@^18.2.0", "react@>= 16", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", "react@>=16", "react@>=16.0.0", "react@>=16.x <=18.x", "react@18.2.0":
   "integrity" "sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ=="

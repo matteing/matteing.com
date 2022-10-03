@@ -6,7 +6,8 @@
 		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"postbuild": "next-sitemap"
 	},
 	"dependencies": {
 		"@heroicons/react": "^2.0.10",
@@ -20,14 +21,16 @@
 		"glob-promise": "^5.0.0",
 		"gray-matter": "^4.0.3",
 		"image-size": "^1.0.2",
+		"loadjs": "^4.2.0",
 		"lodash": "^4.17.21",
 		"next": "12.3.0",
 		"next-mdx-remote": "^4.1.0",
 		"next-seo": "^5.5.0",
+		"next-sitemap": "^3.1.23",
 		"plaiceholder": "^2.5.0",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"react-twitter-widgets": "^1.11.0",
+		"matteing-fork-react-twitter-widgets": "^1.15.0",
 		"rehype-prism-plus": "^1.5.0",
 		"rehype-slug": "^5.0.1",
 		"remark-gfm": "^3.0.1",

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
-import { Follow } from "react-twitter-widgets";
+import { Follow } from "matteing-fork-react-twitter-widgets";
 
 export default function FollowButton() {
 	const [ready, setReady] = useState(false);
