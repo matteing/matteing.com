@@ -167,18 +167,22 @@ function HoveringNav() {
 			{scrollPos < 675 ? (
 				<div
 					className={
-						"dark absolute top-12 z-30 flex w-full justify-center"
+						"dark absolute top-12 z-30 hidden w-full justify-center md:flex"
 					}
 				>
 					<NavPills />
 				</div>
 			) : (
-				<div className={"fixed top-6 z-30 flex w-full justify-center"}>
+				<div
+					className={
+						"fixed top-6 z-30 hidden w-full justify-center md:flex"
+					}
+				>
 					<NavPills />
 				</div>
 			)}
 			{scrollPos > 675 && (
-				<div className="fixed top-0 left-0 z-20 h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl"></div>
+				<div className="fixed top-0 left-0 z-20 hidden h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl md:block"></div>
 			)}
 			<MobileNav />
 		</>
