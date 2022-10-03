@@ -21,6 +21,7 @@ export default function FollowButton() {
 				<m.a
 					initial={{ opacity: 0, scale: 0.95 }}
 					animate={{ opacity: 1, scale: 1 }}
+					transition={{ delay: 0.2 }}
 					className="flex"
 					href="https://twitter.com/intent/follow?region=follow_link&screen_name=matteing"
 					target="_blank"
