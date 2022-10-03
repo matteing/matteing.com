@@ -1,6 +1,4 @@
-import { useState } from "react";
 import { AnimatePresence, m } from "framer-motion";
-import { Follow } from "matteing-fork-react-twitter-widgets";
 
 function Icon() {
 	return (
