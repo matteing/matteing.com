@@ -1,34 +1,48 @@
 import Image from "next/image";
-import Emblem from "../Emblem";
-import Container from "./Container";
 
 export default function Footer() {
 	return (
-		<div className="flex flex-col items-center justify-center bg-gray-50 py-24">
-			<Container>
-				<div className="flex w-full items-center gap-6">
-					<div className="h-[60px] rounded-full border border-gray-300 shadow-sm">
-						<Image
-							className="rounded-full"
-							width={60}
-							height={60}
-							src="/avatar.jpeg"
-							alt="Sergio Mattei"
-						/>
-					</div>
-					<div className="flex-grow">
-						<div className="text-lg uppercase tracking-wider text-gray-900">
-							Sergio Mattei Díaz
-						</div>
-						<div className="text-lg font-light uppercase tracking-wider text-gray-500">
-							Proudly made in Puerto Rico 🏝
-						</div>
-					</div>
-					<div className="text-gray-500">
-						<Emblem dimensionMult={0.8} strokeWidth={9} />
-					</div>
-				</div>
-			</Container>
+		<div className="flex flex-col items-center py-32">
+			<div className="mb-4 h-[72px] w-[72px] rounded-full ">
+				<Image
+					className="rounded-full"
+					width={72}
+					height={72}
+					src="/avatar.jpeg"
+					alt="Sergio Mattei"
+				/>
+			</div>
+			<span className="text-3xl font-medium text-gray-700">
+				Sergio Mattei
+			</span>
+			<span className="mb-8 text-lg text-gray-500">
+				matteing.com · @matteing
+			</span>
+			<div className="flex gap-6">
+				<a
+					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
+					href="https://twitter.com/matteing"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Twitter
+				</a>
+				<a
+					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
+					href="https://instagram.com/matteing"
+					target="_blank"
+					rel="noreferrer"
+				>
+					Instagram
+				</a>
+				<a
+					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
+					href="/rss.xml"
+					target="_blank"
+				>
+					RSS
+				</a>
+			</div>
 		</div>
 	);
 }

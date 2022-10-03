@@ -1,0 +1,126 @@
+---
+title: I Love Elixir
+postLayout: large-feature-image
+status: published
+excerpt: Elixir made me fall in love with programming again.
+featureImage: /elixir/cover.jpeg
+featureImageFit: cover
+createdAt: 2021-07-20
+---
+
+Okay, okay. The title explains the contents of this piece very well, but I just need to keep exclaiming it from roofs, singing it in songs and dropping f-bombs in national TV about it.
+
+Elixir made me fall in love with programming again.
+
+## It writes and reads like fine art
+
+Writing Elixir code is pleasant yet challenging. It forces me to think about my code and encourages good practices every step of the way.
+
+```elixir
+defmodule VisorWeb.AuthController do
+    use VisorWeb, :controller
+
+    alias Visor.Auth
+    alias Visor.Repo
+    import VisorWeb.Auth
+
+    # ...
+
+    def update(conn, %{"user" => params}) do
+    user = current_user(conn)
+    changeset = Auth.change_user_profile(user, params)
+
+    with {:ok, user} <- Repo.update(changeset) do
+        render(conn, "update.json", user: user)
+    end
+    end
+end
+```
+
+I've always been scared of functional languages. From a distance, it's always seemed like the functional programming community supports everything that I dislike: idealism over pragmatism.
+
+Elixir completely changed this for me. It's not hard to read like a Lisp, it's practical to write and read for beginners. It feels like a language designed for elegance, programmer happiness and long-term productivity.
+
+```elixir {3-4} showLineNumbers
+def get_new_subs_past_month(subs) do
+    subs
+    |> get_active_subscriptions()
+    |> filter_by_days(30, "signup_date")
+end
+```
+
+<figcaption className="!mt-3 text-center text-base text-gray-500">
+	Pipes!
+</figcaption>
+
+I have no complaints about the standard library. Python has more batteries included, but I like the quality over quantity approach Elixir takes. A good example is the date manipulation story: the Elixir standard lib contains a very high quality library (`DateTime/NaiveDateTime`) compared to the Python `datetime` API. There's also the [awesome Timex library](https://github.com/bitwalker/timex), but it's just convenient wrappers around the standard library stuff.
+
+A big gripe I had with Python is how awkward using tools like `filter` and `map` is. With Elixir being functional and immutable, it feels very natural to use these as the language is designed around it. JS introduced me to FP concepts with React and filter/map, so... might as well bring the fun to my backend language as well.
+
+## Functional programming
+
+I don't know what happened, but functional programming just clicks for me lately. It's not easy, but while I banged my head with recursion and immutability for a while, now it just feels right.
+
+I remember my first epiphany moment was when I discovered `Enum.reduce`. I've always messed with functional-style programming in JS so I was very familiar with things like filter and map, but never understood what the reduce function on arrays would do.
+
+I was building my first project with Elixir and had a bit of trouble wrapping my head on how to write something common in imperative languages: keeping local state through an accumulator. Suddenly, it hit me. I understood it all.
+
+My Elixir journey since then has been very pleasant.
+
+## It's fast, concurrent and fully multicore
+
+Hot damn, Elixir is fast. It's not a benchmark king like Go or Rust but it doesn't need to be. It's just fast enough for a dynamic language (and it got even faster with Erlang/OTP 24's JIT).
+
+Response times (local, mind you) are easily in... microseconds (μs). The whole ecosystem is built around flawless concurrency and multicore support: the included unit test framework uses all your cores by default, spawning new processes is cheap and easy so you don't need to use a worker queue for web apps and web frameworks saturate all your cores.
+
+It's a welcome change coming from a GIL language like Python where everything runs single core and anything outside of sync programming is a world of pain.
+
+The BEAM VM that Erlang and Elixir run on is also a marvel of engineering. It's preemptively scheduled so it always stays responsive, even in full load. It's perfect for web applications and scale™️. [Watch this video, if your jaw doesn't drop, I owe you $20.](https://www.youtube.com/watch?v=JvBT4XBdoUE)
+
+## Excellent realtime support
+
+I love Django. It's been my framework of preference for years now. [I wrote getmakerlog.com with it.](getmakerlog.com)
+
+However, a big pain point I've had with it over the years is the realtime support. It's absolutely terrible.
+
+I've written multiple apps using Django Channels and every single time it ends in pain. [Memory leaks are easy to introduce with async Python.](https://twitter.com/matteing/status/1219494294228213760) Almost all ASGI servers are slow and buggy in production. Writing any realtime code is such an unpleasant experience that usually I work around it. No shade on the Django Channels developers either, it's a great project. It's just the language around it makes everything a lot harder.
+
+Phoenix doesn't have this problem. It takes advantage of the BEAM and comes with performant PubSub and Presence support out of the box. It's shockingly great, and it makes me sprinkle little features here and there that use realtime to make the user experience better.
+
+It's important to mention that the BEAM is extremely resilient. Small bugs or full-load won't take down the entire runtime, so you don't need to program defensively. That helps the web dev story quite a bit!
+
+## Debugging functions is easier
+
+This point has been overdone online multiple times, but it's true. Debugging and testing pure functions is just easier.
+
+Aside from the opaque Elixir error here and there, everything is just easier to debug without having state littered everywhere.
+
+## Modern tooling with Mix, ExUnit
+
+Elixir has the most pleasant developer experience I've experienced in a long, long time.
+
+The entire ecosystem is unified around a single tool, Mix. It's a package manager, formatter, task runner, Swiss army knife... Everything works with it: every package uses it. Coming from the mess that is Python packaging this is a very welcome change. I've wasted so many hours dealing with Pip that using Mix spoiled me.
+
+There is a standard documentation source for everything: hexdocs.pm. It's like a utopia. Every package has their docs there.
+
+Finally, ExUnit is fully asynchronous out of the box. It's so refreshing to have your tests run instantly.
+
+I also really love Ecto. I never knew how hard the Django was holding me back because I didn't know better. Now I do, and I realize how much time I spent fighting the Django ORM. Things like graphing that are a pain with Django are one or two lines of Ecto. It's not less productive, it's the same and more powerful.
+
+## Pure love for exploratory programming through `iex`
+
+IEx (interactive elixir) is just awesome. I've found myself completing MVPs for projects and algorithms right from there.
+
+At first, I was hesitant about doing all my programming from a REPL. However, after I started doing it, I couldn't stop.
+
+You can recompile your entire project by just typing in `recompile` and it magically all works, your code is hot reloaded. Even the state (variables) is still there. It's mind-blowingly seamless.
+
+## Closing
+
+I have my complaints. Elixir has flaws as well. [The library ecosystem is much smaller, the docs aren't as good as Django and the community can be a little elitist.](https://news.ycombinator.com/item?id=27594642)
+
+But.
+
+It makes me more productive and it makes me smile. That's all that matters.
+
+I love Elixir and [you should give it a shot](https://joyofelixir.com/1-appeasing-the-masses).

@@ -1,20 +1,39 @@
-export default function PostList() {
-	const posts = ["Post 1", "Post 2", "Post 3", "Post 1", "Post 2", "Post 3"];
+import Link from "next/link";
+import format from "date-fns/format";
+import { Post } from "../types";
+
+export default function PostList({ posts }: { posts: Post[] }) {
 	return (
-		<div className="mb-24">
+		<div>
 			<div className="mx-auto max-w-3xl">
 				<div className="group flex w-full flex-col">
-					{posts.map((title) => (
-						<div
-							key={title}
-							className="interactable box-border flex items-center gap-4 overflow-hidden border-b border-gray-100 py-4 last:border-none hover:z-10 hover:rounded-md hover:border-white hover:px-4 group-hover:border-gray-50"
-						>
-							<div className="text-sm font-semibold uppercase tracking-tight text-purple-500">
-								May 1
+					<div className="grid gap-16 lg:grid-cols-1 lg:gap-x-5 lg:gap-y-12">
+						{posts.map((post) => (
+							<div key={post.title}>
+								<p className="text-base text-gray-500">
+									<time dateTime={post.createdAt}>
+										{format(
+											new Date(post.createdAt),
+											"MMM d, yyyy"
+										)}
+									</time>
+								</p>
+								<Link
+									href={`/posts/${post.slug}`}
+									key={post.slug}
+								>
+									<a className="mt-2 block">
+										<p className="text-2xl font-semibold tracking-tight text-gray-900">
+											{post.title}
+										</p>
+										<p className="mt-3 text-lg text-gray-500">
+											{post.excerpt}
+										</p>
+									</a>
+								</Link>
 							</div>
-							<div className="text-lg">{title}</div>
-						</div>
-					))}
+						))}
+					</div>
 				</div>
 			</div>
 		</div>

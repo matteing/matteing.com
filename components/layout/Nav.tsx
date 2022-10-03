@@ -11,7 +11,7 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -70,7 +70,7 @@ export function NavPills({
 }: PropsWithChildren & { className?: string }) {
 	return (
 		<AnimatePresence initial={false}>
-			<motion.div
+			<m.div
 				key="nav"
 				initial={{ opacity: 0, y: -5 }}
 				animate={{ y: 0, opacity: 1 }}
@@ -88,7 +88,7 @@ export function NavPills({
 				>
 					Home
 				</NavItem>
-				<NavItem href="/projects" icon={<RectangleStackIcon />}>
+				<NavItem href="/work" icon={<RectangleStackIcon />}>
 					Work
 				</NavItem>
 				<NavItem href="/posts" basePath icon={<PencilIcon />}>
@@ -101,7 +101,7 @@ export function NavPills({
 				>
 					More
 				</NavItem>
-			</motion.div>
+			</m.div>
 		</AnimatePresence>
 	);
 }
@@ -126,6 +126,7 @@ function HoveringNav() {
 			{scrollPos > 675 && (
 				<div className="fixed top-0 left-0 z-20 h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl"></div>
 			)}
+			<MobileNav />
 		</>
 	);
 }
@@ -133,11 +134,43 @@ function HoveringNav() {
 function StaticNav() {
 	return (
 		<>
-			<div className="fixed top-0 left-0 z-20 h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl"></div>
-			<div className="sticky top-6 z-30 my-12 flex w-full justify-center">
+			<div className="fixed top-0 left-0 z-20 hidden h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl md:block"></div>
+			<div className="sticky top-6 z-30 my-12 hidden w-full justify-center md:flex">
 				<NavPills />
 			</div>
+			<MobileNav />
 		</>
+	);
+}
+
+function MobileNavItem({ children }: PropsWithChildren) {
+	return (
+		<div className="flex flex-1 shrink-0 select-none flex-col items-center px-2 py-4 text-sm font-medium text-gray-700">
+			{children}
+		</div>
+	);
+}
+
+export function MobileNav() {
+	return (
+		<div className="fixed left-0 bottom-0 z-50 flex w-full border-t bg-white shadow-2xl md:hidden">
+			<MobileNavItem>
+				<HomeIcon className="mb-1 h-6 w-6 text-gray-500" />
+				Home
+			</MobileNavItem>
+			<MobileNavItem>
+				<RectangleStackIcon className="mb-1 h-6 w-6 text-gray-500" />
+				Work
+			</MobileNavItem>
+			<MobileNavItem>
+				<PencilIcon className="mb-1 h-6 w-6 text-gray-500" />
+				Posts
+			</MobileNavItem>
+			<MobileNavItem>
+				<BoltIcon className="mb-1 h-6 w-6 text-gray-500" />
+				More
+			</MobileNavItem>
+		</div>
 	);
 }
 

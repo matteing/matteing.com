@@ -1,15 +1,16 @@
-import { NextPage } from "next";
+import { InferGetStaticPropsType } from "next";
 import SpotifyLibrary from "../components/SpotifyLibrary";
 import FollowButton from "../components/FollowButton";
-import Nav from "../components/layout/Nav";
-import Body from "../components/layout/Body";
 import Container from "../components/layout/Container";
 import TextLoop from "../components/TextLoop";
 import PostGrid from "../components/PostGrid";
+import Footer from "../components/layout/Footer";
+import { getAllPosts, getBlurPlaceholdersForMany } from "../lib/blog";
+import { filterFeaturedPosts } from "../lib/filters";
 
 function Hero() {
 	return (
-		<div className="helvetica my-32 mx-auto flex flex-col items-center text-center text-8xl font-bold tracking-tighter">
+		<div className="helvetica my-32 mx-auto hidden flex-col items-center text-center text-4xl font-bold tracking-tighter md:flex md:text-6xl lg:text-8xl">
 			<span className="mb-12">
 				Ambitious
 				<br />
@@ -22,17 +23,32 @@ function Hero() {
 	);
 }
 
-const Home: NextPage = () => {
+function Home({
+	featuredPosts,
+}: InferGetStaticPropsType<typeof getStaticProps>) {
 	return (
-		<Body>
-			<Container>
-				<Nav />
+		<Container>
+			<div className="block md:hidden">
+				<Footer />
+			</div>
+			<div className="hidden md:block">
 				<Hero />
-				<PostGrid />
-				<SpotifyLibrary />
-			</Container>
-		</Body>
+			</div>
+			<PostGrid posts={featuredPosts} />
+			<SpotifyLibrary />
+		</Container>
 	);
-};
+}
+
+export async function getStaticProps() {
+	const featuredPosts = await getBlurPlaceholdersForMany(
+		filterFeaturedPosts(await getAllPosts())
+	);
+	return {
+		props: {
+			featuredPosts,
+		},
+	};
+}
 
 export default Home;

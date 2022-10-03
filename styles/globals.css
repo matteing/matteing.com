@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "./code-theme.css";
+
 .interactable {
 	@apply cursor-pointer select-none outline outline-[3px] outline-transparent hover:border-transparent hover:outline-purple-400 dark:hover:outline-purple-600;
 }
@@ -32,7 +34,7 @@
 	}
 }
 
-.now-playing-icon {
+.spotify-widget .now-playing-icon {
 	position: relative;
 	display: flex;
 	justify-content: space-between;
@@ -40,7 +42,7 @@
 	height: 13px;
 }
 
-.now-playing-icon span {
+.spotify-widget .now-playing-icon span {
 	@apply bg-green-500;
 	width: 3px;
 	height: 100%;
@@ -50,15 +52,15 @@
 	content: "";
 }
 
-.now-playing-icon span:nth-of-type(2) {
+.spotify-widget .now-playing-icon span:nth-of-type(2) {
 	animation-delay: -2.2s; /* Start at the end of animation */
 }
 
-.now-playing-icon span:nth-of-type(3) {
+.spotify-widget .now-playing-icon span:nth-of-type(3) {
 	animation-delay: -3.7s; /* Start mid-way of return of animation */
 }
 
-.radial {
+.spotify-widget .radial {
 	background: rgb(0, 0, 0);
 	background: linear-gradient(
 		90deg,
@@ -68,16 +70,7 @@
 	);
 }
 
-.top-gradient {
-	background: rgba(0, 0, 0, 0);
-	background: linear-gradient(
-		180deg,
-		rgba(180, 128, 196, 0.5) 0%,
-		rgba(180, 128, 196, 0) 100%
-	);
-}
-
-.radial-edges {
+.spotify-widget .radial-edges {
 	background: rgb(0, 0, 0);
 	background: linear-gradient(
 		90deg,
@@ -88,7 +81,7 @@
 	);
 }
 
-@keyframes scroll {
+@keyframes scroll-animation {
 	0% {
 		transform: translateX(0);
 	}
@@ -97,12 +90,12 @@
 	}
 }
 
-.slide-track {
-	animation: scroll 90s linear infinite;
+.spotify-widget .slide-track {
+	animation: scroll-animation 90s linear infinite;
 	width: calc((210px + 2rem) * 20);
 }
 
-.animation-paused {
+.spotify-widget .animation-paused {
 	animation-play-state: paused;
 }
 
@@ -110,6 +103,39 @@
 	@apply font-medium uppercase tracking-wide;
 }
 
-.prose > figure > div {
-	@apply relative aspect-video overflow-hidden rounded-xl bg-gray-50 text-center;
+.heading-link {
+	@apply no-underline;
+}
+
+.heading-link .link {
+	@apply text-purple-600 transition-colors duration-150 hover:text-purple-400 active:text-purple-700;
+}
+
+.prose .contains-task-list {
+	list-style: none;
+}
+
+.prose .contains-task-list input[type="checkbox"] {
+	@apply m-0 mr-2 h-5 w-5 shrink-0 rounded-lg text-lg accent-purple-500 disabled:accent-purple-500;
+}
+
+.prose .contains-task-list .task-list-item {
+	display: flex;
+	align-items: center;
+}
+
+.prose .yt-embed {
+	position: relative;
+	padding-bottom: 56.25%;
+	/* 16:9 */
+	padding-top: 25px;
+	height: 0;
+}
+
+.prose .yt-embed iframe {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }

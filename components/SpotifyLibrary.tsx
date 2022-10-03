@@ -1,6 +1,6 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import Image, { ImageProps } from "next/image";
-import { useNowPlaying, useTopTracks } from "../lib/queries";
+import { useNowPlaying, useTopTracks } from "../lib/swr";
 import { Track } from "../types";
 import SpotifyLogo from "./SpotifyLogo";
 
@@ -60,7 +60,7 @@ export default function SpotifyLibrary() {
 	if (nowPlayingError || topTracksError) return null;
 
 	return (
-		<div className="relative mb-24 flex h-[500px] justify-center gap-16 overflow-hidden rounded-xl border-gray-100 bg-gray-900">
+		<div className="spotify-widget relative mb-24 flex h-[500px] justify-center gap-16 overflow-hidden rounded-xl border-gray-100 bg-gray-900">
 			<div className="absolute top-5 left-5 z-20 flex items-center gap-4">
 				<SpotifyLogo />
 				<div>
@@ -73,14 +73,14 @@ export default function SpotifyLibrary() {
 			<AnimatePresence initial={false}>
 				{isPlaying && nowPlaying ? (
 					<>
-						<motion.div
+						<m.div
 							key="background"
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
 							className="radial absolute z-10 h-full w-full"
-						></motion.div>
-						<motion.a
+						></m.div>
+						<m.a
 							key={nowPlaying.title}
 							initial={{ opacity: 0 }}
 							animate={{
@@ -118,7 +118,7 @@ export default function SpotifyLibrary() {
 									</p>
 								</div>
 							</div>
-						</motion.a>
+						</m.a>
 					</>
 				) : null}
 			</AnimatePresence>
@@ -131,7 +131,7 @@ export default function SpotifyLibrary() {
 				{!tracks && skeletonTracks}
 				{tracks &&
 					[...tracks, ...tracks].map((track, idx) => (
-						<motion.a
+						<m.a
 							key={idx}
 							className="slide scalable shrink-0 cursor-pointer transition-transform"
 							href={track.songUrl}
@@ -149,7 +149,7 @@ export default function SpotifyLibrary() {
 									{track.artist}
 								</span>
 							</p>
-						</motion.a>
+						</m.a>
 					))}
 			</div>
 		</div>

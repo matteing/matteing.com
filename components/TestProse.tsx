@@ -1,7 +1,3 @@
-import Image from "next/image";
-import transparentFig from "../../public/transparent-cover-sample.png";
-import squareFig from "../../public/june-light.png";
-
 export default function TestProse() {
 	return (
 		<>
@@ -10,24 +6,13 @@ export default function TestProse() {
 				our duty to future generations and their quest to ensure the
 				survival of the human species.
 			</p>
+			<h2>Heading 2 &lt;h3&gt;</h2>
 			<p>
 				It suddenly struck me that that tiny pea, pretty and blue, was
 				the Earth. I put up my thumb and shut one eye, and my thumb
 				blotted out the planet Earth. I didn”t feel like a giant. I felt
 				very, very small.
 			</p>
-			<figure className="mb-16">
-				<div className="next-figure-container">
-					<Image
-						src={transparentFig}
-						layout="fill"
-						objectFit={"contain"}
-						objectPosition={"bottom"}
-						placeholder="blur"
-						alt="Title"
-					/>
-				</div>
-			</figure>
 			<h3>Heading 3 &lt;h3&gt;</h3>
 			<p>
 				The Earth was small, light blue, and so touchingly alone, our
@@ -37,15 +22,6 @@ export default function TestProse() {
 			</p>
 
 			<figure>
-				<div className="next-figure-container">
-					<Image
-						src={squareFig}
-						layout="fill"
-						objectFit={"contain"}
-						placeholder="blur"
-						alt="Title"
-					/>
-				</div>
 				<figcaption>Something interesting about this image</figcaption>
 			</figure>
 			<h4>Heading 4 &lt;h4&gt;</h4>
