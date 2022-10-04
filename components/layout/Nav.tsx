@@ -67,12 +67,12 @@ export function NavItem({
 						: "")
 				}
 			>
-				<div className="flex flex-col items-center text-center transition-transform group-active:scale-90 md:flex-row md:text-left">
+				<span className="flex flex-col items-center text-center transition-transform group-active:scale-90 md:flex-row md:text-left">
 					{cloneElement((icon as ReactElement) ?? null, {
 						className: "mb-1 md:mb-0 md:mr-3 md:h-4 md:w-4 h-6 w-6",
 					})}
 					<span className="leading-none">{children}</span>
-				</div>
+				</span>
 			</a>
 		</Link>
 	);
