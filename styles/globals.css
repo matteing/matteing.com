@@ -5,7 +5,7 @@
 @import "./code-theme.css";
 
 .interactable {
-	@apply cursor-pointer select-none ring-[3px] ring-transparent hover:border-transparent hover:ring-purple-500 dark:hover:ring-purple-600;
+	@apply cursor-pointer select-none ring-[3px] ring-transparent transition-shadow hover:border-transparent hover:ring-purple-500 dark:hover:ring-purple-600;
 }
 
 .scalable {
