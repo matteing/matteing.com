@@ -115,7 +115,7 @@ export function MobileNavItem({
 		<Link href={href}>
 			<div
 				className={
-					"text-xs group flex flex-1 shrink-0 cursor-pointer select-none flex-col items-center px-2 py-4 font-medium text-gray-700 transition-all hover:bg-purple-50 dark:text-gray-200 dark:hover:bg-purple-900 dark:hover:bg-opacity-30 " +
+					"group flex flex-1 shrink-0 cursor-pointer select-none flex-col items-center px-2 py-4 text-xs font-medium text-gray-700 transition-all hover:bg-purple-50 dark:text-gray-200 dark:hover:bg-purple-900 dark:hover:bg-opacity-30 " +
 					(router.pathname === href
 						? " text-purple-600 dark:text-purple-500"
 						: "")
