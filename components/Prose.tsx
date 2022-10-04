@@ -11,7 +11,6 @@ export const PROSE_STYLES = `
     prose-h1:no-underline
     prose-h1:hover:underline
     prose-h2:tracking-tight
-    prose-a:break-word
     prose-pre:!text-sm
     prose-pre:md:!text-base
     prose-pre:!leading-tight
