@@ -42,7 +42,10 @@ export interface Post {
 	title: string;
 	status: "published" | "unpublished" | "unlisted";
 	tags: string[];
-	postLayout: "feature-image" | "large-feature-image";
+	postLayout:
+		| "feature-image"
+		| "large-feature-image"
+		| "dark-large-feature-image";
 	excerpt: string;
 	singleLiner?: string;
 	body: string;
