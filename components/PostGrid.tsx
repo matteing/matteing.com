@@ -21,12 +21,10 @@ export default function PostGrid({
 					<Link href={`/posts/${post.slug}`} key={post.slug}>
 						<div className="interactable scalable flex cursor-pointer select-none flex-col rounded-xl border border-gray-100">
 							<div className="flex grow flex-col justify-center p-6 py-10">
-								<div className="text-xl font-semibold tracking-tight lg:text-2xl">
-									{post.title}
-								</div>
-								<div className="inter mt-2 text-base text-gray-500 line-clamp-1 md:text-lg">
+								<h4 className="mb-">{post.title}</h4>
+								<p className="text-base text-gray-500 line-clamp-1">
 									{post.singleLiner ?? post.excerpt}
-								</div>
+								</p>
 							</div>
 							{post.featureImage && withImages && (
 								<div className="relative flex h-64 items-center overflow-hidden rounded-b-xl bg-gray-50">

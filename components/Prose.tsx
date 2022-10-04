@@ -5,7 +5,7 @@ export const PROSE_STYLES = `
     prose-gray
     lg:prose-xl
     mx-auto
-    prose-h1:text-5xl
+    prose-h1:text-4xl
     prose-h1:tracking-tight 
     prose-h1:font-bold
     prose-h1:no-underline

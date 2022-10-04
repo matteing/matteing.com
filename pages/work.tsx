@@ -30,15 +30,11 @@ function ProjectGridItem({
 			className={`interactable scalable flex cursor-pointer select-none flex-col rounded-xl border border-gray-100 ${className}`}
 		>
 			<div className="p-6 py-10">
-				<div className="mb-2 text-sm font-medium uppercase tracking-wide text-gray-400">
+				<small className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400">
 					{year}
-				</div>
-				<div className="mb-2 text-xl font-semibold tracking-tight lg:text-2xl">
-					{title}
-				</div>
-				<div className="inter text-base text-gray-500 lg:text-lg">
-					{description}
-				</div>
+				</small>
+				<h4 className="mb-2">{title}</h4>
+				<p className="inter text-base text-gray-500">{description}</p>
 			</div>
 			<div
 				className={`relative flex items-center justify-center overflow-hidden rounded-b-xl bg-gray-50 ${featureImageClassName}`}

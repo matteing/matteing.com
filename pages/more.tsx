@@ -29,7 +29,7 @@ const More: NextPage = () => {
 								placeholder="blur"
 							/>
 						</div>
-						<figcaption className="text-center text-base">
+						<figcaption className="text-center text-sm">
 							It's a me
 						</figcaption>
 					</figure>

@@ -11,12 +11,10 @@ export default function PostTitle({
 			<div
 				className={`mx-auto mt-12 sm:max-w-[655px] md:mb-6 lg:mt-20 lg:mb-10 lg:max-w-[812px] ${className}`}
 			>
-				<div className="heading mb-2 text-gray-500">
+				<small className="heading mb-2 block text-gray-500">
 					{formatShortDate(post.createdAt)}
-				</div>
-				<h1 className="mb-3 text-3xl font-bold tracking-tight lg:text-5xl">
-					{post.title}
-				</h1>
+				</small>
+				<h1 className="mb-3">{post.title}</h1>
 			</div>
 		</div>
 	);

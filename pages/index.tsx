@@ -10,14 +10,16 @@ import { filterFeaturedPosts } from "../lib/filters";
 
 function Hero() {
 	return (
-		<div className="helvetica my-32 mx-auto hidden flex-col items-center text-center text-4xl font-bold tracking-tighter md:flex md:text-6xl lg:text-8xl">
-			<span className="mb-12">
-				Ambitious
-				<br />
+		<div className="my-32 mx-auto hidden flex-col items-center text-center md:flex">
+			<h1 className="mb-12 text-3xl font-bold tracking-tighter md:text-5xl lg:text-7xl">
 				<span>
-					<TextLoop />
+					Ambitious
+					<br />
+					<span>
+						<TextLoop />
+					</span>
 				</span>
-			</span>
+			</h1>
 			<FollowButton />
 		</div>
 	);

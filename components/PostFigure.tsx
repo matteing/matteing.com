@@ -42,7 +42,7 @@ export function TweetFigure({
 				</AnimatePresence>
 			</div>
 			{alt && (
-				<figcaption className="!mt-2 !text-base text-gray-500">
+				<figcaption className="!mt-2 !text-sm text-gray-500">
 					{alt}
 				</figcaption>
 			)}
@@ -62,7 +62,7 @@ export function ImageFigure(
 				<Image layout="responsive" {...imageProps} alt={alt} />
 			</div>
 			{alt && (
-				<figcaption className="!mt-3 text-base text-gray-500">
+				<figcaption className="!mt-3 text-sm text-gray-500">
 					{alt}
 				</figcaption>
 			)}
@@ -83,7 +83,7 @@ export default function EmptyFigure({
 				{children}
 			</div>
 			{alt && (
-				<figcaption className="!mt-3 text-base text-gray-500">
+				<figcaption className="!mt-3 text-sm text-gray-500">
 					{alt}
 				</figcaption>
 			)}

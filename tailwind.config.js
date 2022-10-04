@@ -9,6 +9,21 @@ module.exports = {
 		"./posts/**/*.mdx",
 	],
 	theme: {
+		fontSize: {
+			xs: defaultTheme.fontSize.sm,
+			sm: defaultTheme.fontSize.base,
+			base: defaultTheme.fontSize.lg,
+			lg: defaultTheme.fontSize.xl,
+			xl: defaultTheme.fontSize["2xl"],
+			"2xl": defaultTheme.fontSize["3xl"],
+			"3xl": defaultTheme.fontSize["4xl"],
+			"4xl": defaultTheme.fontSize["5xl"],
+			"5xl": defaultTheme.fontSize["6xl"],
+			"6xl": defaultTheme.fontSize["7xl"],
+			"7xl": defaultTheme.fontSize["8xl"],
+			"8xl": defaultTheme.fontSize["9xl"],
+			"9xl": ["10rem", { lineHeight: "1" }],
+		},
 		extend: {
 			colors: {
 				gray: {

@@ -39,7 +39,7 @@ function AlbumSkeleton() {
 					className={`h-[210px] w-[210px] shrink-0 animate-pulse rounded-lg bg-green-900 drop-shadow-2xl`}
 				></div>
 			</div>
-			<p className="flex w-[225px] flex-col items-center text-center text-lg leading-tight">
+			<p className="flex w-[225px] flex-col items-center text-center text-base leading-tight">
 				<span className="block h-[1rem] w-[100px] animate-pulse rounded-lg bg-gray-700"></span>
 				<span className="mt-1 block h-[1rem] w-[50px] animate-pulse rounded-lg bg-gray-700"></span>
 			</p>
@@ -64,7 +64,7 @@ export default function SpotifyLibrary() {
 			<div className="absolute top-5 left-5 z-20 flex items-center gap-4">
 				<SpotifyLogo />
 				<div>
-					<span className="text-sm font-light uppercase tracking-widest text-gray-200">
+					<span className="text-xs font-light uppercase tracking-widest text-gray-200">
 						{isPlaying ? "Now Playing" : "Top This Month"}
 					</span>
 				</div>
@@ -105,7 +105,7 @@ export default function SpotifyLibrary() {
 									</span>
 									<AlbumCover track={nowPlaying} nowPlaying />
 									<p
-										className="text-lg leading-tight"
+										className="text-base leading-tight"
 										style={{ maxWidth: 225 }}
 									>
 										<span className=" text-white">
@@ -140,7 +140,7 @@ export default function SpotifyLibrary() {
 							<div className="mb-6">
 								<AlbumCover track={track} />
 							</div>
-							<p className="w-[225px] text-center text-lg leading-tight">
+							<p className="w-[225px] text-center text-base leading-tight">
 								<span className=" text-white">
 									{track.title}
 								</span>

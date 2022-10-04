@@ -14,7 +14,7 @@ function Error({ statusCode }: { statusCode: number }) {
 					placeholder="blur"
 				/>
 			</div>
-			<h1>
+			<h1 className="text-sm">
 				{statusCode} ⎯{" "}
 				{statusCode === 404 ? "page not found" : "something went wrong"}
 			</h1>

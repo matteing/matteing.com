@@ -16,13 +16,13 @@ export default function Footer() {
 					priority
 				/>
 			</div>
-			<span className="text-3xl font-medium text-gray-700">
+			<span className="text-2xl font-semibold tracking-tight text-gray-700">
 				Sergio Mattei
 			</span>
-			<span className="mb-8 text-lg text-gray-500">
+			<span className="mb-8 text-base text-gray-500">
 				matteing.com · @matteing
 			</span>
-			<div className="flex gap-6">
+			<div className="flex gap-6 text-base">
 				<a
 					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
 					href="https://twitter.com/matteing"

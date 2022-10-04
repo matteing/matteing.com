@@ -116,7 +116,7 @@
 }
 
 .prose .contains-task-list input[type="checkbox"] {
-	@apply m-0 mr-2 h-5 w-5 shrink-0 rounded-lg text-lg accent-purple-500 disabled:accent-purple-500;
+	@apply m-0 mr-2 h-5 w-5 shrink-0 rounded-lg text-base accent-purple-500 disabled:accent-purple-500;
 }
 
 .prose .contains-task-list .task-list-item {
@@ -138,4 +138,36 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
+}
+
+/* Semantic, responsive typography configuration */
+
+@layer base {
+	h1 {
+		@apply text-3xl font-bold tracking-tight md:text-4xl;
+	}
+
+	h2 {
+		@apply text-2xl font-bold tracking-tight md:text-3xl;
+	}
+
+	h3 {
+		@apply text-xl font-semibold tracking-tight md:text-2xl;
+	}
+
+	h4 {
+		@apply text-lg font-semibold tracking-tight md:text-xl;
+	}
+
+	h5 {
+		@apply text-base font-semibold;
+	}
+
+	h6 {
+		@apply text-base font-semibold;
+	}
+
+	small {
+		@apply text-xs md:text-sm;
+	}
 }

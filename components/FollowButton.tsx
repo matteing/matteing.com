@@ -16,7 +16,7 @@ function Icon() {
 
 export default function FollowButton() {
 	return (
-		<div className="relative h-[28px] w-[254px]">
+		<div className="relative h-[28px] w-[275px]">
 			<AnimatePresence>
 				<m.a
 					initial={{ opacity: 0, scale: 0.95 }}
@@ -26,11 +26,11 @@ export default function FollowButton() {
 					href="https://twitter.com/intent/follow?region=follow_link&screen_name=matteing"
 					target="_blank"
 				>
-					<div className="helvetica inline-flex h-[28px] shrink-0 cursor-pointer items-center rounded-full bg-[#1d9bf0] pt-[1px] pr-[12px] pb-[1px] pl-[12px] text-[13px] text-xs font-medium leading-normal tracking-normal text-white hover:bg-[#0c7abf]">
+					<div className=" inline-flex h-[28px] shrink-0 cursor-pointer items-center rounded-full bg-[#1d9bf0] pt-[1px] pr-[12px] pb-[1px] pl-[12px] text-[13px] text-xs font-medium leading-normal tracking-normal text-white hover:bg-[#0c7abf]">
 						<Icon />
 						<span className="ml-[4px]">Follow @matteing</span>
 					</div>
-					<div className="helvetica ml-2 inline-flex grow items-center justify-center rounded-md border pl-[8px] pr-[8px] text-[11px] font-normal tracking-normal text-gray-700">
+					<div className=" ml-2 inline-flex grow items-center justify-center rounded-md border bg-white pl-[8px] pr-[8px] text-[11px] font-normal tracking-normal text-gray-700">
 						6,687 followers
 					</div>
 				</m.a>
