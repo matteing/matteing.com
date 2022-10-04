@@ -16,6 +16,8 @@ import rehypePrism from "rehype-prism-plus";
 import rehypeSlug from "rehype-slug";
 import Prose from "../../components/Prose";
 import { NextSeo } from "next-seo";
+import { ReactNode } from "react";
+import DarkLargeFeatureImage from "../../components/layout/DarkLargeFeatureImage";
 
 function Layout({ post, children }: BaseProps & { post: Post }) {
 	switch (post.postLayout) {
@@ -24,13 +26,20 @@ function Layout({ post, children }: BaseProps & { post: Post }) {
 				<LargeFeatureImage post={post}>{children}</LargeFeatureImage>
 			);
 
+		case "dark-large-feature-image":
+			return (
+				<DarkLargeFeatureImage post={post}>
+					{children}
+				</DarkLargeFeatureImage>
+			);
+
 		case "feature-image":
 		default:
 			return <FeatureImage post={post}>{children}</FeatureImage>;
 	}
 }
 
-export default function PostPage({
+function PostPage({
 	source,
 	post,
 }: {
@@ -79,6 +88,7 @@ export default function PostPage({
 	);
 }
 
+PostPage.getLayout = (children: ReactNode) => children;
 interface PageParams {
 	slug: string;
 }
@@ -114,3 +124,5 @@ export const getStaticPaths = async () => {
 		fallback: false,
 	};
 };
+
+export default PostPage;

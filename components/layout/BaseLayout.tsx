@@ -1,10 +1,10 @@
-import { PropsWithChildren } from "react";
+import { BaseProps } from "../../types";
 import Footer from "./Footer";
 import Nav from "./Nav";
 
-export default function BaseLayout({ children }: PropsWithChildren) {
+export default function BaseLayout({ children, className }: BaseProps) {
 	return (
-		<div>
+		<div className={className}>
 			<div className="min-h-[95vh]">
 				<Nav />
 				{children}

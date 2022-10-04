@@ -100,8 +100,8 @@ export function NavPills({
 export default function Nav() {
 	return (
 		<>
-			<div className="fixed top-0 left-0 z-20 hidden h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl md:block"></div>
-			<div className="z-30 flex w-full justify-center md:sticky md:top-6 md:my-12">
+			<div className="fixed top-0 left-0 z-20 hidden h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl dark:hidden dark:bg-gray-900 md:block"></div>
+			<div className="z-30 flex w-full justify-center dark:static dark:bg-gray-900 md:sticky md:top-6 md:my-12 dark:md:my-0 dark:md:py-12">
 				<NavPills />
 			</div>
 		</>

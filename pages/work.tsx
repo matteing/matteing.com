@@ -19,7 +19,7 @@ function ProjectGridItem({
 	className,
 	featureImageClassName,
 }: PropsWithChildren & {
-	year: number;
+	year: number | string;
 	title: string;
 	description: string;
 	featureImageClassName?: string;
@@ -108,6 +108,21 @@ export default function Projects() {
 							year={2022}
 							title="Makerlog (sold 2022)"
 							description="A community of 6,000+ makers sharing their daily tasks publicly"
+							className="col-span-2"
+							featureImageClassName="!items-end"
+						>
+							<Image
+								className="z-10"
+								objectFit="contain"
+								src={makerlogScreenshot}
+								placeholder="blur"
+								alt="Makerlog"
+							/>
+						</ProjectGridItem>
+						<ProjectGridItem
+							year={"2018-2021"}
+							title="Streaming on Twitch"
+							description="As part of my work at Makerlog, I streamed live coding as a Twitch Partner for many years."
 							className="col-span-2"
 							featureImageClassName="!items-end"
 						>
