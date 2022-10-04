@@ -58,22 +58,22 @@ export function NavItem({
 
 	return (
 		<Link href={href}>
-			<div
+			<a
 				className={
-					"group flex flex-1 shrink-0 cursor-pointer select-none items-center justify-center py-4 font-medium text-gray-700 transition-all hover:bg-purple-50 dark:text-gray-200 dark:hover:bg-purple-900 dark:hover:bg-opacity-30 md:justify-start md:px-6 " +
+					"group flex flex-1 shrink-0 cursor-pointer select-none items-center justify-center py-4 font-medium text-gray-700 hover:bg-purple-50 dark:text-gray-200 dark:hover:bg-purple-900 dark:hover:bg-opacity-30 md:justify-start md:px-6 " +
 					className +
 					(router.pathname === href
 						? " text-purple-600 dark:text-purple-500"
 						: "")
 				}
 			>
-				<div className="flex flex-col items-center text-center transition-all group-active:scale-90 md:flex-row md:text-left">
+				<div className="flex flex-col items-center text-center transition-transform group-active:scale-90 md:flex-row md:text-left">
 					{cloneElement((icon as ReactElement) ?? null, {
 						className: "mb-1 md:mb-0 md:mr-3 md:h-4 md:w-4 h-6 w-6",
 					})}
 					<span className="leading-none">{children}</span>
 				</div>
-			</div>
+			</a>
 		</Link>
 	);
 }
@@ -84,7 +84,7 @@ export function NavPills({
 	return (
 		<div
 			className={
-				"inter interactable flex w-full bg-white transition-colors dark:border-gray-700 dark:bg-gray-800 md:w-auto md:rounded-full md:border md:shadow-sm " +
+				"inter interactable flex w-full bg-white dark:border-gray-700 dark:bg-gray-800 md:w-auto md:rounded-full md:border md:shadow-sm " +
 				className
 			}
 		>
