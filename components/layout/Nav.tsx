@@ -4,13 +4,7 @@ import {
 	PencilIcon,
 	BoltIcon,
 } from "@heroicons/react/24/outline";
-import {
-	cloneElement,
-	PropsWithChildren,
-	ReactElement,
-	useEffect,
-	useState,
-} from "react";
+import { cloneElement, PropsWithChildren, ReactElement } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -48,21 +42,6 @@ const ROUTES: RouteDefinition[] = [
 		className: "rounded-r-full",
 	},
 ];
-
-const useScrollPosition = () => {
-	const [scrollPosition, setScrollPosition] = useState(0);
-
-	useEffect(() => {
-		const updatePosition = () => {
-			setScrollPosition(window.pageYOffset);
-		};
-		window.addEventListener("scroll", updatePosition);
-		updatePosition();
-		return () => window.removeEventListener("scroll", updatePosition);
-	}, []);
-
-	return scrollPosition;
-};
 
 export function NavItem({
 	icon,
@@ -152,47 +131,6 @@ export function NavPills({
 	);
 }
 
-function HoveringNav() {
-	const scrollPos = useScrollPosition();
-	return (
-		<>
-			{scrollPos < 675 ? (
-				<div
-					className={
-						"dark absolute top-12 z-30 hidden w-full justify-center md:flex"
-					}
-				>
-					<NavPills />
-				</div>
-			) : (
-				<div
-					className={
-						"fixed top-6 z-30 hidden w-full justify-center md:flex"
-					}
-				>
-					<NavPills />
-				</div>
-			)}
-			{scrollPos > 675 && (
-				<div className="fixed top-0 left-0 z-20 hidden h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl md:block"></div>
-			)}
-			<MobileNav />
-		</>
-	);
-}
-
-function StaticNav() {
-	return (
-		<>
-			<div className="fixed top-0 left-0 z-20 hidden h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl md:block"></div>
-			<div className="sticky top-6 z-30 my-12 hidden w-full justify-center md:flex">
-				<NavPills />
-			</div>
-			<MobileNav />
-		</>
-	);
-}
-
 export function MobileNav() {
 	return (
 		<div className="left-0 bottom-0 z-50 flex w-full bg-white md:hidden">
@@ -205,10 +143,14 @@ export function MobileNav() {
 	);
 }
 
-export default function Nav({ hovering = false }: { hovering?: boolean }) {
-	if (hovering) {
-		return <HoveringNav />;
-	} else {
-		return <StaticNav />;
-	}
+export default function Nav() {
+	return (
+		<>
+			<div className="fixed top-0 left-0 z-20 hidden h-24 w-full bg-white bg-opacity-75 backdrop-blur-xl md:block"></div>
+			<div className="sticky top-6 z-30 my-12 hidden w-full justify-center md:flex">
+				<NavPills />
+			</div>
+			<MobileNav />
+		</>
+	);
 }
