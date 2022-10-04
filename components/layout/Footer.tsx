@@ -25,6 +25,14 @@ export default function Footer() {
 			<div className="flex gap-6 text-base">
 				<a
 					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
+					href="https://github.com/matteing"
+					target="_blank"
+					rel="noreferrer"
+				>
+					GitHub
+				</a>
+				<a
+					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
 					href="https://twitter.com/matteing"
 					target="_blank"
 					rel="noreferrer"
