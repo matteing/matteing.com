@@ -5,6 +5,10 @@ const nextConfig = {
 	images: {
 		domains: ["i.scdn.co", "miro.medium.com"],
 	},
+	i18n: {
+		locales: ["en"],
+		defaultLocale: "en",
+	},
 	async rewrites() {
 		return [
 			{
