@@ -5,7 +5,7 @@ import Nav from "./Nav";
 export default function BaseLayout({ children }: PropsWithChildren) {
 	return (
 		<div>
-			<div className="min-h-[100vh]">
+			<div className="min-h-[95vh]">
 				<Nav />
 				{children}
 			</div>
