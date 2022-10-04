@@ -11,7 +11,6 @@ import {
 	useEffect,
 	useState,
 } from "react";
-import { AnimatePresence, m } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -138,25 +137,18 @@ export function NavPills({
 	className,
 }: PropsWithChildren & { className?: string }) {
 	return (
-		<AnimatePresence initial={false}>
-			<m.div
-				key="nav"
-				initial={{ opacity: 0, y: -5 }}
-				animate={{ y: 0, opacity: 1 }}
-				exit={{ y: -5, opacity: 0 }}
-				transition={{ duration: 0.15 }}
-				className={
-					"inter interactable flex rounded-full border bg-white shadow-sm transition-all dark:border-gray-700 dark:bg-gray-800 " +
-					className
-				}
-			>
-				{ROUTES.map((routeProps) => (
-					<NavItem key={routeProps.name} {...routeProps}>
-						{routeProps.name}
-					</NavItem>
-				))}
-			</m.div>
-		</AnimatePresence>
+		<div
+			className={
+				"inter interactable flex rounded-full border bg-white shadow-sm transition-all dark:border-gray-700 dark:bg-gray-800 " +
+				className
+			}
+		>
+			{ROUTES.map((routeProps) => (
+				<NavItem key={routeProps.name} {...routeProps}>
+					{routeProps.name}
+				</NavItem>
+			))}
+		</div>
 	);
 }
 
