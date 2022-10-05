@@ -2,6 +2,21 @@ import { NextApiRequest, NextApiResponse } from "next";
 import get from "lodash/fp/get";
 import { DISCORD_HOOK, REVALIDATE_KEY } from "../../../config";
 
+async function postNotification(prev: string, current: string) {
+	if (DISCORD_HOOK) {
+		await fetch(DISCORD_HOOK, {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				content: `Updated: previous: ${prev}, current: ${current} `,
+			}),
+		});
+	}
+}
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	// Check for secret to confirm this is a valid request
 	// eslint-disable-next-line no-console
@@ -13,21 +28,20 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
 		// this should be the actual path not a rewritten path
 		// e.g. for "/blog/[slug]" this should be "/blog/post-1"
-		const currentSlug = get("post.current.slug", req.body);
-		const previousSlug = get("post.previous.slug", req.body);
-		if (currentSlug) await res.revalidate(currentSlug);
-		if (previousSlug !== currentSlug) await res.revalidate(previousSlug);
-		if (DISCORD_HOOK) {
-			await fetch(DISCORD_HOOK, {
-				method: "POST",
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					content: `Updated: previous: ${currentSlug}, current: ${previousSlug} `,
-				}),
-			});
+		if (req.body?.post) {
+			const currentSlug = get("post.current.slug", req.body);
+			const previousSlug = get("post.previous.slug", req.body);
+			if (currentSlug) await res.revalidate(`/posts/${currentSlug}`);
+			if (previousSlug !== currentSlug)
+				await res.revalidate(`/posts/${currentSlug}`);
+			postNotification(previousSlug, currentSlug);
+		} else if (req.body?.page) {
+			const currentSlug = get("page.current.slug", req.body);
+			const previousSlug = get("page.previous.slug", req.body);
+			if (currentSlug) await res.revalidate(`/page/${currentSlug}`);
+			if (previousSlug !== currentSlug)
+				await res.revalidate(`/${currentSlug}`);
+			postNotification(previousSlug, currentSlug);
 		}
 		return res.json({ revalidated: true });
 	} catch (err) {
