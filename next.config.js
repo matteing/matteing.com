@@ -3,7 +3,7 @@ const nextConfig = {
 	reactStrictMode: true,
 	swcMinify: true,
 	images: {
-		domains: ["i.scdn.co", "miro.medium.com"],
+		domains: ["i.scdn.co", "miro.medium.com", "cms.matteing.com"],
 	},
 	i18n: {
 		locales: ["en"],
@@ -14,6 +14,10 @@ const nextConfig = {
 			{
 				source: "/rss",
 				destination: "/api/rss/getRss",
+			},
+			{
+				source: "/content/:path*",
+				destination: "https://cms.matteing.com/content/:path*",
 			},
 		];
 	},
