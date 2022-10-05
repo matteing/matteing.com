@@ -49,10 +49,10 @@ export default function Projects() {
 	return (
 		<Container>
 			<NextSeo
-				title="Work"
+				title="Projects"
 				description="Sergio Mattei's project portfolio."
 			/>
-			<PageTitle>Work</PageTitle>
+			<PageTitle>Projects</PageTitle>
 			<div className="mt-12">
 				<AnimatePresence>
 					<m.div

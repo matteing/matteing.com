@@ -24,8 +24,8 @@ const ROUTES: RouteDefinition[] = [
 		className: "md:rounded-l-full",
 	},
 	{
-		name: "Work",
-		href: "/work",
+		name: "Projects",
+		href: "/projects",
 		icon: <RectangleStackIcon />,
 	},
 	{
