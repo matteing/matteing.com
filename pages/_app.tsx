@@ -1,7 +1,6 @@
 import "../styles/globals.css";
 import BaseLayout from "../components/layout/BaseLayout";
 import { AppPropsWithLayout } from "../types";
-import MDXProvider from "../components/MDXProvider";
 import { DefaultSeo } from "next-seo";
 import { LazyMotion } from "framer-motion";
 import { NEXT_PUBLIC_URL } from "../config";
@@ -13,7 +12,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 	const getLayout =
 		Component.getLayout || ((page) => <BaseLayout>{page}</BaseLayout>);
 	return (
-		<MDXProvider>
+		<LazyMotion strict features={loadFeatures}>
 			<DefaultSeo
 				titleTemplate="%s · matteing.com"
 				defaultTitle="Sergio Mattei · matteing.com"
@@ -39,10 +38,8 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 					cardType: "summary_large_image",
 				}}
 			/>
-			<LazyMotion strict features={loadFeatures}>
-				{getLayout(<Component {...pageProps} />)}
-			</LazyMotion>
-		</MDXProvider>
+			{getLayout(<Component {...pageProps} />)}
+		</LazyMotion>
 	);
 }
 

@@ -8,7 +8,7 @@ This website is built using the following technologies:
 -   TypeScript
 -   NextJS
 -   TailwindCSS
--   MDX (remark & next-mdx-remote)
+-   Ghost (Headless)
 
 ## Content
 
