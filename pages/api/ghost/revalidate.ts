@@ -4,6 +4,7 @@ import { DISCORD_HOOK, REVALIDATE_KEY } from "../../../config";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	// Check for secret to confirm this is a valid request
+	// eslint-disable-next-line no-console
 	console.log(req.query.secret, REVALIDATE_KEY);
 	if (req.query.secret !== REVALIDATE_KEY) {
 		return res.status(401).json({ message: "Invalid token" });
