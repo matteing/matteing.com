@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import get from "lodash/fp/get";
-import { DISCORD_HOOK } from "../../../config";
+import { DISCORD_HOOK, REVALIDATE_KEY } from "../../../config";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	// Check for secret to confirm this is a valid request
-	if (req.query.secret !== process.env.REVALIDATE_KEY) {
+	console.log(req.query.secret, REVALIDATE_KEY);
+	if (req.query.secret !== REVALIDATE_KEY) {
 		return res.status(401).json({ message: "Invalid token" });
 	}
 
