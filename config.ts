@@ -12,3 +12,4 @@ export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 export const SPOTIFY_REFRESH_TOKEN = process.env.SPOTIFY_REFRESH_TOKEN;
 
 export const DISCORD_HOOK = process.env.DISCORD_HOOK;
+export const REVALIDATE_KEY = process.env.REVALIDATE_KEY;
