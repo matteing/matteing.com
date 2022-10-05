@@ -35,8 +35,8 @@ const ROUTES: RouteDefinition[] = [
 		icon: <PencilIcon />,
 	},
 	{
-		name: "More",
-		href: "/more",
+		name: "About",
+		href: "/about",
 		basePath: false,
 		icon: <BoltIcon />,
 		className: "md:rounded-r-full",
