@@ -4,6 +4,7 @@ import { AppPropsWithLayout } from "../types";
 import MDXProvider from "../components/MDXProvider";
 import { DefaultSeo } from "next-seo";
 import { LazyMotion } from "framer-motion";
+import { NEXT_PUBLIC_URL } from "../config";
 
 const loadFeatures = () =>
 	import("../lib/framer.js").then((res) => res.default);
@@ -17,14 +18,14 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 				titleTemplate="%s · matteing.com"
 				defaultTitle="Sergio Mattei · matteing.com"
 				description="Founder and software engineer"
-				canonical={process.env.NEXT_PUBLIC_URL}
+				canonical={NEXT_PUBLIC_URL}
 				openGraph={{
-					url: process.env.NEXT_PUBLIC_URL,
+					url: NEXT_PUBLIC_URL,
 					title: "Sergio Mattei · matteing.com",
 					description: "Founder and software engineer",
 					images: [
 						{
-							url: `${process.env.NEXT_PUBLIC_URL}/og-image.png`,
+							url: `${NEXT_PUBLIC_URL}/og-image.png`,
 							width: 1200,
 							height: 675,
 							alt: "Sergio Mattei",

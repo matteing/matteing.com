@@ -5,3 +5,12 @@ export function formatShortDate(date: string): string {
 		day: "numeric",
 	});
 }
+
+export function isJson(str: string): boolean {
+	try {
+		JSON.parse(str);
+	} catch (e) {
+		return false;
+	}
+	return true;
+}

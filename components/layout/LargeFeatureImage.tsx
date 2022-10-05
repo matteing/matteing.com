@@ -1,35 +1,46 @@
 import Image, { ImageProps } from "next/image";
-import { BaseProps, Post } from "../../types";
+import { BaseProps, GhostPost } from "../../types";
 import Container from "./Container";
 import PostTitle from "../PostTitle";
 import BaseLayout from "./BaseLayout";
+import PageTitle from "../PageTitle";
 
 export default function LargeFeatureImage({
 	post,
+	page,
 	children,
-}: BaseProps & { post: Post }) {
+}: BaseProps & { post?: GhostPost; page?: GhostPost }) {
+	const content = post || page;
+	if (!content) return null;
 	return (
 		<BaseLayout>
-			<div className="relative h-[25vh] w-full bg-gray-50 md:h-[60vh]">
-				{post.featureImage && (
+			<div className="relative h-[25vh] w-full bg-gray-50 md:h-[50vh] lg:h-[70vh]">
+				{content.featureImage && (
 					<Image
-						src={post.featureImage}
+						src={content.featureImage}
 						layout="fill"
 						objectFit={
-							post.featureImageFit as ImageProps["objectFit"]
+							(content.featureImageFit as ImageProps["objectFit"]) ??
+							"cover"
 						}
 						objectPosition={
-							post.featureImagePosition as ImageProps["objectPosition"]
+							content.featureImagePosition as ImageProps["objectPosition"]
 						}
-						placeholder={post.featureImageBlur ? "blur" : undefined}
-						blurDataURL={post.featureImageBlur}
-						alt={post.title}
+						placeholder={
+							content.featureImageBlur ? "blur" : undefined
+						}
+						blurDataURL={content.featureImageBlur}
+						alt={content.featureImageAlt ?? content.title}
 					/>
 				)}
 			</div>
 
 			<Container>
-				<PostTitle post={post} />
+				{post ? (
+					<PostTitle post={content} />
+				) : (
+					<PageTitle>{content.title}</PageTitle>
+				)}
 				{children}
 			</Container>
 		</BaseLayout>

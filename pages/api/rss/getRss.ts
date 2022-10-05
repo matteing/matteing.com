@@ -1,25 +1,29 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Post } from "../../../types";
+import { GhostPost } from "../../../types";
 import escape from "lodash/escape";
-import { getAllPosts } from "../../../lib/blog";
-import { isPublished, orderPostsByDate } from "../../../lib/filters";
+import { NEXT_PUBLIC_URL } from "../../../config";
+import { getAllPublicPostsForRss } from "../../../lib/ghost";
 
 /* Full credit to https://jonbellah.com/articles/rss-feed-nextjs */
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
-		const posts = orderPostsByDate(await getAllPosts()).filter(isPublished);
+		const posts = await getAllPublicPostsForRss();
 		const postItems = posts
-			.map((post: Post) => {
-				const url = `${process.env.NEXT_PUBLIC_URL}/posts/${post.slug}`;
-
+			.map((post: GhostPost) => {
+				const url = `${NEXT_PUBLIC_URL}/posts/${post.slug}`;
 				return `<item>
               <title>${post.title}</title>
               <link>${url}</link>
               <guid>${url}</guid>
-              <pubDate>${new Date(post.createdAt).toUTCString()}</pubDate>
-              ${post.excerpt && `<description>${post.excerpt}</description>`}
-              <content:encoded>${escape(post.body)}</content:encoded>
+              <pubDate>${new Date(
+					post.publishedAt ?? ""
+				).toUTCString()}</pubDate>
+              ${
+					post.excerpt &&
+					`<description>${escape(post.excerpt)}</description>`
+				}
+              <content:encoded>${escape(post.plaintext ?? "")}</content:encoded>
             </item>`;
 			})
 			.join("");
@@ -30,8 +34,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
           <channel>
           <title>matteing.com</title>
           <description>Sergio Mattei's Blog</description>
-          <link>${process.env.NEXT_PUBLIC_URL}</link>
-          <lastBuildDate>${posts[0].createdAt}</lastBuildDate>
+          <link>${NEXT_PUBLIC_URL}</link>
+          <lastBuildDate>${posts[0].publishedAt}</lastBuildDate>
           ${postItems}
           </channel>
           </rss>`.trim();

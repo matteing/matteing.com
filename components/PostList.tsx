@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { Post } from "../types";
+import { GhostPost } from "../types";
 import { formatShortDate } from "../lib/utils";
 
-export default function PostList({ posts }: { posts: Post[] }) {
+export default function PostList({ posts }: { posts: GhostPost[] }) {
 	return (
 		<div>
 			<div className="mx-auto max-w-3xl">
@@ -11,8 +11,10 @@ export default function PostList({ posts }: { posts: Post[] }) {
 						{posts.map((post) => (
 							<div key={post.title}>
 								<p className="text-sm text-gray-500">
-									<time dateTime={post.createdAt}>
-										{formatShortDate(post.createdAt)}
+									<time dateTime={post.publishedAt}>
+										{post.publishedAt
+											? formatShortDate(post.publishedAt)
+											: null}
 									</time>
 								</p>
 								<Link
@@ -23,7 +25,7 @@ export default function PostList({ posts }: { posts: Post[] }) {
 										<h4 className="text-gray-900">
 											{post.title}
 										</h4>
-										<p className="mt-3 text-base text-gray-500">
+										<p className="mt-3 text-base text-gray-500 line-clamp-2">
 											{post.excerpt}
 										</p>
 									</a>

@@ -1,10 +1,9 @@
 import { InferGetStaticPropsType } from "next";
 import Container from "../../components/layout/Container";
-import { getAllPosts } from "../../lib/blog";
 import PostList from "../../components/PostList";
-import { isPublished, isUnlisted, orderPostsByDate } from "../../lib/filters";
 import { NextSeo } from "next-seo";
 import PageTitle from "../../components/PageTitle";
+import { getAllPublicPosts } from "../../lib/ghost";
 
 export function PostsIndex({
 	posts,
@@ -22,11 +21,7 @@ export function PostsIndex({
 }
 
 export async function getStaticProps() {
-	const posts = orderPostsByDate(
-		(await getAllPosts()).filter(
-			(post) => isPublished(post) && !isUnlisted(post)
-		)
-	);
+	const posts = await getAllPublicPosts();
 
 	return {
 		props: {

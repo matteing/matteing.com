@@ -1,13 +1,13 @@
 import { AnimatePresence, m } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { Post } from "../types";
+import { GhostPost } from "../types";
 
 export default function PostGrid({
 	posts,
 	withImages = true,
 }: {
-	posts: Post[];
+	posts: GhostPost[];
 	withImages?: boolean;
 }) {
 	return (

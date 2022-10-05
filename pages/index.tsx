@@ -5,8 +5,7 @@ import Container from "../components/layout/Container";
 import TextLoop from "../components/TextLoop";
 import PostGrid from "../components/PostGrid";
 import Footer from "../components/layout/Footer";
-import { getAllPosts, getBlurPlaceholdersForMany } from "../lib/blog";
-import { filterFeaturedPosts } from "../lib/filters";
+import { getBlurFeatureImageForMany, getFeaturedPosts } from "../lib/ghost";
 
 function Hero() {
 	return (
@@ -43,8 +42,8 @@ function Home({
 }
 
 export async function getStaticProps() {
-	const featuredPosts = await getBlurPlaceholdersForMany(
-		filterFeaturedPosts(await getAllPosts())
+	const featuredPosts = await getBlurFeatureImageForMany(
+		await getFeaturedPosts()
 	);
 	return {
 		props: {
