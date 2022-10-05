@@ -33,6 +33,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	} catch (err) {
 		// If there was an error, Next.js will continue
 		// to show the last successfully generated page
+		// eslint-disable-next-line no-console
+		console.error(err);
 		if (DISCORD_HOOK) {
 			await fetch(DISCORD_HOOK, {
 				method: "POST",
