@@ -33,14 +33,14 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 			const previousSlug = get("post.previous.slug", req.body);
 			if (currentSlug) await res.revalidate(`/posts/${currentSlug}`);
 			if (previousSlug !== currentSlug)
-				await res.revalidate(`/posts/${currentSlug}`);
+				await res.revalidate(`/posts/${previousSlug}`);
 			postNotification(previousSlug, currentSlug);
 		} else if (req.body?.page) {
 			const currentSlug = get("page.current.slug", req.body);
 			const previousSlug = get("page.previous.slug", req.body);
 			if (currentSlug) await res.revalidate(`/page/${currentSlug}`);
 			if (previousSlug !== currentSlug)
-				await res.revalidate(`/${currentSlug}`);
+				await res.revalidate(`/${previousSlug}`);
 			postNotification(previousSlug, currentSlug);
 		}
 		return res.json({ revalidated: true });
@@ -49,6 +49,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		// to show the last successfully generated page
 		// eslint-disable-next-line no-console
 		console.error(err);
+		let message = "Unknown Error";
+		// eslint-disable-next-line lodash/prefer-lodash-typecheck
+		if (err instanceof Error) message = err.message;
 		if (DISCORD_HOOK) {
 			await fetch(DISCORD_HOOK, {
 				method: "POST",
@@ -57,7 +60,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					content: `Failed to On-Demand ISG.`,
+					content: `Failed to on-demand revalidate. ${message}`,
 				}),
 			});
 		}
