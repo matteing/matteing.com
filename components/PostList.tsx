@@ -11,7 +11,11 @@ export default function PostList({ posts }: { posts: GhostPost[] }) {
 						{posts.map((post) => (
 							<div key={post.title}>
 								<p className="text-sm text-gray-500">
-									<time dateTime={post.publishedAt}>
+									<time
+										dateTime={
+											post.publishedAt ?? "2022-09-11"
+										}
+									>
 										{post.publishedAt
 											? formatShortDate(post.publishedAt)
 											: null}
