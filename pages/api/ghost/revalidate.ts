@@ -53,6 +53,9 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		return res.status(401).json({ message: "Invalid token" });
 	}
 
+	// eslint-disable-next-line no-console
+	console.log(req.body);
+
 	try {
 		const collected = collectSlugs(req);
 		// Revalidate post lists.
