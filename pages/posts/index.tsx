@@ -3,7 +3,7 @@ import Container from "../../components/layout/Container";
 import PostList from "../../components/PostList";
 import { NextSeo } from "next-seo";
 import PageTitle from "../../components/PageTitle";
-import { getAllPublicPosts } from "../../lib/ghost";
+import { getAllPublishedPosts } from "../../lib/ghost";
 
 export function PostsIndex({
 	posts,
@@ -21,7 +21,7 @@ export function PostsIndex({
 }
 
 export async function getStaticProps() {
-	const posts = await getAllPublicPosts();
+	const posts = await getAllPublishedPosts();
 
 	return {
 		props: {

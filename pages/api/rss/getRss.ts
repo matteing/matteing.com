@@ -2,13 +2,13 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { GhostPost } from "../../../types";
 import escape from "lodash/escape";
 import { NEXT_PUBLIC_URL } from "../../../config";
-import { getAllPublicPostsForRss } from "../../../lib/ghost";
+import { getAllPublishedPostsForRss } from "../../../lib/ghost";
 
 /* Full credit to https://jonbellah.com/articles/rss-feed-nextjs */
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
-		const posts = await getAllPublicPostsForRss();
+		const posts = await getAllPublishedPostsForRss();
 		const postItems = posts
 			.map((post: GhostPost) => {
 				const url = `${NEXT_PUBLIC_URL}/posts/${post.slug}`;

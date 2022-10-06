@@ -68,6 +68,7 @@ export const getStaticProps = async ({ params }: { params: PageParams }) => {
 };
 
 export const getStaticPaths = async () => {
+	// We need to SSG unlisted (visibility:public && status:unpublished) posts too
 	const paths = (await getAllPublicPosts())
 		// Map the path into the static paths object required by Next.js
 		.map(({ slug }) => ({ params: { slug } }));
