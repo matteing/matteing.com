@@ -85,6 +85,7 @@ export interface GhostPost
 	featureImageFit?: string;
 	featureImagePosition?: string;
 	featureImageBlur?: string;
+	noIndex?: boolean;
 }
 // eslint-disable-next-line no-unused-vars
 export type MobiledocGetter = (props: {

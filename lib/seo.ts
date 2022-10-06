@@ -35,6 +35,8 @@ export function getSeoProps(post: GhostPost): NextSeoProps {
 				  ],
 			site_name: "matteing.com",
 		},
-		noindex: post.visibility !== undefined && post.visibility !== "public",
+		noindex:
+			(post.visibility !== undefined && post.visibility !== "public") ||
+			post.noIndex,
 	};
 }
