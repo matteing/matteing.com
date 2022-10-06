@@ -148,7 +148,7 @@ export async function getPublicPageBySlug(slug: string): Promise<GhostPost> {
 }
 
 export async function getAllPublicPages(): Promise<GhostPost[]> {
-	const posts = await adminApi.posts.browse({
+	const posts = await adminApi.pages.browse({
 		include: "tags,authors",
 		filter: "visibility:public",
 	});
