@@ -38,7 +38,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		} else if (req.body?.page) {
 			const currentSlug = get("page.current.slug", req.body);
 			const previousSlug = get("page.previous.slug", req.body);
-			if (currentSlug) await res.revalidate(`/page/${currentSlug}`);
+			if (currentSlug) await res.revalidate(`/${currentSlug}`);
 			if (previousSlug !== currentSlug)
 				await res.revalidate(`/${previousSlug}`);
 			postNotification(previousSlug, currentSlug);
