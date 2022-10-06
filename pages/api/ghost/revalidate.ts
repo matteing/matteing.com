@@ -55,6 +55,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 	try {
 		const collected = collectSlugs(req);
+		// Revalidate post lists.
+		await res.revalidate("/");
+		await res.revalidate("/posts");
+		// Revalidate individual post paths.
 		await Promise.all(
 			collected.map(async (item) => {
 				const path = PATH_MAP[item.type](item.slug);
