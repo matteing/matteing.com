@@ -96,7 +96,7 @@ export async function getPublicPostBySlug(slug: string): Promise<GhostPost> {
 	const post = await adminApi.posts.read({
 		slug,
 		include: "tags,authors",
-		filter: "visibility:public",
+		filter: "visibility:public", // Do not include status:published for unlisted posts.
 	});
 	return parseAdminPost(post);
 }
@@ -104,7 +104,7 @@ export async function getPublicPostBySlug(slug: string): Promise<GhostPost> {
 export async function getAllPublicPosts(): Promise<GhostPost[]> {
 	const posts = await adminApi.posts.browse({
 		include: "tags,authors",
-		filter: "visibility:public",
+		filter: "visibility:public+status:published",
 	});
 	return posts.map(parseAdminPost);
 }
@@ -112,7 +112,7 @@ export async function getAllPublicPosts(): Promise<GhostPost[]> {
 export async function getAllPublicPostsForRss(): Promise<GhostPost[]> {
 	const posts = await adminApi.posts.browse({
 		include: "tags,authors",
-		filter: "visibility:public",
+		filter: "visibility:public+status:published",
 		formats: "plaintext,mobiledoc",
 	});
 	return posts.map(parseAdminPost);
@@ -142,7 +142,7 @@ export async function getPublicPageBySlug(slug: string): Promise<GhostPost> {
 	const post = await adminApi.pages.read({
 		slug,
 		include: "tags,authors",
-		filter: "visibility:public",
+		filter: "visibility:public", // Do not include status:published for unlisted posts.
 	});
 	return parseAdminPost(post);
 }
