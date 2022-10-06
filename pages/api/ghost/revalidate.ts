@@ -54,12 +54,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 	}
 
 	try {
-		const collected = collectSlugs(req.body);
+		const collected = collectSlugs(req);
 		await Promise.all(
 			collected.map(async (item) => {
 				const path = PATH_MAP[item.type](item.slug);
 				await res.revalidate(path);
-				await postMessage(`✅ Revalidated w/ ISR: ${path}`);
+				await postMessage(`✅ Revalidated w/ ISR: \`${path}\``);
 			})
 		);
 		return res.json({ revalidated: true });
@@ -70,7 +70,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		console.error(err);
 		let message = "Unknown Error";
 		if (isError(err)) message = err.message;
-		postMessage(`⚠️ Failed to on-demand revalidate. ${message}`);
+		postMessage(`⚠️ Failed to on-demand revalidate. \`${message}\``);
 		return res.status(500).send("Error revalidating");
 	}
 };
