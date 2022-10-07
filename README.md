@@ -1,4 +1,9 @@
-Hi! This is my personal home on the internet.
+![Me](public/gh-cover.png)
+
+<p align="center">
+  <b>matteing.com</b><br />
+  <span align="center">My personal website</span>
+</p>
 
 ## Stack
 
