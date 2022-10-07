@@ -13,3 +13,7 @@ This website is built using the following technologies:
 ## Content
 
 All content is stored in MDX format inside the `/posts/` folder.
+
+## TODO
+
+-   webhooks API script for ghost
