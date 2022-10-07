@@ -69,8 +69,6 @@ export const getStaticProps = async ({ params }: { params: PageParams }) => {
 
 export const getStaticPaths = async () => {
 	const paths = await getAllPublishedPostsPaths();
-	// eslint-disable-next-line no-console
-	console.log(paths);
 	return {
 		paths,
 		// This tells Vercel to run getStaticPaths on non-existing page.
