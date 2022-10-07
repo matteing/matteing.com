@@ -30,7 +30,10 @@ export async function getHighlightedCards(cards: Card[]): Promise<Card[]> {
 	return await Promise.all(
 		cards.map(async (card) => {
 			const [type, payload] = card;
-			if (type === "code") {
+			if (
+				type === "code" &&
+				Prism.languages[(payload as CodeCardPayload).language]
+			) {
 				const html = await Prism.highlight(
 					(payload as CodeCardPayload).code,
 					Prism.languages[(payload as CodeCardPayload).language],
