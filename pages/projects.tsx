@@ -1,7 +1,7 @@
 import { AnimatePresence, m } from "framer-motion";
 import Image from "next/image";
 import workbooks from "../public/work/workbooks.png";
-import juneScreenshot from "../public/work/june-dark.png";
+import juneScreenshot from "../public/work/june-light.png";
 import makerlogScreenshot from "../public/work/makerlog.png";
 import roundparcel from "../public/work/roundparcel-logo.png";
 import Prose from "../components/Prose";
@@ -18,30 +18,36 @@ function ProjectGridItem({
 	children,
 	className,
 	featureImageClassName,
+	href,
 }: PropsWithChildren & {
 	year: number | string;
 	title: string;
 	description: string;
 	featureImageClassName?: string;
 	className?: string;
+	href: string;
 }) {
 	return (
-		<div
-			className={`interactable scalable flex cursor-pointer select-none flex-col rounded-xl border border-gray-100 ${className}`}
-		>
-			<div className="p-6 py-10">
-				<small className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400">
-					{year}
-				</small>
-				<h4 className="mb-2">{title}</h4>
-				<p className="inter text-base text-gray-500">{description}</p>
-			</div>
-			<div
-				className={`relative flex items-center justify-center overflow-hidden rounded-b-xl bg-gray-50 ${featureImageClassName}`}
+		<Link href={href}>
+			<a
+				className={`interactable scalable flex cursor-pointer select-none flex-col rounded-xl border border-gray-100 ${className}`}
 			>
-				{children}
-			</div>
-		</div>
+				<div className="p-6 py-10">
+					<small className="mb-2 block text-xs font-medium uppercase tracking-wide text-gray-400">
+						{year}
+					</small>
+					<h4 className="mb-2">{title}</h4>
+					<p className="inter text-base text-gray-500">
+						{description}
+					</p>
+				</div>
+				<div
+					className={`relative flex items-center justify-center overflow-hidden rounded-b-xl bg-gray-50 ${featureImageClassName}`}
+				>
+					{children}
+				</div>
+			</a>
+		</Link>
 	);
 }
 
@@ -65,6 +71,7 @@ export default function Projects() {
 							title="Microsoft Azure"
 							description="Built major features for Azure Portal"
 							featureImageClassName="aspect-square"
+							href="/microsoft-azure"
 						>
 							<Image
 								layout="fill"
@@ -80,6 +87,7 @@ export default function Projects() {
 							title="June"
 							description="Full-stack contract work"
 							featureImageClassName="aspect-square !items-end grow"
+							href="/june-so"
 						>
 							<Image
 								className="z-10"
@@ -95,6 +103,7 @@ export default function Projects() {
 							description="A hosted webhooks SaaS solution⎯coming 2022"
 							className="col-span-2"
 							featureImageClassName="aspect-video px-8 lg:px-64"
+							href="/microsoft-azure"
 						>
 							<Image
 								className="z-10"
@@ -110,6 +119,7 @@ export default function Projects() {
 							description="A community of 6,000+ makers sharing their daily tasks publicly"
 							className="col-span-2"
 							featureImageClassName="!items-end"
+							href="/microsoft-azure"
 						>
 							<Image
 								className="z-10"
@@ -125,6 +135,7 @@ export default function Projects() {
 							description="As part of my work at Makerlog, I streamed live coding as a Twitch Partner for many years."
 							className="col-span-2"
 							featureImageClassName="!items-end"
+							href="/microsoft-azure"
 						>
 							<Image
 								className="z-10"
