@@ -70,8 +70,10 @@ export interface Post {
 }
 
 export type AdminPostOrPage = PostOrPage & {
+	uuid: string;
 	mobiledoc: string;
 	visibility: "public" | "members" | "none";
+	status: "published" | "draft" | "scheduled" | "sent";
 };
 export interface GhostPost
 	extends Camelize<Omit<AdminPostOrPage, "mobiledoc">> {
