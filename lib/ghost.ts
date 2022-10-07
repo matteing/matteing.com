@@ -30,6 +30,10 @@ export const contentApi = GhostContentAPI({
 	version: "v5.0",
 });
 
+/* -------------------------------------------------------------------------- */
+/*                                  Utilities                                 */
+/* -------------------------------------------------------------------------- */
+
 function getAssetUrl(url: string): string {
 	if (url.startsWith("https://matteing.com")) {
 		return url.replace("https://matteing.com", NEXT_PUBLIC_GHOST_URL);
@@ -80,40 +84,53 @@ export function parseAdminPost(raw: AdminPostOrPage): GhostPost {
 	};
 }
 
-// Posts
+/* -------------------------------------------------------------------------- */
+/*                                    Posts                                   */
+/* -------------------------------------------------------------------------- */
 
 export async function getPostBySlug(slug: string): Promise<GhostPost> {
 	const post = await adminApi.posts.read({ slug, include: "tags,authors" });
 	return parseAdminPost(post);
 }
 
+export async function getPostByUuid(uuid: string): Promise<GhostPost> {
+	// https://github.com/TryGhost/SDK/issues/380
+	const posts = await adminApi.posts.browse({
+		filter: `uuid:${uuid}`,
+		include: "tags,authors",
+	});
+	if (posts.length === 1) {
+		return parseAdminPost(posts[0]);
+	} else {
+		const err = new Error();
+		throw Object.defineProperty(err, "type", {
+			value: "NotFoundError",
+		});
+	}
+}
+
 export async function getAllPosts(): Promise<GhostPost[]> {
-	const posts = await adminApi.posts.browse({ include: "tags,authors" });
+	const posts = await adminApi.posts.browse({
+		include: "tags,authors",
+		limit: "all", // this won't work well with too many posts.
+	});
 	return posts.map(parseAdminPost);
 }
 
-export async function getPublicPostBySlug(slug: string): Promise<GhostPost> {
+export async function getPublishedPostBySlug(slug: string): Promise<GhostPost> {
 	const post = await adminApi.posts.read({
 		slug,
 		include: "tags,authors",
-		filter: "visibility:public", // Do not include status:published for unlisted posts.
+		filter: "status:published",
 	});
 	return parseAdminPost(post);
 }
 
-export async function getAllPublicPosts(): Promise<GhostPost[]> {
-	const posts = await adminApi.posts.browse({
-		include: "tags,authors",
-		filter: "visibility:public",
-	});
-	return posts.map(parseAdminPost);
-}
-
-// Published !== unlisted.
 export async function getAllPublishedPosts(): Promise<GhostPost[]> {
 	const posts = await adminApi.posts.browse({
 		include: "tags,authors",
 		filter: "status:published",
+		limit: "all", // this won't work well with too many posts.
 	});
 	return posts.map(parseAdminPost);
 }
@@ -123,15 +140,7 @@ export async function getAllPublishedPostsForRss(): Promise<GhostPost[]> {
 		include: "tags,authors",
 		filter: "status:published",
 		formats: "plaintext,mobiledoc",
-	});
-	return posts.map(parseAdminPost);
-}
-
-export async function getAllPublicPostsForRss(): Promise<GhostPost[]> {
-	const posts = await adminApi.posts.browse({
-		include: "tags,authors",
-		filter: "visibility:public",
-		formats: "plaintext,mobiledoc",
+		limit: "all", // this won't work well with too many posts.
 	});
 	return posts.map(parseAdminPost);
 }
@@ -139,39 +148,91 @@ export async function getAllPublicPostsForRss(): Promise<GhostPost[]> {
 export async function getFeaturedPosts(): Promise<GhostPost[]> {
 	const posts = await adminApi.posts.browse({
 		include: "tags,authors",
-		filter: "visibility:public+featured:true",
+		filter: "status:published+featured:true",
 		limit: 2,
 	});
 	return posts.map(parseAdminPost);
 }
 
-// Pages
+/* -------------------------------------------------------------------------- */
+/*                                    Pages                                   */
+/* -------------------------------------------------------------------------- */
+
 export async function getPageBySlug(slug: string): Promise<GhostPost> {
 	const post = await adminApi.pages.read({ slug, include: "tags,authors" });
 	return parseAdminPost(post);
 }
 
 export async function getAllPages(): Promise<GhostPost[]> {
-	const posts = await adminApi.pages.browse({ include: "tags,authors" });
+	const posts = await adminApi.pages.browse({
+		include: "tags,authors",
+		limit: "all", // this won't work well with too many posts.
+	});
 	return posts.map(parseAdminPost);
 }
 
-export async function getPublicPageBySlug(slug: string): Promise<GhostPost> {
+export async function getPublishedPageBySlug(slug: string): Promise<GhostPost> {
 	const post = await adminApi.pages.read({
 		slug,
 		include: "tags,authors",
-		filter: "visibility:public", // Do not include status:published for unlisted posts.
+		filter: "status:published",
 	});
 	return parseAdminPost(post);
 }
 
-export async function getAllPublicPages(): Promise<GhostPost[]> {
+export async function getAllPublishedPages(): Promise<GhostPost[]> {
 	const posts = await adminApi.pages.browse({
 		include: "tags,authors",
-		filter: "visibility:public",
+		filter: "status:published",
+		limit: "all", // this won't work well with too many posts.
 	});
 	return posts.map(parseAdminPost);
 }
+
+/* -------------------------------------------------------------------------- */
+/*                           Static Path Generation                           */
+/* -------------------------------------------------------------------------- */
+
+export interface StaticPathDefinition {
+	params: {
+		uuid: string;
+		slug: string;
+	};
+}
+
+export async function getAllPostPaths(): Promise<StaticPathDefinition[]> {
+	const posts = (await adminApi.posts.browse({
+		fields: "slug,uuid",
+		limit: "all", // this won't work well with too many posts.
+	})) as GhostPost[];
+	return posts.map(({ slug, uuid }) => ({ params: { uuid, slug } }));
+}
+
+export async function getAllPublishedPostsPaths(): Promise<
+	StaticPathDefinition[]
+> {
+	const posts = (await adminApi.posts.browse({
+		fields: "slug,uuid",
+		filter: "status:published",
+		limit: "all", // this won't work well with too many posts.
+	})) as GhostPost[];
+	return posts.map(({ slug, uuid }) => ({ params: { uuid, slug } }));
+}
+
+export async function getAllPublishedPagesPaths(): Promise<
+	StaticPathDefinition[]
+> {
+	const posts = (await adminApi.pages.browse({
+		fields: "slug,uuid",
+		filter: "status:published",
+		limit: "all", // this won't work well with too many posts.
+	})) as GhostPost[];
+	return posts.map(({ slug, uuid }) => ({ params: { uuid, slug } }));
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             Image Optimization                             */
+/* -------------------------------------------------------------------------- */
 
 /**
  * Applies any blur placeholders to the Post object.
@@ -201,6 +262,10 @@ export async function getBlurFeatureImageForMany(
 		posts.map(async (post) => await getBlurFeatureImage(post))
 	);
 }
+
+/* -------------------------------------------------------------------------- */
+/*                               Error Handling                               */
+/* -------------------------------------------------------------------------- */
 
 export function isNotFound(err: Error & { type?: string }): boolean {
 	return err?.type === "NotFoundError";

@@ -37,6 +37,7 @@ export function getSeoProps(post: GhostPost): NextSeoProps {
 		},
 		noindex:
 			(post.visibility !== undefined && post.visibility !== "public") ||
+			post.status !== "published" ||
 			post.noIndex,
 	};
 }

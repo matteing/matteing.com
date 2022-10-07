@@ -3,11 +3,14 @@ import { BaseProps, GhostPost } from "../types";
 import LargeFeatureImage from "../components/layout/LargeFeatureImage";
 import { NextSeo } from "next-seo";
 import DarkLargeFeatureImage from "../components/layout/DarkLargeFeatureImage";
-import { isNotFound } from "../lib/ghost";
+import {
+	getAllPublishedPagesPaths,
+	getPublishedPageBySlug,
+	isNotFound,
+} from "../lib/ghost";
 import GhostRenderer from "../components/ghost-renderer/GhostRenderer";
 import { ReactNode } from "react";
 import { processPost } from "../lib/mobiledoc";
-import { getAllPublicPages, getPublicPageBySlug } from "../lib/ghost";
 import { getSeoProps } from "../lib/seo";
 
 function Layout({ page, children }: BaseProps & { page: GhostPost }) {
@@ -46,7 +49,7 @@ interface PageParams {
 
 export const getStaticProps = async ({ params }: { params: PageParams }) => {
 	try {
-		const page = await getPublicPageBySlug(params.slug);
+		const page = await getPublishedPageBySlug(params.slug);
 		return {
 			props: {
 				page: await processPost(page),
@@ -65,9 +68,7 @@ export const getStaticProps = async ({ params }: { params: PageParams }) => {
 };
 
 export const getStaticPaths = async () => {
-	const paths = (await getAllPublicPages())
-		// Map the path into the static paths object required by Next.js
-		.map(({ slug }) => ({ params: { slug } }));
+	const paths = await getAllPublishedPagesPaths();
 	return {
 		paths,
 		// This tells Vercel to run getStaticPaths on non-existing page.

@@ -3,11 +3,7 @@ import { BaseProps, GhostPost } from "../../types";
 import LargeFeatureImage from "../../components/layout/LargeFeatureImage";
 import { NextSeo } from "next-seo";
 import DarkLargeFeatureImage from "../../components/layout/DarkLargeFeatureImage";
-import {
-	getAllPublishedPostsPaths,
-	getPublishedPostBySlug,
-	isNotFound,
-} from "../../lib/ghost";
+import { getAllPostPaths, getPostByUuid, isNotFound } from "../../lib/ghost";
 import GhostRenderer from "../../components/ghost-renderer/GhostRenderer";
 import { ReactNode } from "react";
 import { processPost } from "../../lib/mobiledoc";
@@ -33,7 +29,7 @@ function Layout({ post, children }: BaseProps & { post: GhostPost }) {
 	}
 }
 
-function PostPage({ post }: { post: GhostPost }) {
+function PostPreviewPage({ post }: { post: GhostPost }) {
 	return (
 		<Layout post={post}>
 			<NextSeo {...getSeoProps(post)} />
@@ -42,14 +38,14 @@ function PostPage({ post }: { post: GhostPost }) {
 	);
 }
 
-PostPage.getLayout = (children: ReactNode) => children;
+PostPreviewPage.getLayout = (children: ReactNode) => children;
 interface PageParams {
-	slug: string;
+	uuid: string;
 }
 
 export const getStaticProps = async ({ params }: { params: PageParams }) => {
 	try {
-		const post = await getPublishedPostBySlug(params.slug);
+		const post = await getPostByUuid(params.uuid);
 		return {
 			props: {
 				post: await processPost(post),
@@ -68,9 +64,7 @@ export const getStaticProps = async ({ params }: { params: PageParams }) => {
 };
 
 export const getStaticPaths = async () => {
-	const paths = await getAllPublishedPostsPaths();
-	// eslint-disable-next-line no-console
-	console.log(paths);
+	const paths = await getAllPostPaths();
 	return {
 		paths,
 		// This tells Vercel to run getStaticPaths on non-existing page.
@@ -78,4 +72,4 @@ export const getStaticPaths = async () => {
 	};
 };
 
-export default PostPage;
+export default PostPreviewPage;
