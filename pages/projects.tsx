@@ -4,6 +4,7 @@ import workbooks from "../public/work/workbooks.png";
 import juneScreenshot from "../public/work/june-light.png";
 import makerlogScreenshot from "../public/work/makerlog.png";
 import roundparcel from "../public/work/roundparcel-logo.png";
+import streaming from "../public/work/streaming.png";
 import Prose from "../components/Prose";
 import Container from "../components/layout/Container";
 import { NextSeo } from "next-seo";
@@ -103,7 +104,7 @@ export default function Projects() {
 							description="A hosted webhooks SaaS solution⎯coming 2022"
 							className="col-span-2"
 							featureImageClassName="aspect-video px-8 lg:px-64"
-							href="/microsoft-azure"
+							href="/roundparcel"
 						>
 							<Image
 								className="z-10"
@@ -114,12 +115,12 @@ export default function Projects() {
 							/>
 						</ProjectGridItem>
 						<ProjectGridItem
-							year={2022}
+							year={"2018-2022"}
 							title="Makerlog (sold 2022)"
 							description="A community of 6,000+ makers sharing their daily tasks publicly"
 							className="col-span-2"
 							featureImageClassName="!items-end"
-							href="/microsoft-azure"
+							href="/makerlog"
 						>
 							<Image
 								className="z-10"
@@ -135,14 +136,14 @@ export default function Projects() {
 							description="As part of my work at Makerlog, I streamed live coding as a Twitch Partner for many years."
 							className="col-span-2"
 							featureImageClassName="!items-end"
-							href="/microsoft-azure"
+							href="/streaming"
 						>
 							<Image
 								className="z-10"
 								objectFit="contain"
-								src={makerlogScreenshot}
+								src={streaming}
 								placeholder="blur"
-								alt="Makerlog"
+								alt="Streaming"
 							/>
 						</ProjectGridItem>
 					</m.div>
