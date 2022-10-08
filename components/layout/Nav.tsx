@@ -62,7 +62,7 @@ export function NavItem({
 				className={
 					"group flex flex-1 shrink-0 cursor-pointer select-none items-center justify-center py-4 font-medium text-gray-700 hover:bg-purple-50 dark:text-gray-200 dark:hover:bg-purple-900 dark:hover:bg-opacity-30 md:justify-start md:px-6 " +
 					className +
-					(router.pathname === href
+					(router.asPath === href
 						? " text-purple-600 dark:text-purple-500"
 						: "")
 				}
