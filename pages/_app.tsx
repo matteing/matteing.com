@@ -16,7 +16,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 			<DefaultSeo
 				titleTemplate="%s · matteing.com"
 				defaultTitle="Sergio Mattei · matteing.com"
-				description="Founder and software engineer"
+				description="Sergio Mattei, founder and software engineer. My passion is building products people love to use."
 				canonical={NEXT_PUBLIC_URL}
 				openGraph={{
 					url: NEXT_PUBLIC_URL,
