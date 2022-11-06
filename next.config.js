@@ -16,6 +16,14 @@ const nextConfig = {
 				destination: "/api/rss/getRss",
 			},
 			{
+				source: "/content/:path*",
+				destination: "https://cms.matteing.com/content/:path*",
+			},
+		];
+	},
+	async redirects() {
+		return [
+			{
 				source: "/resume",
 				destination: "https://github.com/matteing/resume/blob/main/resume.pdf",
 			        permanent: false,
@@ -27,12 +35,8 @@ const nextConfig = {
 			        permanent: false,
         			basePath: false
 			},
-			{
-				source: "/content/:path*",
-				destination: "https://cms.matteing.com/content/:path*",
-			},
-		];
-	},
+		]
+	}
 };
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
