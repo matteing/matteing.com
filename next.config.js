@@ -16,6 +16,10 @@ const nextConfig = {
 				destination: "/api/rss/getRss",
 			},
 			{
+				source: "/resume",
+				destination: "https://github.com/matteing/resume/blob/main/resume.pdf",
+			},
+			{
 				source: "/content/:path*",
 				destination: "https://cms.matteing.com/content/:path*",
 			},
