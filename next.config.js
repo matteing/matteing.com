@@ -18,10 +18,14 @@ const nextConfig = {
 			{
 				source: "/resume",
 				destination: "https://github.com/matteing/resume/blob/main/resume.pdf",
+			        permanent: false,
+        			basePath: false
 			},
 			{
 				source: "/linkedin",
 				destination: "https://www.linkedin.com/in/sergiomattei/",
+			        permanent: false,
+        			basePath: false
 			},
 			{
 				source: "/content/:path*",
