@@ -20,6 +20,10 @@ const nextConfig = {
 				destination: "https://github.com/matteing/resume/blob/main/resume.pdf",
 			},
 			{
+				source: "/linkedin",
+				destination: "https://www.linkedin.com/in/sergiomattei/",
+			},
+			{
 				source: "/content/:path*",
 				destination: "https://cms.matteing.com/content/:path*",
 			},
