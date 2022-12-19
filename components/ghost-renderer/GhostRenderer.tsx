@@ -6,12 +6,22 @@ import { MobiledocGetter } from "../../types";
 import CodeCard from "../../components/ghost-renderer/CodeCard";
 import EmbedCard from "../../components/ghost-renderer/EmbedCard";
 import UnknownCard from "../../components/ghost-renderer/UnknownCard";
+import { ElementTypeGetter } from "@bustle/mobiledoc-vdom-renderer/dist/module/types";
 
 const cards: { [key: string]: MobiledocGetter } = {
 	image: ({ payload, key }) => <ImageCard key={key} payload={payload} />,
 	code: ({ payload, key }) => <CodeCard key={key} payload={payload} />,
 	embed: ({ payload, key }) => <EmbedCard key={key} payload={payload} />,
 	hr: ({ key }) => <hr key={key} />,
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const Span: any = (props: any) => <span {...props} />;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const SoftReturn: any = (props: any) => <div {...props} />;
+
+const atoms: { [key: string]: ElementTypeGetter } = {
+	"soft-return": SoftReturn,
 };
 
 const render = Renderer({
@@ -23,7 +33,11 @@ const render = Renderer({
 		if (!getter) return <UnknownCard />;
 		return getter;
 	},
-	getAtomComponent: () => "span",
+	getAtomComponent: (type) => {
+		const getter = atoms[type];
+		if (!getter) return Span;
+		return getter;
+	},
 });
 
 export default function GhostRenderer({ mobiledoc }: { mobiledoc: Mobiledoc }) {

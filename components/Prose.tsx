@@ -23,6 +23,7 @@ export const PROSE_STYLES = `
     prose-blockquote:text-gray-500
     prose-blockquote:not-italic
     prose-blockquote:font-normal
+    prose-blockquote:!whitespace-pre-wrap
 `;
 
 export default function Prose({ children }: BaseProps) {
