@@ -35,6 +35,12 @@ const nextConfig = {
 			        permanent: false,
         			basePath: false
 			},
+			{
+				source: "/freelance",
+				destination: "https://www.notion.so/unfinite/Freelance-e4e3374b79bf4efa89b936a85dbc82d3",
+			        permanent: false,
+        			basePath: false
+			},
 		]
 	}
 };
