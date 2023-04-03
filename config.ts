@@ -6,6 +6,8 @@ export const NEXT_PUBLIC_GHOST_URL =
 export const NEXT_PUBLIC_GHOST_CONTENT_KEY =
 	process.env.NEXT_PUBLIC_GHOST_CONTENT_KEY;
 export const GHOST_ADMIN_KEY = process.env.GHOST_ADMIN_KEY;
+export const GHOST_RSS_ENDPOINT =
+	process.env.GHOST_RSS_ENDPOINT ?? "https://cms.matteing.com/rss";
 
 export const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 export const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;

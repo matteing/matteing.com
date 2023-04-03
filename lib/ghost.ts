@@ -135,16 +135,6 @@ export async function getAllPublishedPosts(): Promise<GhostPost[]> {
 	return posts.map(parseAdminPost);
 }
 
-export async function getAllPublishedPostsForRss(): Promise<GhostPost[]> {
-	const posts = await adminApi.posts.browse({
-		include: "tags,authors",
-		filter: "status:published",
-		formats: "plaintext,mobiledoc",
-		limit: "all", // this won't work well with too many posts.
-	});
-	return posts.map(parseAdminPost);
-}
-
 export async function getFeaturedPosts(): Promise<GhostPost[]> {
 	const posts = await adminApi.posts.browse({
 		include: "tags,authors",
