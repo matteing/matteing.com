@@ -41,6 +41,12 @@ const nextConfig = {
 			        permanent: false,
         			basePath: false
 			},
+			{
+				source: "/sweet",
+				destination: "https://55jgvbkoyhc.typeform.com/to/fDNbn5QN",
+			        permanent: false,
+        			basePath: false
+			}
 		]
 	}
 };
