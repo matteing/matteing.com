@@ -3,7 +3,12 @@ const nextConfig = {
 	reactStrictMode: true,
 	swcMinify: true,
 	images: {
-		domains: ["i.scdn.co", "miro.medium.com", "cms.matteing.com"],
+		domains: [
+			"i.scdn.co",
+			"is1-ssl.mzstatic.com",
+			"miro.medium.com",
+			"cms.matteing.com",
+		],
 	},
 	i18n: {
 		locales: ["en"],

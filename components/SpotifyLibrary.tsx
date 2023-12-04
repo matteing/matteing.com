@@ -3,6 +3,8 @@ import Image, { ImageProps } from "next/image";
 import { useNowPlaying, useTopTracks } from "../lib/swr";
 import { Track } from "../types";
 import SpotifyLogo from "./SpotifyLogo";
+import { NEXT_PUBLIC_MUSIC_SERVICE } from "../config";
+import AppleMusicLogo from "./AppleMusicLogo";
 
 function AlbumCover({
 	track,
@@ -13,7 +15,11 @@ function AlbumCover({
 		<div
 			className={`relative isolate h-[225px] w-[225px] shrink-0 rounded-lg drop-shadow-2xl ${
 				nowPlaying
-					? "ring-4 ring-green-500 ring-offset-8 ring-offset-gray-900 drop-shadow-2xl"
+					? `ring-4 ${
+							NEXT_PUBLIC_MUSIC_SERVICE === "apple-music"
+								? "ring-red-500"
+								: "ring-green-500"
+					  } ring-offset-8 ring-offset-gray-900 drop-shadow-2xl`
 					: ""
 			}`}
 		>
@@ -36,7 +42,11 @@ function AlbumSkeleton() {
 		<div className="slide shrink-0">
 			<div className="mb-6">
 				<div
-					className={`h-[210px] w-[210px] shrink-0 animate-pulse rounded-lg bg-green-900 drop-shadow-2xl`}
+					className={`h-[210px] w-[210px] shrink-0 animate-pulse rounded-lg ${
+						NEXT_PUBLIC_MUSIC_SERVICE === "apple-music"
+							? "bg-red-900"
+							: "bg-green-900"
+					} drop-shadow-2xl`}
 				></div>
 			</div>
 			<p className="flex w-[225px] flex-col items-center text-center text-base leading-tight">
@@ -62,10 +72,14 @@ export default function SpotifyLibrary() {
 	return (
 		<div className="spotify-widget relative isolate mb-24 flex h-[500px] justify-center gap-16 overflow-hidden rounded-xl border-gray-100 bg-gray-900">
 			<div className="absolute top-5 left-5 z-20 flex items-center gap-4">
-				<SpotifyLogo />
+				{NEXT_PUBLIC_MUSIC_SERVICE === "apple-music" ? (
+					<AppleMusicLogo />
+				) : (
+					<SpotifyLogo />
+				)}
 				<div>
 					<span className="text-xs font-light uppercase tracking-widest text-gray-200">
-						{isPlaying ? "Now Playing" : "Top This Month"}
+						{isPlaying ? "Now Playing" : "In Rotation"}
 					</span>
 				</div>
 			</div>
@@ -94,7 +108,14 @@ export default function SpotifyLibrary() {
 							<div className="scalable isolate cursor-pointer rounded-lg">
 								<div className="relative flex -rotate-6 flex-col gap-6 text-center">
 									<span className="absolute -right-6 -top-6 z-10 flex h-9 w-9">
-										<span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+										<span
+											className={`absolute inline-flex h-full w-full rounded-full ${
+												NEXT_PUBLIC_MUSIC_SERVICE ===
+												"apple-music"
+													? "bg-red-400"
+													: "bg-green-400"
+											} opacity-75`}
+										></span>
 										<span className="relative inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-500 bg-gray-800">
 											<div className="now-playing-icon">
 												<span />
