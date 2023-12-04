@@ -3,7 +3,6 @@ import {
 	RectangleStackIcon,
 	PencilIcon,
 	BoltIcon,
-	RectangleGroupIcon,
 } from "@heroicons/react/24/outline";
 import { cloneElement, PropsWithChildren, ReactElement } from "react";
 import Link from "next/link";
@@ -34,12 +33,6 @@ const ROUTES: RouteDefinition[] = [
 		href: "/posts",
 		basePath: true,
 		icon: <PencilIcon />,
-	},
-	{
-		name: "Freeform",
-		href: "/board",
-		basePath: true,
-		icon: <RectangleGroupIcon />,
 	},
 	{
 		name: "About",
@@ -91,7 +84,7 @@ export function NavPills({
 	return (
 		<div
 			className={
-				"inter interactable relative flex w-full bg-white dark:border-gray-700 dark:bg-gray-800 md:w-auto md:rounded-full md:border md:shadow-sm " +
+				"inter interactable flex w-full bg-white dark:border-gray-700 dark:bg-gray-800 md:w-auto md:rounded-full md:border md:shadow-sm " +
 				className
 			}
 		>
