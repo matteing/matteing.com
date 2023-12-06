@@ -93,7 +93,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		}
 	} catch (e) {
 		// eslint-disable-next-line lodash/prefer-lodash-typecheck
-		console.log(e);
 		if (!(e instanceof Error)) {
 			throw e;
 		}
