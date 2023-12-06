@@ -22,6 +22,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 				.slice(0, 3);
 			const tracks = [...playlistsInRotation, ...data]
 				.slice(0, 10)
+				.filter(
+					(track: any) =>
+						track?.attributes &&
+						track?.attributes?.url &&
+						track?.attributes?.artwork
+				)
 				.map((track: any) => ({
 					artist:
 						track.type === "playlists"
@@ -87,6 +93,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		}
 	} catch (e) {
 		// eslint-disable-next-line lodash/prefer-lodash-typecheck
+		console.log(e);
 		if (!(e instanceof Error)) {
 			throw e;
 		}
