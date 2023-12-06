@@ -128,6 +128,10 @@
 	word-wrap: break-word;
 }
 
+.prose a {
+	word-wrap: break-word;
+}
+
 .prose .yt-embed {
 	position: relative;
 	padding-bottom: 56.25%;
