@@ -9,9 +9,13 @@ import {
 	isNotFound,
 } from "../../lib/ghost";
 import GhostRenderer from "../../components/ghost-renderer/GhostRenderer";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { processPost } from "../../lib/mobiledoc";
 import { getSeoProps } from "../../lib/seo";
+
+import "katex/dist/katex.min.css";
+import "katex";
+import renderMathInElement from "katex/contrib/auto-render";
 
 function Layout({ post, children }: BaseProps & { post: GhostPost }) {
 	switch (post.postLayout) {
@@ -34,10 +38,27 @@ function Layout({ post, children }: BaseProps & { post: GhostPost }) {
 }
 
 function PostPage({ post }: { post: GhostPost }) {
+	const ref = useRef(null);
+
+	useEffect(() => {
+		if (ref.current) {
+			renderMathInElement(ref.current, {
+				delimiters: [
+					{ left: "$$", right: "$$", display: true },
+					{ left: "\\[", right: "\\]", display: true },
+					{ left: "$", right: "$", display: false },
+					{ left: "\\(", right: "\\)", display: false },
+				],
+			});
+		}
+	}, []);
+
 	return (
 		<Layout post={post}>
 			<NextSeo {...getSeoProps(post)} />
-			<GhostRenderer mobiledoc={post.mobiledoc} />
+			<div ref={ref}>
+				<GhostRenderer mobiledoc={post.mobiledoc} />
+			</div>
 		</Layout>
 	);
 }

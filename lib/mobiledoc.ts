@@ -15,7 +15,10 @@ export async function getBlurImageCards(cards: Card[]): Promise<Card[]> {
 		cards.map(async (card) => {
 			const [type, payload] = card;
 			if (type === "image" && (payload as ImageCardPayload).src) {
-				if ((payload as ImageCardPayload).src.includes("gif")) {
+				if (
+					(payload as ImageCardPayload).src.includes("gif") ||
+					(payload as ImageCardPayload).src.includes("blob")
+				) {
 					return card;
 				}
 				const { base64: blurDataURL } = await getPlaiceholder(
