@@ -17,7 +17,9 @@ export function getSeoProps(post: GhostPost): NextSeoProps {
 			images: post.featureImage
 				? [
 						{
-							url: `${post.featureImage.replace(/^\/+/g, "")}`,
+							url: `${NEXT_PUBLIC_URL}/${post.featureImage
+								.replace(/^\/+/g, "")
+								.replace("https://cms.matteing.com", "")}`,
 							alt: post.title,
 						},
 				  ]
