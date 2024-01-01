@@ -12,6 +12,9 @@ const cards: { [key: string]: MobiledocGetter } = {
 	image: ({ payload, key }) => <ImageCard key={key} payload={payload} />,
 	code: ({ payload, key }) => <CodeCard key={key} payload={payload} />,
 	embed: ({ payload, key }) => <EmbedCard key={key} payload={payload} />,
+	html: ({ payload, key }) => (
+		<div key={key} dangerouslySetInnerHTML={{ __html: payload.html }} />
+	),
 	hr: ({ key }) => <hr key={key} />,
 };
 

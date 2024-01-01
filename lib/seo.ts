@@ -17,7 +17,7 @@ export function getSeoProps(post: GhostPost): NextSeoProps {
 			images: post.featureImage
 				? [
 						{
-							url: `${NEXT_PUBLIC_URL}/${post.featureImage.replace(
+							url: `${post.featureImage.replace(
 								/^\/+/g,
 								""
 							)}`,
