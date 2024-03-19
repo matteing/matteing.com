@@ -5,8 +5,8 @@ import {
 	getRecentTracks as getRecentTracksAppleMusic,
 	getRecentResources as getRecentResourcesAppleMusic,
 } from "../../lib/apple-music";
-import { getPlaiceholder } from "plaiceholder";
 import { NextApiRequest, NextApiResponse } from "next";
+import { getBlurFromRemoteSource } from "../../lib/ghost";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
 	try {
@@ -42,9 +42,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 				}));
 			const tracksWithPlaceholders = await Promise.all(
 				tracks.map(async (track: any) => {
-					const { base64: blurAlbumImageUrl } = await getPlaiceholder(
-						track.albumImageUrl
-					);
+					const { base64: blurAlbumImageUrl } =
+						await getBlurFromRemoteSource(track.albumImageUrl);
 					return {
 						...track,
 						blurAlbumImageUrl,
@@ -72,9 +71,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
 			const tracksWithPlaceholders = await Promise.all(
 				tracks.map(async (track: any) => {
-					const { base64: blurAlbumImageUrl } = await getPlaiceholder(
-						track.albumImageUrl
-					);
+					const { base64: blurAlbumImageUrl } =
+						await getBlurFromRemoteSource(track.albumImageUrl);
 					return {
 						...track,
 						blurAlbumImageUrl,

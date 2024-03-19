@@ -229,7 +229,7 @@ export async function getAllPublishedPagesPaths(): Promise<
  * We want build to fail in case of a problem.
  * https://plaiceholder.co/docs/upgrading-to-3
  */
-export async function generateBlurImageFromSource(src: string) {
+export async function getBlurFromRemoteSource(src: string) {
 	const buffer = await fetch(src).then(async (res) =>
 		Buffer.from(await res.arrayBuffer())
 	);
@@ -254,7 +254,7 @@ export async function generateBlurImageFromSource(src: string) {
  */
 export async function getBlurFeatureImage(post: GhostPost): Promise<GhostPost> {
 	if (post.featureImage) {
-		const { base64: featureImageBlur } = await generateBlurImageFromSource(
+		const { base64: featureImageBlur } = await getBlurFromRemoteSource(
 			post.featureImage
 		);
 		return {

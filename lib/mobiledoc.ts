@@ -5,7 +5,7 @@ import { ImageCardPayload } from "../components/ghost-renderer/ImageCard";
 import { CodeCardPayload } from "../components/ghost-renderer/CodeCard";
 import { GhostPost } from "../types";
 import set from "lodash/fp/set";
-import { generateBlurImageFromSource, getBlurFeatureImage } from "./ghost";
+import { getBlurFromRemoteSource, getBlurFeatureImage } from "./ghost";
 
 loadLanguages();
 
@@ -20,10 +20,9 @@ export async function getBlurImageCards(cards: Card[]): Promise<Card[]> {
 				) {
 					return card;
 				}
-				const { base64: blurDataURL } =
-					await generateBlurImageFromSource(
-						(payload as ImageCardPayload).src
-					);
+				const { base64: blurDataURL } = await getBlurFromRemoteSource(
+					(payload as ImageCardPayload).src
+				);
 				return [type, { ...payload, blurDataURL }];
 			} else {
 				return card;

@@ -1,5 +1,5 @@
+import { getBlurFromRemoteSource } from "../../lib/ghost";
 import { getNowPlaying } from "../../lib/spotify";
-import { getPlaiceholder } from "plaiceholder";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
@@ -19,7 +19,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 		const album = song.item.album.name;
 		const albumImageUrl = song.item.album.images[0].url;
 		const songUrl = song.item.external_urls.spotify;
-		const { base64: blurAlbumImageUrl } = await getPlaiceholder(
+		const { base64: blurAlbumImageUrl } = await getBlurFromRemoteSource(
 			albumImageUrl
 		);
 
