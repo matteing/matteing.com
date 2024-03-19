@@ -225,6 +225,28 @@ export async function getAllPublishedPagesPaths(): Promise<
 /* -------------------------------------------------------------------------- */
 
 /**
+ * https://plaiceholder.co/docs/upgrading-to-3
+ */
+export async function generateBlurImageFromSource(src: string) {
+	const buffer = await fetch(src).then(async (res) =>
+		Buffer.from(await res.arrayBuffer())
+	);
+
+	// eslint-disable-next-line no-console
+	console.log("Buffer", buffer);
+
+	const {
+		metadata: { height, width },
+		...plaiceholder
+	} = await getPlaiceholder(buffer, { size: 10 });
+
+	return {
+		...plaiceholder,
+		img: { src, height, width },
+	};
+}
+
+/**
  * Applies any blur placeholders to the Post object.
  * Other placeholders are applied after Remark runs our custom plugin.
  * This only runs on the server.
@@ -233,7 +255,7 @@ export async function getAllPublishedPagesPaths(): Promise<
  */
 export async function getBlurFeatureImage(post: GhostPost): Promise<GhostPost> {
 	if (post.featureImage) {
-		const { base64: featureImageBlur } = await getPlaiceholder(
+		const { base64: featureImageBlur } = await generateBlurImageFromSource(
 			post.featureImage
 		);
 		return {

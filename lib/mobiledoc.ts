@@ -1,12 +1,11 @@
 import { Card } from "@bustle/mobiledoc-vdom-renderer/dist/module/types/Mobiledoc";
-import { getPlaiceholder } from "plaiceholder";
 import Prism from "prismjs";
 import loadLanguages from "prismjs/components/index";
 import { ImageCardPayload } from "../components/ghost-renderer/ImageCard";
 import { CodeCardPayload } from "../components/ghost-renderer/CodeCard";
 import { GhostPost } from "../types";
 import set from "lodash/fp/set";
-import { getBlurFeatureImage } from "./ghost";
+import { generateBlurImageFromSource, getBlurFeatureImage } from "./ghost";
 
 loadLanguages();
 
@@ -21,9 +20,10 @@ export async function getBlurImageCards(cards: Card[]): Promise<Card[]> {
 				) {
 					return card;
 				}
-				const { base64: blurDataURL } = await getPlaiceholder(
-					(payload as ImageCardPayload).src
-				);
+				const { base64: blurDataURL } =
+					await generateBlurImageFromSource(
+						(payload as ImageCardPayload).src
+					);
 				return [type, { ...payload, blurDataURL }];
 			} else {
 				return card;
