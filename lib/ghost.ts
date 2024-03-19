@@ -225,27 +225,24 @@ export async function getAllPublishedPagesPaths(): Promise<
 /* -------------------------------------------------------------------------- */
 
 /**
+ * This code has no error handling intentionally.
+ * We want build to fail in case of a problem.
  * https://plaiceholder.co/docs/upgrading-to-3
  */
 export async function generateBlurImageFromSource(src: string) {
-	try {
-		const buffer = await fetch(src).then(async (res) =>
-			Buffer.from(await res.arrayBuffer())
-		);
+	const buffer = await fetch(src).then(async (res) =>
+		Buffer.from(await res.arrayBuffer())
+	);
 
-		const {
-			metadata: { height, width },
-			...plaiceholder
-		} = await getPlaiceholder(buffer, { size: 10 });
+	const {
+		metadata: { height, width },
+		...plaiceholder
+	} = await getPlaiceholder(buffer, { size: 10 });
 
-		return {
-			...plaiceholder,
-			img: { src, height, width },
-		};
-	} catch (err) {
-		// We want build to fail loudly if there's 404s or other errors.
-		throw err;
-	}
+	return {
+		...plaiceholder,
+		img: { src, height, width },
+	};
 }
 
 /**
