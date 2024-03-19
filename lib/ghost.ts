@@ -228,22 +228,24 @@ export async function getAllPublishedPagesPaths(): Promise<
  * https://plaiceholder.co/docs/upgrading-to-3
  */
 export async function generateBlurImageFromSource(src: string) {
-	const buffer = await fetch(src).then(async (res) =>
-		Buffer.from(await res.arrayBuffer())
-	);
+	try {
+		const buffer = await fetch(src).then(async (res) =>
+			Buffer.from(await res.arrayBuffer())
+		);
 
-	// eslint-disable-next-line no-console
-	console.log("Buffer", buffer);
+		const {
+			metadata: { height, width },
+			...plaiceholder
+		} = await getPlaiceholder(buffer, { size: 10 });
 
-	const {
-		metadata: { height, width },
-		...plaiceholder
-	} = await getPlaiceholder(buffer, { size: 10 });
-
-	return {
-		...plaiceholder,
-		img: { src, height, width },
-	};
+		return {
+			...plaiceholder,
+			img: { src, height, width },
+		};
+	} catch (err) {
+		// We want build to fail loudly if there's 404s or other errors.
+		throw err;
+	}
 }
 
 /**
