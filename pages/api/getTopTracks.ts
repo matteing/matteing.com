@@ -17,10 +17,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 			]);
 			const { data } = await tracksResponse.json();
 			const { data: resources } = await resourcesResponse.json();
-			const playlistsInRotation = resources
+			const playlistsInRotation = (resources ?? [])
 				.filter((resource: any) => resource.type === "playlists")
 				.slice(0, 3);
-			const tracks = [...playlistsInRotation, ...data]
+			const tracks = [...(playlistsInRotation ?? []), ...(data ?? [])]
 				.slice(0, 10)
 				.filter(
 					(track: any) =>
