@@ -1,0 +1,21 @@
+@reference "../../app/globals.css";
+
+.nav {
+  @apply flex gap-8 mb-4;
+}
+
+.tab {
+  @apply relative pb-2 text-base font-normal cursor-pointer transition-colors duration-200;
+}
+
+.tab[data-active="false"] {
+  @apply text-gray-400;
+}
+
+.tab[data-active="true"] {
+  @apply text-gray-950;
+}
+
+.indicator {
+  @apply absolute bottom-0 left-0 right-0 h-px bg-gray-950;
+}

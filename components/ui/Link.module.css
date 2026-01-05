@@ -1,3 +1,5 @@
+@reference "../../app/globals.css";
+
 /* Base link style with animated underline */
 .link {
   color: var(--color-text-primary);
@@ -12,7 +14,7 @@
   text-decoration-color: currentColor;
 }
 
-.link.link-outbound::after {
+.outbound::after {
   content: " \ea70";
   font-family: "remixicon";
   font-size: 0.85em;
@@ -20,6 +22,6 @@
   transition: color 0.2s ease;
 }
 
-.link.link-outbound:hover::after {
+.outbound:hover::after {
   @apply text-gray-600;
 }

@@ -1,0 +1,31 @@
+@reference "../../app/globals.css";
+
+.header {
+  @apply flex items-center w-full;
+}
+
+.avatar {
+  @apply relative mr-5;
+  width: 5.75rem;
+  height: 5.75rem;
+}
+
+.avatarImage {
+  @apply rounded-full object-cover;
+}
+
+.info {
+  @apply mb-2;
+}
+
+.name {
+  @apply text-xl font-[400];
+}
+
+.title {
+  @apply text-text-secondary;
+}
+
+.links {
+  @apply flex gap-2;
+}

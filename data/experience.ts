@@ -1,4 +1,4 @@
-import { ExperienceItem } from "@/components/ExperienceList";
+import type { ExperienceItem } from "./types";
 
 export const workItems: ExperienceItem[] = [
   {
@@ -6,12 +6,12 @@ export const workItems: ExperienceItem[] = [
     title: "Software Engineer",
     subtitle: "Microsoft",
     url: "https://microsoft.com/",
-   description:
+    description:
       "Crafting cutting-edge UI/UX at Azure Monitor and improving team velocity through fast, modern tooling.",
     bullets: [
       "Delivery of multiple high-impact features",
       "Building and revitalizing internal UI libraries",
-      "Upstream contributions to Chromium"
+      "Upstream contributions to Chromium",
     ],
   },
   {

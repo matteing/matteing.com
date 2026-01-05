@@ -1,9 +1,11 @@
+@reference "../../app/globals.css";
+
 /* Pill link with animated arrow */
-.pill-link {
+.pillLink {
   @apply inline-flex items-center gap-0 py-1.5 px-2.5 text-sm leading-none text-gray-800 bg-gray-100 rounded-full transition-all duration-200;
 }
 
-.pill-link::after {
+.pillLink::after {
   content: "\ea70";
   font-family: "remixicon";
   width: 0;
@@ -17,16 +19,16 @@
   @apply inline-block transition-all duration-200;
 }
 
-.pill-link:hover::after {
+.pillLink:hover::after {
   width: 1em;
   @apply ml-1;
 }
 
-.pill-link:active {
+.pillLink:active {
   filter: brightness(1.05);
 }
 
-.pill-link-clicked::after {
+.clicked::after {
   animation: arrowShoot 0.3s ease-out forwards;
 }
 

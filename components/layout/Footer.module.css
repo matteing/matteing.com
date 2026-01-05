@@ -1,53 +1,54 @@
-/* Footer */
-.site-footer {
+@reference "../../app/globals.css";
+
+.footer {
   text-align: center;
-  padding: 3em 0 1em 0;
+  padding: 3rem 0 1rem 0;
   color: var(--color-text-secondary);
   --flag-fill: var(--color-gray-200);
   --flag-star: var(--color-white);
 }
 
 @media (prefers-color-scheme: dark) {
-  .site-footer {
+  .footer {
     --flag-fill: var(--color-gray-800);
     --flag-star: var(--color-gray-50);
   }
 }
 
-.site-footer svg {
+.flag {
   display: inline-block;
   vertical-align: middle;
   width: 2em;
   height: auto;
 }
 
-.site-footer svg path,
-.site-footer svg rect {
+.flag path,
+.flag rect {
   transition: fill 0.3s ease, stroke 0.3s ease;
 }
 
-.site-footer a:hover {
+.link:hover {
   text-decoration: none;
 }
 
-.site-footer a:hover svg .flag-stripes {
+.link:hover .stripes {
   fill: #ed1c24;
   stroke: #ed1c24;
 }
 
-.site-footer a:hover svg .flag-triangle {
+.link:hover .triangle {
   fill: #87cefa;
 }
 
-.site-footer a:hover svg .flag-star {
+.link:hover .star {
   fill: var(--flag-star);
 }
 
 @media (prefers-color-scheme: dark) {
-  .site-footer a:hover svg .flag-bg {
+  .link:hover .bg {
     fill: #fff;
   }
-  .site-footer a:hover svg .flag-star {
+  .link:hover .star {
     fill: #fff;
   }
 }

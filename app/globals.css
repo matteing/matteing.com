@@ -108,10 +108,41 @@
   }
 }
 
+/* Prose styles (for rich text content) */
 @layer components {
-  @import "./styles/links.css";
-  @import "./styles/prose.css";
-  @import "./styles/timeline.css";
-  @import "./styles/footer.css";
-  @import "./styles/pill-link.css";
+  .prose {
+    & > * + * {
+      margin-top: 1.25em;
+    }
+
+    blockquote {
+      border-left: 2px solid var(--color-gray-300);
+      padding-left: 1em;
+      font-style: italic;
+      color: var(--color-text-secondary);
+
+      cite {
+        display: block;
+        margin-top: 0.5em;
+        font-style: normal;
+        font-weight: var(--font-weight-semibold);
+      }
+    }
+
+    ul,
+    ol {
+      padding-left: 1.5em;
+    }
+
+    li + li {
+      margin-top: 0.25em;
+    }
+
+    code {
+      background-color: var(--color-gray-3);
+      padding: 0.125em 0.25em;
+      border-radius: 0.25em;
+      font-size: 0.9em;
+    }
+  }
 }
