@@ -1,0 +1,94 @@
+/* Timeline / Work Experience */
+.timeline-section {
+  @apply mb-12;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 8em 1fr;
+  gap: 1.5em;
+  align-items: baseline;
+  @apply mb-8;
+}
+
+.timeline-date {
+  @apply text-text-secondary;
+}
+
+.timeline-title {
+  @apply mb-1;
+}
+
+.timeline-title a {
+  @apply text-gray-950 font-semibold;
+}
+
+.timeline-description {
+  @apply text-text-secondary leading-relaxed mb-3;
+}
+
+.timeline-list {
+  @apply text-text-secondary leading-relaxed m-0;
+  list-style-position: outside;
+  list-style-type: disc;
+  color: var(--color-text-secondary);
+}
+
+.timeline-list li {
+  @apply mb-1;
+}
+
+.timeline-list li::marker {
+  @apply text-gray-400;
+}
+
+.timeline-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.timeline-gallery a {
+  display: block;
+}
+
+.timeline-gallery img {
+  width: 100%;
+  height: auto;
+  max-height: 25rem;
+  object-fit: contain;
+  border: 1px solid var(--color-gray-100);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 0.4rem;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.timeline-gallery img:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .timeline-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .timeline-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Responsive: stack on mobile */
+@media (max-width: 600px) {
+  .timeline-item {
+    grid-template-columns: 1fr;
+    gap: 0.25em;
+  }
+
+  .timeline-date {
+    @apply mb-1;
+  }
+}

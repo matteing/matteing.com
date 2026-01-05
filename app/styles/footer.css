@@ -1,0 +1,53 @@
+/* Footer */
+.site-footer {
+  text-align: center;
+  padding: 3em 0 1em 0;
+  color: var(--color-text-secondary);
+  --flag-fill: var(--color-gray-200);
+  --flag-star: var(--color-white);
+}
+
+@media (prefers-color-scheme: dark) {
+  .site-footer {
+    --flag-fill: var(--color-gray-800);
+    --flag-star: var(--color-gray-50);
+  }
+}
+
+.site-footer svg {
+  display: inline-block;
+  vertical-align: middle;
+  width: 2em;
+  height: auto;
+}
+
+.site-footer svg path,
+.site-footer svg rect {
+  transition: fill 0.3s ease, stroke 0.3s ease;
+}
+
+.site-footer a:hover {
+  text-decoration: none;
+}
+
+.site-footer a:hover svg .flag-stripes {
+  fill: #ed1c24;
+  stroke: #ed1c24;
+}
+
+.site-footer a:hover svg .flag-triangle {
+  fill: #87cefa;
+}
+
+.site-footer a:hover svg .flag-star {
+  fill: var(--flag-star);
+}
+
+@media (prefers-color-scheme: dark) {
+  .site-footer a:hover svg .flag-bg {
+    fill: #fff;
+  }
+  .site-footer a:hover svg .flag-star {
+    fill: #fff;
+  }
+}
