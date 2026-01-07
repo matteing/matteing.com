@@ -4,6 +4,10 @@
   @apply flex gap-8 mb-4;
 }
 
+.tabsContainer {
+  @apply flex gap-8;
+}
+
 .tab {
   @apply relative pb-2 text-base font-normal cursor-pointer transition-colors duration-200;
 }
@@ -18,4 +22,16 @@
 
 .indicator {
   @apply absolute bottom-0 left-0 right-0 h-px bg-gray-950;
+}
+
+.backLink {
+  @apply flex items-center gap-1 pb-2 text-base font-normal text-gray-950 transition-colors duration-200;
+}
+
+.backLink:hover {
+  @apply text-gray-600;
+}
+
+.backIcon {
+  @apply font-[remixicon] text-base leading-none;
 }

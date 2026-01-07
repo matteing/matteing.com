@@ -1,11 +1,8 @@
-import { Description } from "@/components/ui/Description";
+import { PostList } from "@/components/posts/PostList";
+import { getAllPosts } from "@/lib/posts";
 
 export default function WritingPage() {
-  return (
-    <>
-      <Description>
-        Coming soon — thoughts on engineering, design, and building products.
-      </Description>
-    </>
-  );
+  const posts = getAllPosts();
+
+  return <PostList posts={posts} />;
 }

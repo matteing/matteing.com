@@ -11,6 +11,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "matteing.com",
   description: "",
+  alternates: {
+    types: {
+      "application/rss+xml": "/feed.xml",
+    },
+  },
 };
 
 export default function RootLayout({
@@ -20,6 +25,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="Blog Posts"
+          href="/feed.xml"
+        />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
