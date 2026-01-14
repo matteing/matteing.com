@@ -142,37 +142,49 @@ export async function refreshNowPlaying(): Promise<{
   track: string | null;
   isPlaying: boolean;
 }> {
-  // Fetch latest from Apple Music
-  const response = await getRecentTracks();
-  if (response.status === 204 || response.status > 400) {
+  try {
+    // Fetch latest from Apple Music
+    const response = await getRecentTracks();
+    if (response.status === 204 || response.status > 400) {
+      return { changed: false, track: null, isPlaying: false };
+    }
+
+    const { data } = await response.json();
+    if (!data?.length) {
+      return { changed: false, track: null, isPlaying: false };
+    }
+
+    const latestTrack = data[0] as AppleMusicTrack;
+    const current = await getCurrent();
+
+    // Check if track changed
+    if (current?.id === latestTrack.id) {
+      // Same track - check if still playing
+      const elapsed = Date.now() - new Date(current.startedAt).getTime();
+      const isPlaying = elapsed < current.durationMs + 4 * 60 * 1000; // 4 min buffer
+      return { changed: false, track: current.name, isPlaying };
+    }
+
+    // Track changed - push old to history, set new as current
+    if (current) {
+      await pushToHistory(current);
+    }
+
+    const processed = await processTrack(latestTrack);
+    await setCurrent(processed);
+
+    return { changed: true, track: processed.name, isPlaying: true };
+  } catch (error) {
+    // Network error or timeout - return cached state if available
+    console.error("Failed to refresh from Apple Music:", error);
+    const current = await getCurrent();
+    if (current) {
+      const elapsed = Date.now() - new Date(current.startedAt).getTime();
+      const isPlaying = elapsed < current.durationMs + 4 * 60 * 1000;
+      return { changed: false, track: current.name, isPlaying };
+    }
     return { changed: false, track: null, isPlaying: false };
   }
-
-  const { data } = await response.json();
-  if (!data?.length) {
-    return { changed: false, track: null, isPlaying: false };
-  }
-
-  const latestTrack = data[0] as AppleMusicTrack;
-  const current = await getCurrent();
-
-  // Check if track changed
-  if (current?.id === latestTrack.id) {
-    // Same track - check if still playing
-    const elapsed = Date.now() - new Date(current.startedAt).getTime();
-    const isPlaying = elapsed < current.durationMs + 4 * 60 * 1000; // 4 min buffer
-    return { changed: false, track: current.name, isPlaying };
-  }
-
-  // Track changed - push old to history, set new as current
-  if (current) {
-    await pushToHistory(current);
-  }
-
-  const processed = await processTrack(latestTrack);
-  await setCurrent(processed);
-
-  return { changed: true, track: processed.name, isPlaying: true };
 }
 
 /**

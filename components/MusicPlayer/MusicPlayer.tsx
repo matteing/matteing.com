@@ -15,7 +15,7 @@
 
 import { useMemo, useState, useCallback } from "react";
 import useSWR from "swr";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import type { NowPlayingState } from "@/lib/apple-music/types";
 
 import { SoundBars } from "./components/SoundBars";
@@ -72,7 +72,7 @@ export default function MusicPlayer({ initialData }: MusicPlayerProps) {
     fetcher,
     {
       fallbackData: initialData,
-      revalidateOnMount: !initialData,
+      revalidateOnMount: true,
       refreshInterval: REFRESH_INTERVAL,
       dedupingInterval: 30000,
     }
@@ -120,78 +120,70 @@ export default function MusicPlayer({ initialData }: MusicPlayerProps) {
     };
   }, [dominantColor]);
 
-  // No recent albums at all
-  if (!recentAlbums || recentAlbums.length === 0) {
-    if (!track) return null;
-  }
+  // Determine what content to show
+  const isLoading = !data;
+  const showNowPlaying = !isLoading && isPlaying && track;
+  const showRecentlyPlayed = !isLoading && !isPlaying && recentAlbums && recentAlbums.length > 0;
 
-  // Not playing - show recently played expanded view only
-  if (!isPlaying) {
-    return recentAlbums && recentAlbums.length > 0 ? (
-      <RecentlyPlayedExpanded albums={recentAlbums} />
-    ) : null;
-  }
+  // Render content based on state
+  const renderContent = () => {
+    // Loading/fallback state
+    if (isLoading || (!showNowPlaying && !showRecentlyPlayed)) {
+      return (
+        <div className="flex h-full items-center justify-center bg-gray-100 p-4 text-gray-900 sm:p-5">
+          <span className="text-sm text-gray-500">Fetching some tunes...</span>
+        </div>
+      );
+    }
 
-  // No track data but playing (shouldn't happen, but safety check)
-  if (!track) {
-    return null;
-  }
+    // Recently played (not currently playing)
+    if (showRecentlyPlayed) {
+      return <RecentlyPlayedExpanded albums={recentAlbums!} />;
+    }
 
-  // Playing - show now playing view with animated sections
-  // Skip entrance animation if we have initialData (server-rendered)
-  const skipInitialAnimation = !!initialData;
-
-  return (
-    <motion.div
-      className="relative overflow-hidden rounded-[11px]"
-      style={{ backgroundColor: dominantColor || "var(--color-white)", color: textColor }}
-      layout
-      transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-    >
-      <AnimatePresence mode="popLayout" initial={!skipInitialAnimation}>
-        <motion.div
-          key="now-playing"
-          className="relative flex flex-col sm:flex-row"
-          initial={skipInitialAnimation ? false : { height: 0, opacity: 0 }}
-          animate={{ height: "auto", opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
-          transition={{
-            height: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
-            opacity: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.15 }}
-          >
-            <SoundBars />
-          </motion.div>
-
+    // Now playing
+    return (
+      <div
+        className="relative overflow-hidden rounded-[11px]"
+        style={{ 
+          backgroundColor: dominantColor || "var(--color-white)",
+          color: textColor,
+        }}
+      >
+        <div className="relative flex flex-col sm:flex-row">
+          <SoundBars />
           <AlbumArt
-            album={track.album}
+            album={track!.album}
             dominantColor={dominantColor ?? undefined}
           />
-
           <TrackInfo
-            name={track.name}
-            artist={track.artist}
-            url={track.url}
+            name={track!.name}
+            artist={track!.artist}
+            url={track!.url}
             currentTime={currentTime}
             duration={durationMs}
           />
-        </motion.div>
-      </AnimatePresence>
+        </div>
+        {recentAlbums && recentAlbums.length > 0 && (
+          <RecentlyPlayed
+            albums={recentAlbums}
+            maxItems={4}
+            backgroundColor={darkerColor}
+            textColor={textColor}
+          />
+        )}
+      </div>
+    );
+  };
 
-      {recentAlbums && recentAlbums.length > 0 && (
-        <RecentlyPlayed
-          albums={recentAlbums}
-          maxItems={4}
-          backgroundColor={darkerColor}
-          textColor={textColor}
-        />
-      )}
+  return (
+    <motion.div
+      layout
+      className="overflow-hidden rounded-[17px]"
+      style={{ minHeight: 330 }}
+      transition={{ layout: { type: "spring", stiffness: 260, damping: 32, mass: 0.8 } }}
+    >
+      {renderContent()}
     </motion.div>
   );
 }
