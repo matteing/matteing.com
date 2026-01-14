@@ -24,6 +24,12 @@ export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
+
+    // Ensure attributes are set before play attempt (some iOS builds are picky)
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("muted", "true");
+    video.setAttribute("autoplay", "true");
+
     const playAttempt = video.play();
     if (playAttempt?.catch) {
       playAttempt.catch(() => {
@@ -62,9 +68,12 @@ export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
               ref={videoRef}
               src={album.videoUrl}
               autoPlay
+              controls={false}
               loop
               muted
               playsInline
+              disablePictureInPicture
+              disableRemotePlayback
               preload="auto"
               className={styles.video}
             />
