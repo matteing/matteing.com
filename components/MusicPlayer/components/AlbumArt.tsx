@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef } from "react";
 import type { Album } from "@/lib/apple-music/types";
 import styles from "./AlbumArt.module.css";
 
@@ -17,6 +18,20 @@ interface AlbumArtProps {
  * Includes a soft gradient on the right edge to blend into the track info area.
  */
 export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Nudge iOS Safari to autoplay inline motion artwork
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const playAttempt = video.play();
+    if (playAttempt?.catch) {
+      playAttempt.catch(() => {
+        // Ignore autoplay rejections; iOS may require a second attempt after user gesture
+      });
+    }
+  }, [album.id]);
+
   return (
     <a
       href={album.url}
@@ -44,11 +59,13 @@ export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
           {/* Animated video overlay (Apple Music motion artwork) */}
           {album.videoUrl && (
             <video
+              ref={videoRef}
               src={album.videoUrl}
               autoPlay
               loop
               muted
               playsInline
+              preload="auto"
               className={styles.video}
             />
           )}
