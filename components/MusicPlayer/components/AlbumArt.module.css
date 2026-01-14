@@ -17,5 +17,5 @@
 }
 
 .gradient {
-  @apply pointer-events-none absolute inset-y-0 right-0 w-20;
+  @apply pointer-events-none absolute inset-y-0 right-0 w-20 hidden sm:block;
 }

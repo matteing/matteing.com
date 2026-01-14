@@ -5,7 +5,7 @@
 }
 
 .track {
-  @apply mx-auto h-1 w-full max-w-[200px] overflow-hidden rounded-full bg-white/30;
+  @apply mx-auto h-1 w-full overflow-hidden rounded-full bg-white/30;
 }
 
 .progress {
@@ -13,5 +13,5 @@
 }
 
 .times {
-  @apply mt-2 flex justify-between text-xs opacity-70;
+  @apply mt-1 flex justify-between text-xs opacity-70;
 }
