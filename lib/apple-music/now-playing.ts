@@ -7,7 +7,6 @@ import type { AppleMusicTrack, Track, Album, NowPlayingState } from "@/lib/apple
 // Redis keys
 const KEY_CURRENT = "now-playing:current";
 const KEY_HISTORY = "now-playing:history";
-const TTL = 60 * 60; // 1 hour
 
 // =============================================================================
 // Types
@@ -40,7 +39,7 @@ async function getCurrent(): Promise<StoredTrack | null> {
 }
 
 async function setCurrent(track: StoredTrack): Promise<boolean> {
-  return setJSON(KEY_CURRENT, track, TTL);
+  return setJSON(KEY_CURRENT, track);
 }
 
 async function getHistory(): Promise<StoredTrack[]> {
@@ -57,7 +56,7 @@ async function pushToHistory(track: StoredTrack): Promise<boolean> {
   
   // Add to front, keep max 10
   const updated = [track, ...history].slice(0, 10);
-  return setJSON(KEY_HISTORY, updated, TTL);
+  return setJSON(KEY_HISTORY, updated);
 }
 
 // =============================================================================
