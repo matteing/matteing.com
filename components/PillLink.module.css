@@ -1,0 +1,51 @@
+@reference "../app/globals.css";
+
+/* Pill link with animated arrow */
+.pillLink {
+  @apply inline-flex items-center gap-0 rounded-full bg-gray-100 px-2.5 py-1.5 text-sm leading-none text-gray-800 transition-all duration-200;
+}
+
+.pillLink::after {
+  content: "\ea70";
+  font-family: "remixicon";
+  width: 0;
+  height: 1em;
+  line-height: 1;
+  font-size: 1em;
+  border-radius: 100%;
+  overflow: hidden;
+  text-align: center;
+  margin-left: 0;
+  @apply inline-block transition-all duration-200;
+}
+
+.pillLink:hover::after {
+  width: 1em;
+  @apply ml-1;
+}
+
+.pillLink:active {
+  filter: brightness(1.05);
+}
+
+.clicked::after {
+  animation: arrowShoot 0.3s ease-out forwards;
+}
+
+@keyframes arrowShoot {
+  0% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 3px -3px;
+    opacity: 0;
+  }
+  51% {
+    translate: -3px 3px;
+    opacity: 0;
+  }
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}

@@ -1,0 +1,49 @@
+@reference "../../app/globals.css";
+
+.footer {
+  text-align: center;
+  padding: 3rem 0 1rem 0;
+  color: var(--color-text-secondary);
+  --flag-fill: var(--color-gray-200);
+  --flag-star: var(--color-white);
+}
+
+.flag {
+  display: inline-block;
+  vertical-align: middle;
+  width: 2em;
+  height: auto;
+}
+
+.flag path,
+.flag rect {
+  transition:
+    fill 0.3s ease,
+    stroke 0.3s ease;
+}
+
+.link:hover {
+  text-decoration: none;
+}
+
+.link:hover .stripes {
+  fill: #ed1c24;
+  stroke: #ed1c24;
+}
+
+.link:hover .triangle {
+  fill: #87cefa;
+}
+
+.link:hover .star {
+  fill: var(--flag-star);
+}
+
+@media (prefers-color-scheme: dark) {
+  .link:hover .bg {
+    fill: #fff;
+  }
+  .link:hover .star {
+    fill: #fff;
+  }
+}

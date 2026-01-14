@@ -1,0 +1,225 @@
+@import "tailwindcss"
+  theme(--spacing, --width, --height, --inset, --size, --radius, --breakpoint);
+@import "remixicon/fonts/remixicon.css";
+
+/* Light mode (default) */
+:root {
+  --white: hsl(0, 0%, 100%);
+  --gray-50: hsl(0, 0%, 96%);
+  --gray-100: hsl(0, 0%, 91%);
+  --gray-200: hsl(0, 0%, 82%);
+  --gray-300: hsl(0, 0%, 69%);
+  --gray-400: hsl(0, 0%, 53%);
+  --gray-500: hsl(0, 0%, 43%);
+  --gray-600: hsl(0, 0%, 36%);
+  --gray-700: hsl(0, 0%, 31%);
+  --gray-800: hsl(0, 0%, 27%);
+  --gray-900: hsl(0, 0%, 24%);
+  --gray-950: hsl(0, 0%, 7%);
+  --accent: hsl(211, 100%, 55%);
+  --text-primary: var(--gray-950);
+  --text-secondary: var(--gray-600);
+}
+
+/* Dark mode - automatic via media query */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --white: #111;
+    --gray-50: #1a1a1a;
+    --gray-100: #222;
+    --gray-200: #333;
+    --gray-300: #444;
+    --gray-400: #666;
+    --gray-500: #888;
+    --gray-600: #aaa;
+    --gray-700: #ccc;
+    --gray-800: #ddd;
+    --gray-900: #eee;
+    --gray-950: #fff;
+    --accent: #fff;
+    --text-primary: #ccc;
+    --text-secondary: rgba(204, 204, 204, 0.6666);
+  }
+}
+
+@theme {
+  --*: initial;
+
+  /* Breakpoints for responsive variants */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* Border radius */
+  --radius-sm: 0.25rem; /* 4px */
+  --radius-md: 0.375rem; /* 6px */
+  --radius-lg: 0.5rem; /* 8px */
+  --radius-xl: 0.75rem; /* 12px */
+  --radius-2xl: 1rem; /* 16px */
+  --radius-full: 9999px;
+
+  /* Spacing scale - minimalist set */
+  --spacing: 0.25rem;
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-lg: 2rem; /* 32px */
+  --spacing-xl: 4rem; /* 64px */
+
+  /* Font scale - base 14px */
+  --text-xs: 0.6875rem; /* 11px */
+  --text-sm: 0.75rem; /* 12px */
+  --text-base: 0.875rem; /* 14px */
+  --text-lg: 1rem; /* 16px */
+  --text-xl: 1.125rem; /* 18px */
+
+  /* Line height */
+  --leading-base: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-none: 1;
+
+  /* Letter spacing */
+  --tracking-base: 0.0184em;
+
+  /* Font weights */
+  /* Font weights */
+  --font-weight-normal: 315;
+  --font-weight-semibold: 400;
+  --font-weight-bold: 500;
+
+  /* Transition duration */
+  --duration-350: 350ms;
+
+  /* Colors referencing CSS variables */
+  --color-white: var(--white);
+  --color-gray-50: var(--gray-50);
+  --color-gray-100: var(--gray-100);
+  --color-gray-200: var(--gray-200);
+  --color-gray-300: var(--gray-300);
+  --color-gray-400: var(--gray-400);
+  --color-gray-500: var(--gray-500);
+  --color-gray-600: var(--gray-600);
+  --color-gray-700: var(--gray-700);
+  --color-gray-800: var(--gray-800);
+  --color-gray-900: var(--gray-900);
+  --color-gray-950: var(--gray-950);
+  --color-accent: var(--accent);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-white);
+    color: var(--color-text-primary);
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-normal);
+    line-height: var(--leading-base);
+    letter-spacing: var(--tracking-base);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+@keyframes music-bar {
+  0%,
+  100% {
+    height: 30%;
+  }
+  50% {
+    height: 100%;
+  }
+}
+
+@keyframes soundbar {
+  0%,
+  100% {
+    transform: scaleY(0.4);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes glow-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 0.7;
+    transform: scale(1.04) translateY(2px);
+  }
+  60% {
+    opacity: 0.55;
+    transform: scale(0.98) translateY(-1px);
+  }
+  80% {
+    opacity: 0.65;
+    transform: scale(1.02) translateX(2px);
+  }
+}
+
+@keyframes now-playing-bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateX(10px) translateY(-10px) scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+@layer components {
+  .page-container {
+    max-width: 37.5rem; /* 600px */
+    margin: 0 auto;
+    padding: clamp(1.5rem, calc((100vw - 37.5rem) / 2), 4.5rem) 1.875rem;
+  }
+}

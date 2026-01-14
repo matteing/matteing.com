@@ -1,0 +1,27 @@
+@reference "../app/globals.css";
+
+/* Base link style with animated underline */
+.link {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.link:hover {
+  text-decoration-color: currentColor;
+}
+
+.outbound::after {
+  content: " \ea70";
+  font-family: "remixicon";
+  font-size: 0.85em;
+  @apply text-gray-400;
+  transition: color 0.2s ease;
+}
+
+.outbound:hover::after {
+  @apply text-gray-600;
+}

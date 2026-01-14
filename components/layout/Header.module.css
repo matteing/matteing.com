@@ -1,0 +1,55 @@
+@reference "../../app/globals.css";
+
+.header {
+  @apply flex w-full items-center;
+}
+
+.avatar {
+  @apply relative;
+  width: 4rem;
+  height: 4rem;
+}
+
+@media (min-width: 640px) {
+  .avatar {
+    width: 5.75rem;
+    height: 5.75rem;
+  }
+}
+
+.avatarLink {
+  @apply mr-4 block sm:mr-5;
+}
+
+.avatarImage {
+  @apply rounded-full object-cover;
+}
+
+.info {
+  @apply mb-2;
+}
+
+.name {
+  @apply text-lg font-[400] sm:text-xl;
+}
+
+.nameLink {
+  @apply text-inherit no-underline;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.nameLink:hover {
+  text-decoration-color: currentColor;
+}
+
+.title {
+  @apply text-text-secondary text-sm sm:text-base;
+}
+
+.links {
+  @apply flex flex-wrap gap-2;
+}

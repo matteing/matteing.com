@@ -1,0 +1,38 @@
+@reference "../../../app/globals.css";
+
+.container {
+  @apply p-4;
+}
+
+.title {
+  @apply mb-3 font-semibold;
+}
+
+.grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3;
+}
+
+.albumItem {
+  @apply flex items-center gap-3;
+}
+
+.albumCover {
+  @apply rounded-md;
+}
+
+.albumInfo {
+  @apply min-w-0 flex-1;
+}
+
+.albumName {
+  @apply truncate text-sm font-semibold;
+}
+
+.albumArtist {
+  @apply truncate text-xs opacity-70;
+}
+
+/* Expanded variant - uses semantic gray scale that inverts in dark mode */
+.containerExpanded {
+  @apply overflow-hidden rounded-[17px] bg-gray-100 p-4 text-gray-900;
+}

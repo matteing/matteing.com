@@ -1,0 +1,509 @@
+.prose {
+  /* Base typography */
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  color: var(--color-text-primary);
+
+  /* Vertical rhythm - consistent spacing between elements */
+  & > * + * {
+    margin-top: 1.5em;
+  }
+
+  /* Headings - same size, hierarchy via spacing */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-base);
+    color: var(--color-text-primary);
+  }
+
+  h1 {
+    margin-top: 3em;
+    margin-bottom: 1em;
+  }
+
+  h2 {
+    margin-top: 2.5em;
+    margin-bottom: 0.75em;
+  }
+
+  h3 {
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+  }
+
+  h4,
+  h5,
+  h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  /* First heading shouldn't have top margin */
+  & > h1:first-child,
+  & > h2:first-child,
+  & > h3:first-child,
+  & > h4:first-child {
+    margin-top: 0;
+  }
+
+  /* Paragraphs */
+  p {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+  }
+
+  & > p:first-child {
+    margin-top: 0;
+  }
+
+  /* Links - matching site Link component */
+  a {
+    color: var(--color-text-primary);
+    /* font-weight: var(--font-weight-bold); */
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color 0.2s ease;
+    text-decoration-color: currentColor;
+  }
+
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  /* Outbound links - external icon */
+  a[href^="http"]::after,
+  a[href^="//"]::after {
+    content: " \ea70";
+    font-family: "remixicon";
+    font-size: 0.85em;
+    font-weight: normal;
+    color: var(--color-gray-400);
+    transition: color 0.2s ease;
+  }
+
+  a[href^="http"]:hover::after,
+  a[href^="//"]::after {
+    color: var(--color-gray-600);
+  }
+
+  /* Strong and emphasis */
+  strong,
+  b {
+    font-weight: 500;
+  }
+
+  em,
+  i {
+    font-style: italic;
+  }
+
+  /* Blockquotes */
+  blockquote {
+    border-left: 1px solid var(--color-gray-300);
+    padding-left: 1.25em;
+    margin-left: 0;
+    margin-right: 0;
+    color: var(--color-text-secondary);
+  }
+
+  blockquote p {
+    margin-top: 0.75em;
+    margin-bottom: 0.75em;
+  }
+
+  blockquote p:first-child {
+    margin-top: 0;
+  }
+
+  blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  blockquote cite {
+    display: block;
+    margin-top: 0.75em;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--text-sm);
+  }
+
+  /* Nested blockquotes */
+  blockquote blockquote {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
+  /* Lists - true hanging bullets */
+  ul,
+  ol {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    margin-left: 0;
+    padding-left: 0;
+    list-style-position: outside;
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  li {
+    margin-top: 0.375em;
+    margin-bottom: 0.375em;
+  }
+
+  /* Nested lists - indent content */
+  li > ul,
+  li > ol {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 1.5em;
+  }
+
+  /* Nested list styling */
+  ul ul {
+    list-style-type: circle;
+  }
+
+  ul ul ul {
+    list-style-type: square;
+  }
+
+  /* Code - inline */
+  code {
+    font-family:
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace;
+    font-size: 0.85em;
+    background-color: var(--color-gray-100);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25em;
+  }
+
+  /* Code blocks - rehype-pretty-code styling */
+  pre {
+    font-family:
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace;
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    border-radius: 0.375em;
+    overflow-x: auto;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    background-color: var(--color-gray-50);
+    border: 1px solid var(--color-gray-200);
+    padding: 0.75em 0;
+  }
+
+  pre code {
+    background-color: transparent;
+    padding: 0;
+    font-size: inherit;
+    border-radius: 0;
+    display: grid;
+  }
+
+  /* Syntax highlighting - use shiki theme colors */
+  pre span {
+    color: var(--shiki-light);
+    background-color: transparent !important;
+  }
+
+  /* Line styling */
+  pre [data-line] {
+    padding: 0 1em;
+    border-left: 2px solid transparent;
+  }
+
+  /* Highlighted lines - accent color touch */
+  pre [data-highlighted-line] {
+    background-color: color-mix(in srgb, var(--accent) 8%, transparent);
+    border-left-color: var(--accent);
+  }
+
+  /* Highlighted chars/words - accent color */
+  pre [data-highlighted-chars] {
+    background-color: color-mix(in srgb, var(--accent) 20%, transparent);
+    border-radius: 0.2em;
+    padding: 0.1em 0.2em;
+    margin: 0 -0.1em;
+  }
+
+  /* Line numbers */
+  code[data-line-numbers] {
+    counter-reset: line;
+  }
+
+  code[data-line-numbers] > [data-line]::before {
+    counter-increment: line;
+    content: counter(line);
+    display: inline-block;
+    width: 1rem;
+    margin-right: 1.25em;
+    text-align: right;
+    color: var(--gray-400);
+  }
+
+  code[data-line-numbers-max-digits="2"] > [data-line]::before {
+    width: 1.5rem;
+  }
+
+  code[data-line-numbers-max-digits="3"] > [data-line]::before {
+    width: 2rem;
+  }
+
+  /* Code block title */
+  figure[data-rehype-pretty-code-figure]
+    > figcaption[data-rehype-pretty-code-title] {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-secondary);
+    padding: 0.5em 1em;
+    background-color: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-bottom: none;
+    border-radius: 0.375em 0.375em 0 0;
+  }
+
+  figure[data-rehype-pretty-code-figure]
+    > figcaption[data-rehype-pretty-code-title]
+    + pre {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  /* Code block caption */
+  figcaption[data-rehype-pretty-code-caption] {
+    font-family: inherit;
+    font-size: var(--text-xs);
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 0.5em;
+  }
+
+  /* Figure wrapper from rehype-pretty-code */
+  figure[data-rehype-pretty-code-figure] {
+    margin: 1.5em 0;
+  }
+
+  figure[data-rehype-pretty-code-figure] pre {
+    margin: 0;
+  }
+
+  /* Horizontal rule */
+  hr {
+    border: none;
+    border-top: 1px solid var(--color-gray-200);
+    margin-top: 2em;
+    margin-bottom: 2em;
+  }
+
+  /* Images */
+  img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5em;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+  }
+
+  /* Figure and figcaption */
+  figure {
+    margin: 2em 0;
+  }
+
+  figure img {
+    margin: 0;
+  }
+
+  figcaption {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-top: 1em;
+    padding-top: 0.75em;
+    border-top: 1px solid var(--color-gray-200);
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    font-size: var(--text-sm);
+  }
+
+  th,
+  td {
+    padding: 0.625em 0.75em;
+    text-align: left;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+
+  th {
+    font-weight: var(--font-weight-semibold);
+    background-color: var(--color-gray-50);
+  }
+
+  thead th {
+    border-bottom-width: 2px;
+  }
+
+  /* Definition lists */
+  dl {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+  }
+
+  dt {
+    font-weight: var(--font-weight-semibold);
+    margin-top: 1em;
+  }
+
+  dt:first-child {
+    margin-top: 0;
+  }
+
+  dd {
+    margin-left: 1.5em;
+    margin-top: 0.25em;
+  }
+
+  /* Abbreviations */
+  abbr[title] {
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+
+  /* Keyboard input */
+  kbd {
+    font-family:
+      ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+      "Liberation Mono", monospace;
+    font-size: 0.875em;
+    background-color: var(--color-gray-100);
+    border: 1px solid var(--color-gray-200);
+    border-radius: 0.25em;
+    padding: 0.125em 0.375em;
+    box-shadow: 0 1px 0 var(--color-gray-300);
+  }
+
+  /* Mark/highlight */
+  mark {
+    background-color: #fef08a;
+    padding: 0.125em 0.25em;
+    border-radius: 0.125em;
+  }
+
+  /* Subscript and superscript */
+  sub,
+  sup {
+    font-size: 0.75em;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+  }
+
+  sup {
+    top: -0.5em;
+  }
+
+  sub {
+    bottom: -0.25em;
+  }
+
+  /* Small text */
+  small {
+    font-size: var(--text-sm);
+  }
+
+  /* Video embeds */
+  video,
+  iframe {
+    max-width: 100%;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    border-radius: 0.5em;
+  }
+
+  /* Task lists (GitHub-style) - hanging checkbox */
+  ul:has(input[type="checkbox"]) {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+  }
+
+  li:has(> input[type="checkbox"]) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5em;
+    margin-left: -1.25em;
+  }
+
+  input[type="checkbox"] {
+    margin: 0;
+    margin-top: 0.25em;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .prose {
+    code {
+      background-color: var(--gray-200);
+    }
+
+    pre {
+      background-color: var(--gray-100);
+      border-color: var(--gray-200);
+    }
+
+    /* Use shiki dark theme colors */
+    pre span {
+      color: var(--shiki-dark);
+    }
+
+    pre [data-highlighted-line] {
+      background-color: color-mix(in srgb, var(--accent) 12%, transparent);
+      border-left-color: var(--accent);
+    }
+
+    pre [data-highlighted-chars] {
+      background-color: color-mix(in srgb, var(--accent) 25%, transparent);
+    }
+
+    figure[data-rehype-pretty-code-figure]
+      > figcaption[data-rehype-pretty-code-title] {
+      background-color: var(--gray-200);
+      border-color: var(--gray-300);
+    }
+
+    th {
+      background-color: var(--gray-200);
+    }
+
+    kbd {
+      background-color: var(--gray-200);
+      border-color: var(--gray-300);
+      box-shadow: 0 1px 0 var(--gray-400);
+    }
+
+    mark {
+      background-color: #854d0e;
+      color: var(--gray-950);
+    }
+  }
+}

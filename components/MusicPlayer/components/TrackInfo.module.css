@@ -1,0 +1,17 @@
+@reference "../../../app/globals.css";
+
+.container {
+  @apply relative z-10 flex flex-1 flex-col justify-center p-4 sm:p-6 min-w-0;
+}
+
+.content {
+  @apply w-full min-w-0 text-center sm:text-left;
+}
+
+.name {
+  @apply truncate text-lg sm:text-xl font-bold;
+}
+
+.artist {
+  @apply truncate text-sm sm:text-base opacity-80;
+}

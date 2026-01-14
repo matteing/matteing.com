@@ -1,0 +1,17 @@
+@reference "../../../app/globals.css";
+
+.container {
+  @apply mt-4;
+}
+
+.track {
+  @apply mx-auto h-1 w-full max-w-[200px] overflow-hidden rounded-full bg-white/30;
+}
+
+.progress {
+  @apply h-full rounded-full bg-white;
+}
+
+.times {
+  @apply mt-2 flex justify-between text-xs opacity-70;
+}

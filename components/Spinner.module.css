@@ -1,0 +1,33 @@
+@reference "../app/globals.css";
+
+.container {
+  @apply relative;
+}
+
+.ring {
+  @apply absolute inset-0 rounded-full;
+  background: linear-gradient(to right, #888888 10%, rgba(136, 136, 136, 0) 42%);
+  animation: spin 1s linear infinite;
+}
+
+.cap {
+  @apply absolute left-0 top-0 rounded-tl-full;
+  width: 50%;
+  height: 50%;
+  background: #888888;
+}
+
+.hole {
+  @apply absolute inset-0 m-auto rounded-full bg-white;
+  width: 75%;
+  height: 75%;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

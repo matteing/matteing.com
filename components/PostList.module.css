@@ -1,0 +1,16 @@
+@reference "../app/globals.css";
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  margin-bottom: 1.5rem;
+}
+
+.title {
+  margin: 0;
+  @apply font-semibold;
+}

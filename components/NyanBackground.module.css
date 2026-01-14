@@ -1,0 +1,45 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-color: #050505; /* Deep space black */
+  overflow: hidden;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.cat {
+  position: absolute;
+  width: 100px;
+  height: auto;
+  z-index: 1;
+  animation: float 15s infinite ease-in-out;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(10vw, 10vh) rotate(0deg);
+  }
+  20% {
+    transform: translate(80vw, 30vh) rotate(10deg);
+  }
+  40% {
+    transform: translate(20vw, 80vh) rotate(-5deg);
+  }
+  60% {
+    transform: translate(70vw, 60vh) rotate(5deg);
+  }
+  80% {
+    transform: translate(30vw, 20vh) rotate(-10deg);
+  }
+  100% {
+    transform: translate(10vw, 10vh) rotate(0deg);
+  }
+}

@@ -1,31 +1,19 @@
-import { BaseProps } from "../types";
+import styles from "./Prose.module.css";
 
-export const PROSE_STYLES = `
-    prose 
-    prose-gray
-    lg:prose-xl
-    mx-auto
-    prose-h1:text-4xl
-    prose-h1:tracking-tight 
-    prose-h1:font-bold
-    prose-h1:no-underline
-    prose-h1:hover:underline
-    prose-h2:tracking-tight
-    prose-pre:!text-xs
-    prose-pre:md:!text-sm
-    prose-pre:!leading-tight
-    prose-pre:!bg-gray-900
-    prose-pre:!py-8
-    prose-a:no-underline
-    prose-a:transition-colors
-    prose-a:duration-150
-    prose-a:text-purple-600
-    prose-blockquote:text-gray-500
-    prose-blockquote:not-italic
-    prose-blockquote:font-normal
-    prose-blockquote:!whitespace-pre-wrap
-`;
+interface ProseProps {
+  children?: React.ReactNode;
+  html?: string;
+}
 
-export default function Prose({ children }: BaseProps) {
-	return <div className={PROSE_STYLES}>{children}</div>;
+export function Prose({ children, html }: ProseProps) {
+  if (html) {
+    return (
+      <div
+        className={styles.prose}
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+    );
+  }
+
+  return <div className={styles.prose}>{children}</div>;
 }

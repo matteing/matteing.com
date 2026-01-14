@@ -1,0 +1,90 @@
+@reference "../app/globals.css";
+
+.item {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  @apply mb-8;
+}
+
+.date {
+  @apply text-text-secondary;
+}
+
+.itemTitle {
+  @apply mb-1;
+}
+
+.itemTitleLink {
+  @apply font-semibold text-gray-950;
+}
+
+.description {
+  @apply text-text-secondary mb-3 leading-relaxed;
+}
+
+.list {
+  @apply text-text-secondary m-0 leading-relaxed;
+  list-style-position: outside;
+  list-style-type: disc;
+  padding-left: 1.25rem;
+}
+
+.listItem {
+  @apply mb-1;
+}
+
+.listItem::marker {
+  @apply text-gray-400;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.galleryLink {
+  display: block;
+}
+
+.galleryImage {
+  width: 100%;
+  height: auto;
+  max-height: 25rem;
+  object-fit: contain;
+  border: 1px solid var(--color-gray-100);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: 0.4rem;
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.galleryImage:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .item {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+
+  .date {
+    @apply mb-1;
+  }
+
+  .gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

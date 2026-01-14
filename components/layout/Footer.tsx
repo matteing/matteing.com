@@ -1,60 +1,47 @@
-import Image from "next/image";
-import avatar from "../../public/avatar.jpeg";
+import styles from "./Footer.module.css";
 
-export default function Footer() {
-	return (
-		<div className="flex flex-col items-center border-gray-50 py-12 md:mt-16 md:border-t lg:py-32">
-			<div className="mb-4 h-[72px] w-[72px] rounded-full ">
-				<Image
-					className="rounded-full"
-					layout="fixed"
-					width={72}
-					height={72}
-					src={avatar}
-					alt="Sergio Mattei"
-					placeholder="blur"
-					priority
-				/>
-			</div>
-			<span className="text-2xl font-semibold tracking-tight text-gray-700">
-				Sergio Mattei
-			</span>
-			<span className="mb-8 text-base text-gray-500">
-				matteing.com · @matteing
-			</span>
-			<div className="flex gap-6 text-base">
-				<a
-					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
-					href="https://github.com/matteing"
-					target="_blank"
-					rel="noreferrer"
-				>
-					GitHub
-				</a>
-				<a
-					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
-					href="https://twitter.com/matteing"
-					target="_blank"
-					rel="noreferrer"
-				>
-					Twitter
-				</a>
-				<a
-					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
-					href="https://instagram.com/matteing"
-					target="_blank"
-					rel="noreferrer"
-				>
-					Instagram
-				</a>
-				<a
-					className="text-purple-500 transition-colors duration-300 hover:text-purple-400 active:text-purple-600"
-					href="/rss"
-					target="_blank"
-				>
-					RSS
-				</a>
-			</div>
-		</div>
-	);
+export function Footer() {
+  return (
+    <footer className={styles.footer}>
+      <a
+        href="https://web.archive.org/web/20250124171230/https://www.tallerlaprole.online/product-page/PuertoRicanResistanceFlagSticker"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Puerto Rican Resistance Flag"
+        className={styles.link}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 900 600"
+          className={styles.flag}
+          aria-label="Puerto Rican Flag"
+          role="img"
+        >
+          <rect
+            className={styles.bg}
+            width="900"
+            height="600"
+            fill="transparent"
+          />
+          <path
+            className={styles.stripes}
+            stroke="var(--flag-fill)"
+            strokeWidth="120"
+            d="m0,60h900m0,240H0m0,240h900"
+            fill="var(--flag-fill)"
+          />
+          <path
+            className={styles.triangle}
+            d="M 0,0 0,600 520,300 Z"
+            fill="var(--flag-fill)"
+          />
+          <path
+            className={styles.star}
+            d="m114,382 59-183 59,183-155-113h192"
+            fill="var(--flag-star)"
+          />
+        </svg>
+      </a>
+    </footer>
+  );
 }

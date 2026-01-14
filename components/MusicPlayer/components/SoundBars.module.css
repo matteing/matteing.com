@@ -1,0 +1,45 @@
+@reference "../../../app/globals.css";
+
+.container {
+  @apply absolute right-3 top-3 z-20 flex items-center gap-1.5 rounded-full px-2.5 py-1.5;
+  background-color: rgb(0 0 0 / 0.3);
+  backdrop-filter: blur(4px);
+  border-radius: 9999%;
+  width: 32px;
+  height: 32px;
+}
+
+.bars {
+  @apply flex h-3 items-end gap-[2px];
+}
+
+.bar {
+  @apply w-[3px] rounded-full origin-bottom;
+  background-color: white;
+  animation: soundbar 0.8s ease-in-out infinite;
+}
+
+.bar1 {
+  height: 0.5rem;
+  animation-delay: 0ms;
+}
+
+.bar2 {
+  height: 0.75rem;
+  animation-delay: 200ms;
+}
+
+.bar3 {
+  height: 0.375rem;
+  animation-delay: 400ms;
+}
+
+@keyframes soundbar {
+  0%,
+  100% {
+    transform: scaleY(0.5);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}

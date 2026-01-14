@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/now-playing",
+      "schedule": "*/3 * * * *"
+    }
+  ]
+}

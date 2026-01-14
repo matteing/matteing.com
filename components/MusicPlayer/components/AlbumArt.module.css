@@ -1,0 +1,21 @@
+@reference "../../../app/globals.css";
+
+.container {
+  @apply relative z-10 w-full sm:w-[52%] aspect-square sm:max-h-[230px] shrink-0 overflow-hidden;
+}
+
+.artwork {
+  @apply absolute inset-0;
+}
+
+.image {
+  @apply object-cover;
+}
+
+.video {
+  @apply absolute inset-0 h-full w-full object-cover;
+}
+
+.gradient {
+  @apply pointer-events-none absolute inset-y-0 right-0 w-20;
+}
