@@ -17,6 +17,16 @@ export const metadata: Metadata = {
 		default: SITE_TITLE,
 	},
 	description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/me.png",
+        alt: SITE_TITLE,
+      },
+    ],
+  },
 	alternates: {
 		types: {
 			"application/rss+xml": "/feed.xml",
