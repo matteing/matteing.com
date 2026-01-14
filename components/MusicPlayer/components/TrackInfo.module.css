@@ -5,7 +5,7 @@
 }
 
 .content {
-  @apply w-full min-w-0 text-center sm:text-left;
+  @apply w-full min-w-0 text-center;
 }
 
 .name {

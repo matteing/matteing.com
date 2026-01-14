@@ -42,7 +42,7 @@ interface MusicPlayerProps {
 // ============================================================================
 
 const DEFAULT_DURATION = 180000; // 3 minutes fallback
-const REFRESH_INTERVAL = 60000; // Refresh every 60 seconds (matches cron)
+const REFRESH_INTERVAL = 60000; // Refresh every 60 seconds (API caches for 1 min)
 
 // ============================================================================
 // Helpers
