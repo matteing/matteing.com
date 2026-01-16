@@ -204,7 +204,30 @@
     margin-bottom: 1.5em;
     background-color: var(--color-gray-50);
     border: 1px solid var(--color-gray-200);
-    padding: 0.75em 0;
+    padding: 1em 0;
+    /* Escape the container - responsive */
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+
+    @media (min-width: 640px) {
+      margin-left: -2em;
+      margin-right: -2em;
+      padding-left: 2em;
+      padding-right: 2em;
+      padding-top: 1.25em;
+      padding-bottom: 1.25em;
+    }
+
+    @media (min-width: 1024px) {
+      margin-left: -3em;
+      margin-right: -3em;
+      padding-left: 3em;
+      padding-right: 3em;
+      padding-top: 1.5em;
+      padding-bottom: 1.5em;
+    }
   }
 
   pre code {
@@ -297,10 +320,25 @@
   /* Figure wrapper from rehype-pretty-code */
   figure[data-rehype-pretty-code-figure] {
     margin: 1.5em 0;
+    /* Escape the container - responsive */
+    margin-left: -0.5em;
+    margin-right: -0.5em;
+
+    @media (min-width: 640px) {
+      margin-left: -2em;
+      margin-right: -2em;
+    }
+
+    @media (min-width: 1024px) {
+      margin-left: -3em;
+      margin-right: -3em;
+    }
   }
 
   figure[data-rehype-pretty-code-figure] pre {
     margin: 0;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   /* Horizontal rule */

@@ -130,7 +130,7 @@ export default function MusicPlayer({ initialData }: MusicPlayerProps) {
     // Loading/fallback state
     if (isLoading || (!showNowPlaying && !showRecentlyPlayed)) {
       return (
-        <div className="flex h-full items-center justify-center bg-gray-100 p-4 text-gray-900 sm:p-5">
+        <div className="flex h-full items-center justify-center rounded-lg bg-gray-100 p-4 text-gray-900 sm:p-5">
           <span className="text-sm text-gray-500">Fetching some tunes...</span>
         </div>
       );
@@ -144,7 +144,7 @@ export default function MusicPlayer({ initialData }: MusicPlayerProps) {
     // Now playing
     return (
       <div
-        className="relative overflow-hidden rounded-[11px]"
+        className="relative overflow-hidden rounded-lg"
         style={{ 
           backgroundColor: dominantColor || "var(--color-white)",
           color: textColor,
@@ -179,7 +179,7 @@ export default function MusicPlayer({ initialData }: MusicPlayerProps) {
   return (
     <motion.div
       layout
-      className="overflow-hidden rounded-[17px]"
+      className="overflow-hidden rounded-xl"
       style={{ minHeight: 330 }}
       transition={{ layout: { type: "spring", stiffness: 260, damping: 32, mass: 0.8 } }}
     >
