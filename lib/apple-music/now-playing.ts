@@ -47,15 +47,18 @@ async function getHistory(): Promise<StoredTrack[]> {
 }
 
 async function pushToHistory(track: StoredTrack): Promise<boolean> {
-  const history = await getHistory();
-  
-  // Don't add duplicates (same track ID)
-  if (history.some((t) => t.id === track.id)) {
+  // Don't add tracks without album covers
+  if (!track.coverUrl) {
     return true;
   }
+
+  const history = await getHistory();
   
-  // Add to front, keep max 10
-  const updated = [track, ...history].slice(0, 10);
+  // Remove any existing entry for the same album (by album name) to avoid duplicates
+  const filtered = history.filter((t) => t.albumName !== track.albumName);
+  
+  // Add to front (newest first), keep max 10
+  const updated = [track, ...filtered].slice(0, 10);
   return setJSON(KEY_HISTORY, updated);
 }
 
@@ -63,7 +66,12 @@ async function pushToHistory(track: StoredTrack): Promise<boolean> {
 // Track Processing
 // =============================================================================
 
-async function processTrack(raw: AppleMusicTrack): Promise<StoredTrack> {
+async function processTrack(raw: AppleMusicTrack): Promise<StoredTrack | null> {
+  // Skip tracks without artwork
+  if (!raw.attributes.artwork?.url) {
+    return null;
+  }
+
   const coverUrl = raw.attributes.artwork.url
     .replace("{w}", "600")
     .replace("{h}", "600");
@@ -170,6 +178,12 @@ export async function refreshNowPlaying(): Promise<{
     }
 
     const processed = await processTrack(latestTrack);
+    
+    // Skip tracks without album artwork
+    if (!processed) {
+      return { changed: false, track: null, isPlaying: false };
+    }
+    
     await setCurrent(processed);
 
     return { changed: true, track: processed.name, isPlaying: true };
