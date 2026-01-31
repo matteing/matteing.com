@@ -58,3 +58,16 @@ export async function setJSON<T>(
     return false;
   }
 }
+
+export async function deleteKey(key: string): Promise<boolean> {
+  const client = getRedis();
+  if (!client) return false;
+
+  try {
+    await client.del(key);
+    return true;
+  } catch (error) {
+    console.error(`Redis DEL error for ${key}:`, error);
+    return false;
+  }
+}

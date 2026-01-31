@@ -4,9 +4,11 @@ import { getRecentTracks, getSongFromCatalog, getAlbumFromCatalog } from "@/lib/
 import { getVideoUrlFromM3u8 } from "@/lib/apple-music/m3u8";
 import type { AppleMusicTrack, Track, Album, NowPlayingState } from "@/lib/apple-music/types";
 
-// Redis keys
-const KEY_CURRENT = "now-playing:current";
+// Single Redis key - a stack of recently played tracks
 const KEY_HISTORY = "now-playing:history";
+
+// Max tracks to keep in history
+const MAX_HISTORY = 10;
 
 // =============================================================================
 // Types
@@ -31,35 +33,28 @@ interface StoredTrack {
 }
 
 // =============================================================================
-// Redis Operations
+// Redis Operations (single stack)
 // =============================================================================
-
-async function getCurrent(): Promise<StoredTrack | null> {
-  return getJSON<StoredTrack>(KEY_CURRENT);
-}
-
-async function setCurrent(track: StoredTrack): Promise<boolean> {
-  return setJSON(KEY_CURRENT, track);
-}
 
 async function getHistory(): Promise<StoredTrack[]> {
   return (await getJSON<StoredTrack[]>(KEY_HISTORY)) ?? [];
 }
 
-async function pushToHistory(track: StoredTrack): Promise<boolean> {
-  // Don't add tracks without album covers
-  if (!track.coverUrl) {
-    return true;
-  }
+async function setHistory(history: StoredTrack[]): Promise<boolean> {
+  return setJSON(KEY_HISTORY, history);
+}
+
+/**
+ * Push a track to the front of history.
+ * Dedupes by album name and caps at MAX_HISTORY.
+ */
+async function pushTrack(track: StoredTrack): Promise<boolean> {
+  if (!track.coverUrl) return true;
 
   const history = await getHistory();
-  
-  // Remove any existing entry for the same album (by album name) to avoid duplicates
   const filtered = history.filter((t) => t.albumName !== track.albumName);
-  
-  // Add to front (newest first), keep max 10
-  const updated = [track, ...filtered].slice(0, 10);
-  return setJSON(KEY_HISTORY, updated);
+  const updated = [track, ...filtered].slice(0, MAX_HISTORY);
+  return setHistory(updated);
 }
 
 // =============================================================================
@@ -67,19 +62,11 @@ async function pushToHistory(track: StoredTrack): Promise<boolean> {
 // =============================================================================
 
 async function processTrack(raw: AppleMusicTrack): Promise<StoredTrack | null> {
-  // Skip tracks without artwork
-  if (!raw.attributes.artwork?.url) {
-    return null;
-  }
+  if (!raw.attributes.artwork?.url) return null;
 
-  const coverUrl = raw.attributes.artwork.url
-    .replace("{w}", "600")
-    .replace("{h}", "600");
-  const hqCoverUrl = raw.attributes.artwork.url
-    .replace("{w}", "1200")
-    .replace("{h}", "1200");
+  const coverUrl = raw.attributes.artwork.url.replace("{w}", "600").replace("{h}", "600");
+  const hqCoverUrl = raw.attributes.artwork.url.replace("{w}", "1200").replace("{h}", "1200");
 
-  // Fetch image data and video URLs in parallel
   const [blurData, dominantColor, videoData] = await Promise.all([
     getBlurFromRemoteSource(hqCoverUrl),
     getDominantColor(hqCoverUrl),
@@ -105,9 +92,6 @@ async function processTrack(raw: AppleMusicTrack): Promise<StoredTrack | null> {
   };
 }
 
-/**
- * Fetch video URLs for animated album artwork.
- */
 async function fetchVideoUrls(songId: string): Promise<{
   albumId: string | null;
   videoUrl: string | null;
@@ -116,10 +100,8 @@ async function fetchVideoUrls(songId: string): Promise<{
   try {
     const catalog = await getSongFromCatalog(songId);
     const albumId = catalog?.data?.[0]?.relationships?.albums?.data?.[0]?.id || null;
-    
-    if (!albumId) {
-      return { albumId: null, videoUrl: null, hqVideoUrl: null };
-    }
+
+    if (!albumId) return { albumId: null, videoUrl: null, hqVideoUrl: null };
 
     const details = await getAlbumFromCatalog(albumId);
     const video = details?.attributes?.editorialVideo;
@@ -137,127 +119,47 @@ async function fetchVideoUrls(songId: string): Promise<{
 }
 
 // =============================================================================
-// Public API
+// Helpers
 // =============================================================================
 
 /**
- * Check Apple Music for the latest track and update Redis if changed.
- * Returns { changed: boolean, track: string | null }
+ * Check if a track is currently playing based on startedAt time.
+ * Playing = started recently enough that it hasn't ended yet (with buffer).
  */
-export async function refreshNowPlaying(): Promise<{
-  changed: boolean;
-  track: string | null;
-  isPlaying: boolean;
-}> {
-  try {
-    // Fetch latest from Apple Music
-    const response = await getRecentTracks();
-    if (response.status === 204 || response.status > 400) {
-      return { changed: false, track: null, isPlaying: false };
-    }
-
-    const { data } = await response.json();
-    if (!data?.length) {
-      return { changed: false, track: null, isPlaying: false };
-    }
-
-    const latestTrack = data[0] as AppleMusicTrack;
-    const current = await getCurrent();
-
-    // Check if track changed
-    if (current?.id === latestTrack.id) {
-      // Same track - check if still playing
-      const elapsed = Date.now() - new Date(current.startedAt).getTime();
-      const isPlaying = elapsed < current.durationMs + 4 * 60 * 1000; // 4 min buffer
-      return { changed: false, track: current.name, isPlaying };
-    }
-
-    // Track changed - push old to history, set new as current
-    if (current) {
-      await pushToHistory(current);
-    }
-
-    const processed = await processTrack(latestTrack);
-    
-    // Skip tracks without album artwork
-    if (!processed) {
-      return { changed: false, track: null, isPlaying: false };
-    }
-    
-    await setCurrent(processed);
-
-    return { changed: true, track: processed.name, isPlaying: true };
-  } catch (error) {
-    // Network error or timeout - return cached state if available
-    console.error("Failed to refresh from Apple Music:", error);
-    const current = await getCurrent();
-    if (current) {
-      const elapsed = Date.now() - new Date(current.startedAt).getTime();
-      const isPlaying = elapsed < current.durationMs + 4 * 60 * 1000;
-      return { changed: false, track: current.name, isPlaying };
-    }
-    return { changed: false, track: null, isPlaying: false };
-  }
+function isTrackPlaying(track: StoredTrack): boolean {
+  const elapsed = Date.now() - new Date(track.startedAt).getTime();
+  return elapsed < track.durationMs + 4 * 60 * 1000; // 4 min buffer for pauses
 }
 
-/**
- * Get the current now-playing state for the API/frontend.
- */
-export async function getNowPlayingState(): Promise<NowPlayingState> {
-  const [current, history] = await Promise.all([getCurrent(), getHistory()]);
-
-  if (!current) {
-    return {
-      track: null,
-      isPlaying: false,
-      recentAlbums: historyToAlbums(history),
-      startedAt: null,
-    };
-  }
-
-  // Check if still playing
-  const elapsed = Date.now() - new Date(current.startedAt).getTime();
-  const isPlaying = elapsed < current.durationMs + 4 * 60 * 1000;
-
-  const track: Track = {
-    id: current.id,
-    name: current.name,
-    url: current.url,
-    artist: current.artist,
-    album: {
-      id: current.albumId || `album-${current.albumName.toLowerCase().replace(/\s+/g, "-")}`,
-      name: current.albumName,
-      url: current.url,
-      artist: current.artist,
-      coverUrl: current.coverUrl,
-      hqCoverUrl: current.hqCoverUrl,
-      videoUrl: current.videoUrl,
-      hqVideoUrl: current.hqVideoUrl,
-      previewUrl: current.previewUrl,
-    },
-    blurDataUrl: current.blurDataUrl,
-    previewUrl: current.previewUrl,
-    dominantColor: current.dominantColor,
-    durationMs: current.durationMs,
-  };
-
+function storedToTrack(stored: StoredTrack): Track {
   return {
-    track,
-    isPlaying,
-    recentAlbums: historyToAlbums(history),
-    startedAt: current.startedAt,
+    id: stored.id,
+    name: stored.name,
+    url: stored.url,
+    artist: stored.artist,
+    album: {
+      id: stored.albumId || `album-${stored.albumName.toLowerCase().replace(/\s+/g, "-")}`,
+      name: stored.albumName,
+      url: stored.url,
+      artist: stored.artist,
+      coverUrl: stored.coverUrl,
+      hqCoverUrl: stored.hqCoverUrl,
+      videoUrl: stored.videoUrl,
+      hqVideoUrl: stored.hqVideoUrl,
+      previewUrl: stored.previewUrl,
+    },
+    blurDataUrl: stored.blurDataUrl,
+    previewUrl: stored.previewUrl,
+    dominantColor: stored.dominantColor,
+    durationMs: stored.durationMs,
   };
 }
 
-/**
- * Convert history tracks to album format for display.
- * Deduplicates by album name.
- */
-function historyToAlbums(history: StoredTrack[]): Album[] {
+function historyToAlbums(history: StoredTrack[], skip: number = 0): Album[] {
   const seen = new Set<string>();
   const albums: Album[] = [];
 
-  for (const track of history) {
+  for (const track of history.slice(skip)) {
     if (seen.has(track.albumName)) continue;
     seen.add(track.albumName);
 
@@ -275,6 +177,115 @@ function historyToAlbums(history: StoredTrack[]): Album[] {
   }
 
   return albums;
+}
+
+// =============================================================================
+// Public API
+// =============================================================================
+
+/**
+ * Refresh from Apple Music and update the history stack.
+ * New tracks get pushed to the front. That's it.
+ */
+export async function refreshNowPlaying(): Promise<{
+  changed: boolean;
+  track: string | null;
+  isPlaying: boolean;
+}> {
+  try {
+    const response = await getRecentTracks();
+    if (response.status === 204 || response.status > 400) {
+      const history = await getHistory();
+      const head = history[0];
+      return {
+        changed: false,
+        track: head?.name ?? null,
+        isPlaying: head ? isTrackPlaying(head) : false,
+      };
+    }
+
+    const { data } = await response.json();
+    if (!data?.length) {
+      const history = await getHistory();
+      const head = history[0];
+      return {
+        changed: false,
+        track: head?.name ?? null,
+        isPlaying: head ? isTrackPlaying(head) : false,
+      };
+    }
+
+    const latestTrack = data[0] as AppleMusicTrack;
+    const history = await getHistory();
+    const head = history[0];
+
+    // Same track as head? No change needed.
+    if (head?.id === latestTrack.id) {
+      return {
+        changed: false,
+        track: head.name,
+        isPlaying: isTrackPlaying(head),
+      };
+    }
+
+    // New track - process and push to history
+    const processed = await processTrack(latestTrack);
+    if (!processed) {
+      return {
+        changed: false,
+        track: head?.name ?? null,
+        isPlaying: head ? isTrackPlaying(head) : false,
+      };
+    }
+
+    await pushTrack(processed);
+    return { changed: true, track: processed.name, isPlaying: true };
+  } catch (error) {
+    console.error("Failed to refresh from Apple Music:", error);
+    const history = await getHistory();
+    const head = history[0];
+    return {
+      changed: false,
+      track: head?.name ?? null,
+      isPlaying: head ? isTrackPlaying(head) : false,
+    };
+  }
+}
+
+/**
+ * Get the current now-playing state.
+ * 
+ * - track: history[0] if it's fresh (playing), otherwise null
+ * - isPlaying: whether history[0] is still playing
+ * - recentAlbums: the rest of history (or all of it if not playing)
+ */
+export async function getNowPlayingState(): Promise<NowPlayingState> {
+  const history = await getHistory();
+
+  if (!history.length) {
+    return { track: null, isPlaying: false, recentAlbums: [], startedAt: null };
+  }
+
+  const head = history[0];
+  const isPlaying = isTrackPlaying(head);
+
+  if (isPlaying) {
+    // Currently playing - head is the track, rest is recentAlbums
+    return {
+      track: storedToTrack(head),
+      isPlaying: true,
+      recentAlbums: historyToAlbums(history, 1), // skip head
+      startedAt: head.startedAt,
+    };
+  }
+
+  // Not playing - no current track, all history is recentAlbums
+  return {
+    track: null,
+    isPlaying: false,
+    recentAlbums: historyToAlbums(history, 0),
+    startedAt: null,
+  };
 }
 
 // Legacy export for page.tsx
