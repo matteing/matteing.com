@@ -250,6 +250,17 @@
     border-left: 2px solid transparent;
   }
 
+  /* Single-line code blocks: word wrap with even padding */
+  pre code:has(> [data-line]:only-child) {
+    display: block;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  pre code > [data-line]:only-child {
+    border-left: none;
+  }
+
   /* Highlighted lines - accent color touch */
   pre [data-highlighted-line] {
     background-color: color-mix(in srgb, var(--accent) 8%, transparent);
