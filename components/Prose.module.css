@@ -246,8 +246,7 @@
 
   /* Line styling */
   pre [data-line] {
-    padding: 0 1em;
-    border-left: 2px solid transparent;
+    padding: 0;
   }
 
   /* Single-line code blocks: word wrap with even padding */
