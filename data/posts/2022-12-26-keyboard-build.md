@@ -11,8 +11,6 @@ After so many years with my prebuilt Cherry MX Blue keyboard, I caved in. I've b
 
 ![](/assets/_Archived/_DSC06776-2.jpeg)
 
-Thanks to my girlfriend Nicole for deepening my casual interest in mechanical keyboard modding.
-
 Here's the specs.
 
 - Drop Alt keyboard
