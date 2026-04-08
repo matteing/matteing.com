@@ -10,6 +10,9 @@ import { getNowPlayingState } from "@/lib/apple-music/now-playing";
 
 export const metadata = {
   title: "Sergio Mattei",
+  robots: {
+    noimageindex: true,
+  },
 };
 
 export default async function Home() {
