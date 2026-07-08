@@ -2,7 +2,14 @@ import { ExperienceItem } from "./types";
 
 export const workItems: ExperienceItem[] = [
 	{
-		date: "2024 — Now",
+		date: "2026 — Now",
+		title: "Member of Technical Staff",
+		subtitle: "OpenAI",
+		url: "https://openai.com/",
+		description: "Building joyful experiences at Codex.",
+	},
+	{
+		date: "2024 — 2026",
 		title: "Software Engineer",
 		subtitle: "Microsoft",
 		url: "https://microsoft.com/",
