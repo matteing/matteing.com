@@ -1,5 +1,4 @@
-import { AM_USER_TOKEN } from "../config";
-import { getDeveloperToken } from "./auth";
+import { AM_DEV_TOKEN, AM_USER_TOKEN } from "../config";
 import { getAppleWebToken } from "./web-token";
 import type {
   RecentTracksResult,
@@ -16,12 +15,11 @@ const REQUEST_TIMEOUT_MS = 10_000;
  * @returns Headers object with Bearer token and Music-User-Token, or null if tokens are missing
  */
 const getHeaders = (): HeadersInit | null => {
-  const developerToken = getDeveloperToken();
-  if (!AM_USER_TOKEN || !developerToken) {
+  if (!AM_USER_TOKEN || !AM_DEV_TOKEN) {
     return null;
   }
   return {
-    Authorization: `Bearer ${developerToken}`,
+    Authorization: `Bearer ${AM_DEV_TOKEN}`,
     "Music-User-Token": AM_USER_TOKEN,
   };
 };
@@ -29,13 +27,13 @@ const getHeaders = (): HeadersInit | null => {
 /**
  * Fetches the user's recently played tracks from Apple Music.
  *
- * @returns A fetch Response promise, or a mocked 204 response if auth is unavailable
+ * @returns The Apple Music response
  */
 export const getRecentTracks = async (): Promise<RecentTracksResult> => {
   const headers = getHeaders();
   if (!headers) {
     throw new Error(
-      "Apple Music authentication is unavailable. Configure AM_USER_TOKEN and either a valid AM_DEV_TOKEN or AM_TEAM_ID, AM_KEY_ID, and AM_PRIVATE_KEY."
+      "Apple Music authentication is unavailable. Configure AM_DEV_TOKEN and AM_USER_TOKEN."
     );
   }
   return fetch(RECENT_TRACKS_ENDPOINT, {
