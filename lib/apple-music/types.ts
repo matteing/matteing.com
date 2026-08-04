@@ -87,18 +87,8 @@ export interface HLSStream {
   url: string;
 }
 
-/**
- * A mocked response used when authentication is unavailable.
- */
-export interface MockedResponse {
-  status: number;
-  json: () => Promise<Record<string, never>>;
-}
-
-/**
- * Union type for the return value of getRecentTracks.
- */
-export type RecentTracksResult = Response | MockedResponse;
+/** Response returned by the recently played tracks request. */
+export type RecentTracksResult = Response;
 
 // =============================================================================
 // Raw Apple Music API Types

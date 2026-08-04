@@ -194,14 +194,8 @@ export async function refreshNowPlaying(): Promise<{
 }> {
   try {
     const response = await getRecentTracks();
-    if (response.status === 204 || response.status > 400) {
-      const history = await getHistory();
-      const head = history[0];
-      return {
-        changed: false,
-        track: head?.name ?? null,
-        isPlaying: head ? isTrackPlaying(head) : false,
-      };
+    if (!response.ok) {
+      throw new Error(`Apple Music recent tracks returned ${response.status}`);
     }
 
     const { data } = await response.json();
