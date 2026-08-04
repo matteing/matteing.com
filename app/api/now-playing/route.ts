@@ -18,8 +18,8 @@ export async function GET() {
 
     return NextResponse.json(state, {
       headers: {
-        // Cache for 60 seconds, serve stale for 120s while revalidating
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=120",
+        // The browser uses SWR; shared caching here can hide track changes across requests.
+        "Cache-Control": "public, s-maxage=15, stale-while-revalidate=30",
       },
     });
   } catch (error) {

@@ -1,15 +1,14 @@
-import { AM_USER_TOKEN, AM_DEV_TOKEN } from "../config";
+import { AM_USER_TOKEN } from "../config";
+import { getDeveloperToken } from "./auth";
+import { getAppleWebToken } from "./web-token";
 import type {
   RecentTracksResult,
-  MockedResponse,
   CatalogSongResponse,
   AppleMusicAlbum,
 } from "./types";
 
-const user_token = AM_USER_TOKEN;
-const dev_token = AM_DEV_TOKEN;
-
 const RECENT_TRACKS_ENDPOINT = `https://api.music.apple.com/v1/me/recent/played/tracks?limit=10`;
+const REQUEST_TIMEOUT_MS = 10_000;
 
 /**
  * Builds the authentication headers required for Apple Music API requests.
@@ -17,12 +16,13 @@ const RECENT_TRACKS_ENDPOINT = `https://api.music.apple.com/v1/me/recent/played/
  * @returns Headers object with Bearer token and Music-User-Token, or null if tokens are missing
  */
 const getHeaders = (): HeadersInit | null => {
-  if (!user_token || !dev_token) {
+  const developerToken = getDeveloperToken();
+  if (!AM_USER_TOKEN || !developerToken) {
     return null;
   }
   return {
-    Authorization: `Bearer ${dev_token}`,
-    "Music-User-Token": user_token,
+    Authorization: `Bearer ${developerToken}`,
+    "Music-User-Token": AM_USER_TOKEN,
   };
 };
 
@@ -34,16 +34,15 @@ const getHeaders = (): HeadersInit | null => {
 export const getRecentTracks = async (): Promise<RecentTracksResult> => {
   const headers = getHeaders();
   if (!headers) {
-    // Return a mocked response that will result in "not playing"
-    const mockedResponse: MockedResponse = {
-      status: 204,
-      json: async () => ({}),
-    };
-    return mockedResponse;
+    throw new Error(
+      "Apple Music authentication is unavailable. Configure AM_USER_TOKEN and either a valid AM_DEV_TOKEN or AM_TEAM_ID, AM_KEY_ID, and AM_PRIVATE_KEY."
+    );
   }
   return fetch(RECENT_TRACKS_ENDPOINT, {
     method: "GET",
     headers,
+    cache: "no-store",
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
   });
 };
 
@@ -69,6 +68,8 @@ export const getSongFromCatalog = async (
     const response = await fetch(url, {
       method: "GET",
       headers,
+      cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
     if (!response.ok) return null;
@@ -83,10 +84,8 @@ export const getSongFromCatalog = async (
 /**
  * Fetches album data from Apple Music catalog including animated artwork (editorialVideo).
  *
- * This function uses a reverse-engineered approach to access Apple's internal AMP API:
- * 1. Scrapes the Apple Music web player to find the JS bundle
- * 2. Extracts the embedded JWT web token from the bundle
- * 3. Uses that token to call the amp-api endpoint with editorialVideo extension
+ * This function uses a cached web-player token to access Apple's internal AMP API.
+ * The public developer token does not expose the editorialVideo extension.
  *
  * Note: This is a workaround because the official Apple Music API developer token
  * does not provide access to editorialVideo data - only the web player token does.
@@ -100,35 +99,13 @@ export const getAlbumFromCatalog = async (
   storefront: string = "us"
 ): Promise<AppleMusicAlbum | null> => {
   try {
-    // Step 1: Fetch the Apple Music web player HTML to find the JS bundle path
-    const webTokenResponse = await fetch(
-      "https://music.apple.com/us/album/1693323844"
-    );
-    const html = await webTokenResponse.text();
-
-    // Step 2: Extract the JS bundle path from the HTML (matches pattern like /assets/index-xxx.js)
-    const jsPathMatch = html.match(
-      /crossorigin src="(\/assets\/index[^"]+\.js)"/
-    );
-    if (!jsPathMatch) {
-      console.log("Could not find JS bundle path");
+    const webToken = await getAppleWebToken();
+    if (!webToken) {
+      console.log("Could not discover Apple Music web token");
       return null;
     }
 
-    // Step 3: Fetch the JS bundle and extract the embedded JWT token
-    // The token starts with "eyJhbGc" (base64 for {"alg) which is the JWT header
-    const jsResponse = await fetch(`https://music.apple.com${jsPathMatch[1]}`);
-    const jsText = await jsResponse.text();
-    const tokenMatch = jsText.match(/(eyJhbGc[^"]+)/);
-
-    if (!tokenMatch) {
-      console.log("Could not extract web token");
-      return null;
-    }
-
-    const webToken = tokenMatch[1];
-
-    // Step 4: Call the internal AMP API with the web token to get editorialVideo data
+    // Call the internal AMP API with the web token to get editorialVideo data.
     const url = `https://amp-api.music.apple.com/v1/catalog/${storefront}/albums/${albumId}?extend=editorialVideo`;
 
     const response = await fetch(url, {
@@ -137,6 +114,8 @@ export const getAlbumFromCatalog = async (
         Authorization: `Bearer ${webToken}`,
         origin: "https://music.apple.com",
       },
+      cache: "no-store",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
 
     if (!response.ok) {
