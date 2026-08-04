@@ -21,7 +21,5 @@ This website is built using the following technologies:
 
 ## Apple Music configuration
 
-The now-playing endpoint requires `AM_USER_TOKEN`. For developer authentication,
-configure `AM_TEAM_ID`, `AM_KEY_ID`, and `AM_PRIVATE_KEY`; the app generates and
-rotates the short-lived developer JWT automatically. `AM_DEV_TOKEN` remains
-supported as a fallback for local development, but it must not be expired.
+The now-playing endpoint requires valid `AM_DEV_TOKEN` and `AM_USER_TOKEN`
+environment variables.
