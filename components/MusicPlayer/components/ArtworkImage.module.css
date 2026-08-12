@@ -1,0 +1,38 @@
+.container {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  background: color-mix(in srgb, currentColor 9%, transparent);
+}
+
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  line-height: 1;
+  background:
+    radial-gradient(
+      circle at 28% 22%,
+      color-mix(in srgb, currentColor 12%, transparent),
+      transparent 48%
+    ),
+    color-mix(in srgb, currentColor 7%, transparent);
+}
+
+.image {
+  opacity: 0;
+  transition: opacity 180ms ease-in-out;
+}
+
+.container[data-image-state="loaded"] .image {
+  opacity: 1;
+}
+
+.container[data-image-state="loaded"] .fallback {
+  visibility: hidden;
+}

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ArtworkImage } from "./ArtworkImage";
 import styles from "./RecentlyPlayed.module.css";
 
 interface Album {
@@ -20,6 +20,21 @@ interface RecentlyPlayedProps {
   textColor: string;
 }
 
+function AlbumCover({ album }: { album: Album }) {
+  return (
+    <ArtworkImage
+      src={album.coverUrl}
+      alt={album.name}
+      width={48}
+      height={48}
+      containerClassName={styles.albumCoverFrame}
+      imageClassName={styles.albumCover}
+      fallbackClassName={styles.albumCoverFallback}
+      fallback={<span aria-hidden="true">♫</span>}
+    />
+  );
+}
+
 /**
  * Grid of recently played albums shown below the current track.
  */
@@ -34,7 +49,10 @@ export function RecentlyPlayed({
   return (
     <div
       className={styles.container}
-      style={{ backgroundColor: backgroundColor || undefined, color: textColor }}
+      style={{
+        backgroundColor: backgroundColor || undefined,
+        color: textColor,
+      }}
     >
       <h4 className={styles.title}>Recently played</h4>
       <div className={styles.grid}>
@@ -46,13 +64,7 @@ export function RecentlyPlayed({
             rel="noopener noreferrer"
             className={styles.albumItem}
           >
-            <Image
-              src={album.coverUrl}
-              alt={album.name}
-              width={48}
-              height={48}
-              className={styles.albumCover}
-            />
+            <AlbumCover album={album} />
             <div className={styles.albumInfo}>
               <p className={styles.albumName}>{album.name}</p>
               <p className={styles.albumArtist}>{album.artist}</p>
@@ -82,13 +94,7 @@ export function RecentlyPlayedExpanded({ albums }: { albums: Album[] }) {
             rel="noopener noreferrer"
             className={styles.albumItem}
           >
-            <Image
-              src={album.coverUrl}
-              alt={album.name}
-              width={48}
-              height={48}
-              className={styles.albumCover}
-            />
+            <AlbumCover album={album} />
             <div className={styles.albumInfo}>
               <p className={styles.albumName}>{album.name}</p>
               <p className={styles.albumArtist}>{album.artist}</p>
