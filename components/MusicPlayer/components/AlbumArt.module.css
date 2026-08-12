@@ -8,12 +8,37 @@
   @apply absolute inset-0;
 }
 
+.imageFrame {
+  @apply absolute inset-0 h-full w-full;
+}
+
 .image {
   @apply object-cover;
 }
 
+.imageFallback {
+  font-size: 3rem;
+  background:
+    radial-gradient(
+      circle at 28% 22%,
+      color-mix(in srgb, currentColor 13%, transparent),
+      transparent 48%
+    ),
+    color-mix(in srgb, currentColor 9%, transparent);
+}
+
+.imageFallback span {
+  opacity: 0.38;
+}
+
 .video {
   @apply absolute inset-0 h-full w-full object-cover;
+  opacity: 0;
+  transition: opacity 180ms ease-in-out;
+}
+
+.video[data-video-state="ready"] {
+  opacity: 1;
 }
 
 .gradient {

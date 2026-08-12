@@ -16,8 +16,20 @@
   @apply flex items-center gap-3;
 }
 
+.albumCoverFrame {
+  @apply h-12 w-12 shrink-0 rounded-md;
+}
+
 .albumCover {
-  @apply rounded-md;
+  @apply object-cover;
+}
+
+.albumCoverFallback {
+  @apply text-lg;
+}
+
+.albumCoverFallback span {
+  opacity: 0.42;
 }
 
 .albumInfo {

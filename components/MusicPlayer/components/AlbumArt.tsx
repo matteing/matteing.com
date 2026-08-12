@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ArtworkImage } from "./ArtworkImage";
 import type { Album } from "@/lib/apple-music/types";
 import styles from "./AlbumArt.module.css";
 
@@ -19,6 +19,13 @@ interface AlbumArtProps {
  */
 export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoKey = `${album.id}:${album.videoUrl ?? ""}`;
+  const [videoState, setVideoState] = useState<{
+    key: string;
+    value: "loading" | "ready" | "error";
+  }>({ key: videoKey, value: "loading" });
+  const currentVideoState =
+    videoState.key === videoKey ? videoState.value : "loading";
 
   // Nudge iOS Safari to autoplay inline motion artwork
   useEffect(() => {
@@ -36,7 +43,7 @@ export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
         // Ignore autoplay rejections; iOS may require a second attempt after user gesture
       });
     }
-  }, [album.id]);
+  }, [videoKey]);
 
   return (
     <a
@@ -55,16 +62,21 @@ export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4, ease: "easeInOut" }}
         >
-          <Image
-            src={album.hqCoverUrl}
+          <ArtworkImage
+            src={album.hqCoverUrl || album.coverUrl}
             alt={album.name}
-            className={styles.image}
+            containerClassName={styles.imageFrame}
+            imageClassName={styles.image}
+            fallbackClassName={styles.imageFallback}
+            fallback={<span aria-hidden="true">♫</span>}
             fill
+            sizes="(max-width: 639px) 100vw, 312px"
           />
 
           {/* Animated video overlay (Apple Music motion artwork) */}
-          {album.videoUrl && (
+          {album.videoUrl && currentVideoState !== "error" && (
             <video
+              key={album.videoUrl}
               ref={videoRef}
               src={album.videoUrl}
               autoPlay
@@ -76,6 +88,13 @@ export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
               disableRemotePlayback
               preload="auto"
               className={styles.video}
+              data-video-state={currentVideoState}
+              onCanPlay={() =>
+                setVideoState({ key: videoKey, value: "ready" })
+              }
+              onError={() =>
+                setVideoState({ key: videoKey, value: "error" })
+              }
             />
           )}
         </motion.div>
