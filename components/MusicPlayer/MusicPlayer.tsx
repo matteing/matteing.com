@@ -10,7 +10,6 @@ import type {
 } from "@/lib/apple-music/types";
 import {
 	POLL_INTERVAL_MS,
-	RECENT_FRESH_MS,
 	RECENT_MAX_AGE_MS,
 } from "@/lib/apple-music/shared.mjs";
 import { SoundBars } from "./components/SoundBars";
@@ -95,8 +94,6 @@ export default function MusicPlayer() {
 	const recentUsable =
 		!!recent && !recent.unavailable && recentAge < RECENT_MAX_AGE_MS;
 	const albums = recentUsable ? recent.albums : [];
-	const recentStale =
-		recentUsable && (recent.stale || recentAge >= RECENT_FRESH_MS);
 	const recentStatus =
 		!history.data && !history.error
 			? "Fetching some tunes..."
@@ -164,11 +161,6 @@ export default function MusicPlayer() {
 				>
 					{recentStatus}
 				</div>
-			)}
-			{recentStale && (
-				<p className="px-4 py-2 text-xs text-gray-500" role="status">
-					Recently played is temporarily out of date.
-				</p>
 			)}
 		</motion.div>
 	);
