@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
 import { unstable_cache } from "next/cache";
-import { getAlbumFromCatalog } from "@/lib/apple-music/api";
+import { getAlbumFromCatalog, getCatalogAlbumId } from "@/lib/apple-music/api";
 import { getVideoUrlFromM3u8 } from "@/lib/apple-music/m3u8";
-import { appleUrl } from "@/lib/apple-music/normalize";
+import { appleUrl, catalogId } from "@/lib/apple-music/normalize";
 import { getDominantColor } from "@/lib/images";
 import type { ArtworkDetails, VideoUrls } from "@/lib/apple-music/types";
 
 export const dynamic = "force-dynamic";
+
+const getSongAlbum = unstable_cache(
+	getCatalogAlbumId,
+	["music:song-album:v1"],
+	{ revalidate: 86400 },
+);
 
 const getAnimatedArtwork = unstable_cache(
 	async (albumId: string): Promise<VideoUrls> => {
@@ -39,12 +45,16 @@ const getArtworkColor = unstable_cache(
 /** Optional decoration, requested independently after the live card is visible. */
 export async function GET(request: Request) {
 	const params = new URL(request.url).searchParams;
-	const albumId = params.get("albumId");
+	const rawAlbumId = params.get("albumId");
+	const albumId = catalogId(rawAlbumId);
+	const rawSongId = params.get("songId");
+	const songId = catalogId(rawSongId);
 	const rawCoverUrl = params.get("coverUrl");
 	const coverUrl = appleUrl(rawCoverUrl, true);
 	if (
-		(!albumId && !coverUrl) ||
-		(albumId !== null && !/^\d{1,20}$/.test(albumId)) ||
+		(!albumId && !songId && !coverUrl) ||
+		(rawAlbumId !== null && !albumId) ||
+		(rawSongId !== null && !songId) ||
 		(rawCoverUrl !== null && !coverUrl)
 	) {
 		return NextResponse.json(
@@ -53,7 +63,11 @@ export async function GET(request: Request) {
 		);
 	}
 	const [video, color] = await Promise.allSettled([
-		albumId ? getAnimatedArtwork(albumId) : Promise.resolve(null),
+		albumId
+			? getAnimatedArtwork(albumId)
+			: songId
+				? getSongAlbum(songId).then(getAnimatedArtwork)
+				: Promise.resolve(null),
 		coverUrl ? getArtworkColor(coverUrl) : Promise.resolve(null),
 	]);
 	const details: ArtworkDetails = {
@@ -65,9 +79,10 @@ export async function GET(request: Request) {
 		dominantColor: color.status === "fulfilled" ? color.value : null,
 	};
 	const succeeded =
-		(albumId && video.status === "fulfilled") ||
+		((albumId || songId) && video.status === "fulfilled") ||
 		(coverUrl && color.status === "fulfilled");
 	const failed = video.status === "rejected" || color.status === "rejected";
+	if (failed) details.retryable = true;
 	return NextResponse.json(details, {
 		status: succeeded ? 200 : 503,
 		headers: {

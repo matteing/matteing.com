@@ -7,6 +7,7 @@ import { getDominantColor } from "../lib/images.ts";
 const require = createRequire(import.meta.url);
 const routeUrl = new URL("../app/api/music/artwork/route.ts", import.meta.url)
 	.href;
+const apiUrl = new URL("../lib/apple-music/api.ts", import.meta.url).href;
 const modules = {
 	"next/cache": `export function unstable_cache(callback, keys) {
 		return async (...args) => {
@@ -18,7 +19,7 @@ const modules = {
 		};
 	}`,
 	"@/lib/apple-music/api":
-		"export function getAlbumFromCatalog(id) { return globalThis.artworkAlbum(id); }",
+		"export function getAlbumFromCatalog(id) { return globalThis.artworkAlbum(id); } export function getCatalogAlbumId(id) { return globalThis.artworkSongAlbum(id); }",
 	"@/lib/apple-music/m3u8":
 		"export function getVideoUrlFromM3u8(url) { return globalThis.artworkVideo(url); }",
 	"@/lib/images":
@@ -26,6 +27,26 @@ const modules = {
 };
 registerHooks({
 	resolve(specifier, context, nextResolve) {
+		if (context.parentURL === apiUrl) {
+			if (specifier === "../config")
+				return {
+					url: "data:text/javascript,export const AM_DEV_TOKEN='artwork-test-developer-token'; export const AM_USER_TOKEN=undefined;",
+					shortCircuit: true,
+				};
+			if (specifier === "./web-token")
+				return {
+					url: "data:text/javascript,export function getAppleWebToken(){ throw new Error('Catalog song resolution must not request a web token'); }",
+					shortCircuit: true,
+				};
+			if (specifier === "./normalize")
+				return {
+					url: new URL(
+						"../lib/apple-music/normalize.ts",
+						import.meta.url,
+					).href,
+					shortCircuit: true,
+				};
+		}
 		if (context.parentURL === routeUrl) {
 			if (specifier in modules)
 				return {
@@ -51,6 +72,7 @@ registerHooks({
 	},
 });
 const { GET } = await import(routeUrl);
+const { getCatalogAlbumId } = await import(apiUrl);
 const coverUrl = "https://is1-ssl.mzstatic.com/image/1200x1200bb.jpg";
 const request = (params = {}) =>
 	new Request(
@@ -60,6 +82,7 @@ const request = (params = {}) =>
 test.beforeEach(() => {
 	globalThis.artworkCache = new Map();
 	globalThis.artworkAlbum = async () => ({ attributes: {} });
+	globalThis.artworkSongAlbum = async () => "1692805050";
 	globalThis.artworkVideo = async () => ({
 		standard: "video.mp4",
 		hq: "hq.mp4",
@@ -70,6 +93,7 @@ test.afterEach(() => {
 	for (const key of [
 		"artworkCache",
 		"artworkAlbum",
+		"artworkSongAlbum",
 		"artworkVideo",
 		"artworkColor",
 	])
@@ -86,10 +110,17 @@ test("artwork enrichment validates Apple covers and optional numeric album IDs b
 		fetched = true;
 		return { attributes: {} };
 	};
+	globalThis.artworkSongAlbum = async () => {
+		fetched = true;
+		return "1692805050";
+	};
 	for (const params of [
 		{},
 		{ coverUrl: "" },
 		{ albumId: "library-id", coverUrl },
+		{ songId: "i.library", coverUrl },
+		{ songId: "" },
+		{ songId: "1".repeat(21), coverUrl },
 		{ coverUrl: "http://is1-ssl.mzstatic.com/image.jpg" },
 		{ coverUrl: "https://mzstatic.com.evil.test/image.jpg" },
 		{ coverUrl: "https://user:password@is1-ssl.mzstatic.com/image.jpg" },
@@ -113,6 +144,145 @@ test("cover-only enrichment restores color for library albums without catalog ID
 	assert.match(response.headers.get("Cache-Control"), /s-maxage=86400/);
 });
 
+test("catalog song enrichment resolves a library track to animated album artwork and caches the mapping", async () => {
+	let lookups = 0;
+	globalThis.artworkSongAlbum = async (songId) => {
+		assert.equal(songId, "1692805053");
+		lookups += 1;
+		return "1692805050";
+	};
+	globalThis.artworkAlbum = async (albumId) => {
+		assert.equal(albumId, "1692805050");
+		return {
+			attributes: {
+				editorialVideo: {
+					motionSquareVideo1x1: { video: "manifest.m3u8" },
+				},
+			},
+		};
+	};
+	const response = await GET(request({ songId: "1692805053", coverUrl }));
+	assert.equal(response.status, 200);
+	assert.deepEqual(await response.json(), {
+		standard: "video.mp4",
+		hq: "hq.mp4",
+		dominantColor: "rgb(37, 83, 129)",
+	});
+	assert.equal((await GET(request({ songId: "1692805053" }))).status, 200);
+	assert.equal(lookups, 1);
+});
+
+test("numeric album ID bypasses unnecessary catalog song resolution", async () => {
+	globalThis.artworkSongAlbum = async () => {
+		throw new Error("Must not resolve song");
+	};
+	const response = await GET(
+		request({ albumId: "123", songId: "1692805053" }),
+	);
+	assert.equal(response.status, 200);
+	assert.deepEqual(await response.json(), {
+		standard: null,
+		hq: null,
+		dominantColor: null,
+	});
+});
+
+test("failed catalog mappings preserve color and are retried instead of cached as absent video", async () => {
+	let attempts = 0;
+	globalThis.artworkSongAlbum = async () => {
+		if (++attempts === 1) throw new Error("Temporary catalog failure");
+		return "1692805050";
+	};
+	globalThis.artworkAlbum = async () => ({
+		attributes: {
+			editorialVideo: {
+				motionSquareVideo1x1: { video: "manifest.m3u8" },
+			},
+		},
+	});
+	const first = await GET(request({ songId: "1692805053", coverUrl }));
+	assert.equal(first.status, 200);
+	assert.equal(first.headers.get("Cache-Control"), "no-store");
+	assert.deepEqual(await first.json(), {
+		standard: null,
+		hq: null,
+		dominantColor: "rgb(37, 83, 129)",
+		retryable: true,
+	});
+	const recovered = await GET(request({ songId: "1692805053", coverUrl }));
+	assert.equal((await recovered.json()).standard, "video.mp4");
+	assert.equal(attempts, 2);
+});
+
+test("catalog song lookup uses only the developer token and requires a matching song with a catalog album", async (t) => {
+	t.mock.method(globalThis, "fetch", async (url, options) => {
+		assert.equal(
+			url,
+			"https://api.music.apple.com/v1/catalog/us/songs/1692805053?include=albums",
+		);
+		assert.deepEqual(options.headers, {
+			Authorization: "Bearer artwork-test-developer-token",
+		});
+		assert.equal(options.redirect, "error");
+		assert.ok(options.signal instanceof AbortSignal);
+		return Response.json({
+			data: [
+				{
+					id: "1692805053",
+					type: "songs",
+					relationships: {
+						albums: {
+							data: [
+								{ type: "library-albums", id: "l.baO44Q9" },
+								{ type: "albums", id: "1692805050" },
+							],
+						},
+					},
+				},
+			],
+		});
+	});
+	assert.equal(await getCatalogAlbumId("1692805053"), "1692805050");
+	await assert.rejects(
+		getCatalogAlbumId("i.library"),
+		/Invalid catalog song ID/,
+	);
+});
+
+test("unsuccessful or missing catalog song mappings remain retryable failures", async (t) => {
+	const fetch = t.mock.method(globalThis, "fetch");
+	for (const response of [
+		new Response(null, { status: 503 }),
+		Response.json({ data: [] }),
+		Response.json({
+			data: [
+				{
+					id: "1692805053",
+					type: "songs",
+					relationships: { albums: { data: [] } },
+				},
+			],
+		}),
+		Response.json({
+			data: [
+				{
+					id: "different",
+					type: "songs",
+					relationships: {
+						albums: { data: [{ id: "123", type: "albums" }] },
+					},
+				},
+			],
+		}),
+	]) {
+		fetch.mock.mockImplementation(async () => response);
+		await assert.rejects(
+			getCatalogAlbumId("1692805053"),
+			/Catalog (song|album) unavailable/,
+		);
+	}
+});
+
 test("a video failure preserves the independently cached color and retries video", async () => {
 	let albumCalls = 0;
 	let colorCalls = 0;
@@ -127,7 +297,9 @@ test("a video failure preserves the independently cached color and retries video
 	const first = await GET(request({ albumId: "123", coverUrl }));
 	assert.equal(first.status, 200);
 	assert.equal(first.headers.get("Cache-Control"), "no-store");
-	assert.equal((await first.json()).dominantColor, "rgb(37, 83, 129)");
+	const partial = await first.json();
+	assert.equal(partial.dominantColor, "rgb(37, 83, 129)");
+	assert.equal(partial.retryable, true);
 	const recovered = await GET(request({ albumId: "123", coverUrl }));
 	assert.equal(recovered.status, 200);
 	assert.match(recovered.headers.get("Cache-Control"), /s-maxage=86400/);
@@ -157,6 +329,7 @@ test("transient color failure does not cache an absent color or discard successf
 		standard: "video.mp4",
 		hq: "hq.mp4",
 		dominantColor: null,
+		retryable: true,
 	});
 	const second = await GET(request({ albumId: "123", coverUrl }));
 	assert.equal((await second.json()).dominantColor, "rgb(37, 83, 129)");
@@ -169,6 +342,7 @@ test("total enrichment failures are retryable without caching", async () => {
 	const response = await GET(request({ coverUrl }));
 	assert.equal(response.status, 503);
 	assert.equal(response.headers.get("Cache-Control"), "no-store");
+	assert.equal((await response.json()).retryable, true);
 });
 
 test("dominant color retains the original image-derived RGB algorithm with bounded safe fetch", async (t) => {

@@ -35,6 +35,8 @@ export interface Album extends Entity {
  * Track data formatted for display.
  */
 export interface Track extends Entity {
+	/** Catalog song ID for optional artwork lookup, including library songs. */
+	catalogSongId?: string;
 	artist: string;
 	album: Album;
 	blurDataUrl: string;
@@ -80,6 +82,8 @@ export interface VideoUrls {
 /** Optional artwork decoration loaded independently of playback updates. */
 export interface ArtworkDetails extends VideoUrls {
 	dominantColor: string | null;
+	/** One requested decoration failed temporarily and should be retried. */
+	retryable?: boolean;
 }
 
 /**

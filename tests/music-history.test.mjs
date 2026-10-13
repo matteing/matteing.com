@@ -88,6 +88,66 @@ test("library tracks survive missing artwork, album name, URL, and duration", ()
 	assert.equal(track.url, "");
 });
 
+test("normalization preserves catalog song identities without changing library track or album IDs", () => {
+	assert.equal(
+		normalizeTrack(song("1692805053")).catalogSongId,
+		"1692805053",
+	);
+	const track = normalizeTrack({
+		...song("i.XMDoPDPH2Mbk0A", {
+			name: "fetish",
+			albumName: "KLEPTO - EP",
+			playParams: { catalogId: "1692805053" },
+		}),
+		type: "library-songs",
+		relationships: {
+			albums: { data: [{ id: "l.baO44Q9", type: "library-albums" }] },
+		},
+	});
+	assert.equal(track.id, "i.XMDoPDPH2Mbk0A");
+	assert.equal(track.album.id, "l.baO44Q9");
+	assert.equal(track.catalogSongId, "1692805053");
+});
+
+test("catalog relationship fallback accepts only numeric song IDs", () => {
+	const librarySong = { ...song("i.library"), type: "library-songs" };
+	assert.equal(
+		normalizeTrack({
+			...librarySong,
+			relationships: {
+				catalog: {
+					data: [
+						{ id: "123", type: "albums" },
+						{ id: "invalid", type: "songs" },
+						{ id: "1692805053", type: "songs" },
+					],
+				},
+			},
+		}).catalogSongId,
+		"1692805053",
+	);
+	for (const id of [
+		"",
+		"i.library",
+		"-1",
+		"1/../../albums",
+		"1".repeat(21),
+		123,
+	]) {
+		assert.equal(
+			normalizeTrack({
+				...librarySong,
+				attributes: {
+					...librarySong.attributes,
+					playParams: { catalogId: id },
+				},
+				relationships: { catalog: { data: [{ id, type: "songs" }] } },
+			}).catalogSongId,
+			undefined,
+		);
+	}
+});
+
 test("normalization allows only safe Apple URLs and validated artwork colors", () => {
 	const track = normalizeTrack(
 		song("a", {

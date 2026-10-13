@@ -2,6 +2,7 @@ import { AM_DEV_TOKEN, AM_USER_TOKEN } from "../config";
 import { getAppleWebToken } from "./web-token";
 import type { AppleMusicAlbum } from "./types";
 import { RECENT_TRACKS_URL, REQUEST_TIMEOUT_MS } from "./shared.mjs";
+import { catalogId } from "./normalize";
 
 /**
  * Builds the authentication headers required for Apple Music API requests.
@@ -37,6 +38,36 @@ export const getRecentTracks = async (): Promise<Response> => {
 		signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
 	});
 };
+
+/** Resolve artwork through a catalog song without accessing the user's library. */
+export async function getCatalogAlbumId(songId: string): Promise<string> {
+	if (!catalogId(songId)) throw new Error("Invalid catalog song ID");
+	if (!AM_DEV_TOKEN)
+		throw new Error("Apple Music developer token unavailable");
+	const response = await fetch(
+		`https://api.music.apple.com/v1/catalog/us/songs/${songId}?include=albums`,
+		{
+			headers: { Authorization: `Bearer ${AM_DEV_TOKEN}` },
+			cache: "no-store",
+			redirect: "error",
+			signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+		},
+	);
+	if (!response.ok) throw new Error("Catalog song unavailable");
+	const data = await response.json();
+	const song = data?.data?.[0];
+	const albumId =
+		song?.type === "songs" && song.id === songId
+			? catalogId(
+					song.relationships?.albums?.data?.find(
+						(album: { type?: unknown; id?: unknown } | null) =>
+							album?.type === "albums" && catalogId(album.id),
+					)?.id,
+				)
+			: null;
+	if (!albumId) throw new Error("Catalog album unavailable");
+	return albumId;
+}
 
 /**
  * Fetches album data from Apple Music catalog including animated artwork (editorialVideo).

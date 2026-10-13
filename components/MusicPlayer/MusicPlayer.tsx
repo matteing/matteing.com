@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import useSWR from "swr";
 import { motion } from "motion/react";
 import { Section } from "@/components/Section";
+import { catalogId } from "@/lib/apple-music/normalize";
 import type {
 	NowPlayingState,
 	RecentlyPlayedState,
@@ -63,20 +64,23 @@ export default function MusicPlayer() {
 		playback.data,
 	);
 	const track = isPlaying ? playback.data?.value.track : null;
-	const albumId = track?.album.id;
+	const albumId = catalogId(track?.album.id);
 	const coverUrl = track?.album.hqCoverUrl || track?.album.coverUrl;
 	const artworkParams = new URLSearchParams();
-	if (albumId && /^\d{1,20}$/.test(albumId))
-		artworkParams.set("albumId", albumId);
+	if (albumId) artworkParams.set("albumId", albumId);
+	else if (track?.catalogSongId)
+		artworkParams.set("songId", track.catalogSongId);
 	if (coverUrl) artworkParams.set("coverUrl", coverUrl);
 	// Colors and motion artwork load independently of playback and history.
 	const { data: artwork } = useSWR(
 		artworkParams.size ? `/api/music/artwork?${artworkParams}` : null,
 		fetchJSON<ArtworkDetails>,
 		{
-			dedupingInterval: 3_600_000,
+			dedupingInterval: 10_000,
+			refreshInterval: (data) => (data?.retryable ? 30_000 : 0),
 			revalidateOnFocus: false,
-			shouldRetryOnError: false,
+			errorRetryInterval: 15_000,
+			errorRetryCount: 3,
 		},
 	);
 	const dominantColor = artwork?.dominantColor ?? track?.dominantColor;

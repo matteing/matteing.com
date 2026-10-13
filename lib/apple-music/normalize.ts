@@ -11,6 +11,10 @@ function text(value: unknown): string | null {
 	return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+export function catalogId(value: unknown): string | null {
+	return typeof value === "string" && /^\d{1,20}$/.test(value) ? value : null;
+}
+
 /** Only Apple links and artwork/preview CDN URLs are sent to the browser. */
 export function appleUrl(value: unknown, artwork = false): string {
 	if (typeof value !== "string") return "";
@@ -53,6 +57,18 @@ export function normalizeTrack(raw: unknown): Track | null {
 	const artist = attributes.artistName.trim();
 
 	const relationships = record(source.relationships);
+	const catalogData = record(relationships?.catalog)?.data;
+	const catalogSong = Array.isArray(catalogData)
+		? catalogData
+				.map(record)
+				.find((song) => song?.type === "songs" && catalogId(song.id))
+		: null;
+	const catalogSongId =
+		catalogId(
+			source.type === "songs"
+				? id
+				: record(attributes.playParams)?.catalogId,
+		) ?? catalogId(catalogSong?.id);
 	const albumData = record(relationships?.albums)?.data;
 	const albumReference = Array.isArray(albumData)
 		? albumData
@@ -87,6 +103,7 @@ export function normalizeTrack(raw: unknown): Track | null {
 
 	return {
 		id,
+		...(catalogSongId ? { catalogSongId } : {}),
 		name,
 		artist,
 		url,
