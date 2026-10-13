@@ -16,7 +16,6 @@ export function getRedis(): Redis | null {
 			maxRetriesPerRequest: 1,
 			connectTimeout: 3000,
 			commandTimeout: 3000,
-			enableOfflineQueue: false,
 			retryStrategy: (times) => Math.min(times * 50, 2000),
 		});
 	}
