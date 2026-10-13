@@ -1,5 +1,6 @@
 import { getPlaiceholder } from "plaiceholder";
 import sharp from "sharp";
+import { REQUEST_TIMEOUT_MS } from "./apple-music/shared.mjs";
 
 export async function getBlurFromRemoteSource(src: string) {
   try {
@@ -32,9 +33,13 @@ export async function getBlurFromRemoteSource(src: string) {
  */
 export async function getDominantColor(src: string): Promise<string | null> {
   try {
-    const buffer = await fetch(src).then(async (res) =>
-      Buffer.from(await res.arrayBuffer())
-    );
+    const response = await fetch(src, {
+      cache: "no-store",
+      redirect: "error",
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
+    if (!response.ok) throw new Error("Image request failed");
+    const buffer = Buffer.from(await response.arrayBuffer());
 
     // Resize to 1x1 pixel to get average/dominant color
     const { data } = await sharp(buffer)

@@ -12,7 +12,7 @@ function text(value: unknown): string | null {
 }
 
 /** Only Apple links and artwork/preview CDN URLs are sent to the browser. */
-function appleUrl(value: unknown, artwork = false): string {
+export function appleUrl(value: unknown, artwork = false): string {
 	if (typeof value !== "string") return "";
 	try {
 		const url = new URL(value);
@@ -20,6 +20,7 @@ function appleUrl(value: unknown, artwork = false): string {
 		const applePreview = url.hostname === "audio-ssl.itunes.apple.com";
 		if (
 			url.protocol !== "https:" ||
+			url.port ||
 			url.username ||
 			url.password ||
 			(artwork

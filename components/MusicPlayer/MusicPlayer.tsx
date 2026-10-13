@@ -7,7 +7,7 @@ import { Section } from "@/components/Section";
 import type {
 	NowPlayingState,
 	RecentlyPlayedState,
-	VideoUrls,
+	ArtworkDetails,
 } from "@/lib/apple-music/types";
 import {
 	POLL_INTERVAL_MS,
@@ -64,25 +64,31 @@ export default function MusicPlayer() {
 	);
 	const track = isPlaying ? playback.data?.value.track : null;
 	const albumId = track?.album.id;
-	// Motion artwork is optional: its request can never delay playback or history.
-	const { data: video } = useSWR(
-		albumId && /^\d+$/.test(albumId)
-			? `/api/music/artwork?albumId=${albumId}`
-			: null,
-		fetchJSON<VideoUrls>,
+	const coverUrl = track?.album.hqCoverUrl || track?.album.coverUrl;
+	const artworkParams = new URLSearchParams();
+	if (albumId && /^\d{1,20}$/.test(albumId))
+		artworkParams.set("albumId", albumId);
+	if (coverUrl) artworkParams.set("coverUrl", coverUrl);
+	// Colors and motion artwork load independently of playback and history.
+	const { data: artwork } = useSWR(
+		artworkParams.size ? `/api/music/artwork?${artworkParams}` : null,
+		fetchJSON<ArtworkDetails>,
 		{
 			dedupingInterval: 3_600_000,
 			revalidateOnFocus: false,
 			shouldRetryOnError: false,
 		},
 	);
-	const dominantColor = track?.dominantColor;
+	const dominantColor = artwork?.dominantColor ?? track?.dominantColor;
+	const backgroundColor = dominantColor || "var(--color-white)";
 	const { darkerColor, textColor } = useMemo(
 		() => ({
 			darkerColor: darkenColor(dominantColor ?? null, 25),
-			textColor: shouldUseLightText(dominantColor ?? null)
-				? "#ffffff"
-				: "#1a1a1a",
+			textColor: dominantColor
+				? shouldUseLightText(dominantColor)
+					? "#ffffff"
+					: "#1a1a1a"
+				: "var(--color-text-primary)",
 		}),
 		[dominantColor],
 	);
@@ -115,7 +121,7 @@ export default function MusicPlayer() {
 					<div
 						className="relative overflow-hidden rounded-lg"
 						style={{
-							backgroundColor: dominantColor || "#1f2937",
+							backgroundColor,
 							color: textColor,
 						}}
 					>
@@ -124,10 +130,10 @@ export default function MusicPlayer() {
 							<AlbumArt
 								album={{
 									...track.album,
-									videoUrl: video?.standard ?? null,
-									hqVideoUrl: video?.hq ?? null,
+									videoUrl: artwork?.standard ?? null,
+									hqVideoUrl: artwork?.hq ?? null,
 								}}
-								dominantColor={dominantColor ?? undefined}
+								dominantColor={backgroundColor}
 							/>
 							<TrackInfo
 								name={track.name}

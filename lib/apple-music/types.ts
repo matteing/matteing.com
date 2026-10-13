@@ -77,6 +77,11 @@ export interface VideoUrls {
 	hq: string | null;
 }
 
+/** Optional artwork decoration loaded independently of playback updates. */
+export interface ArtworkDetails extends VideoUrls {
+	dominantColor: string | null;
+}
+
 /**
  * Stream information parsed from an HLS master playlist.
  */
