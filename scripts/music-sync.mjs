@@ -20,7 +20,8 @@ import {
 
 const HELP = `Keep the blog's estimated Apple Music playback state current.
 
-Usage: npm run music:sync -- [--dry-run] [--help]
+Usage: mise run music:sync -- [--dry-run] [--help]
+       npm run music:sync -- [--dry-run] [--help]
 
 Environment (.env.local is loaded by the npm script):
   AM_DEV_TOKEN       Apple Music developer token

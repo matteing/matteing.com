@@ -1,0 +1,24 @@
+[tools]
+node = "24.19.0"
+pnpm = "11.17.0"
+
+[tasks.setup]
+description = "Install the site's locked dependencies"
+run = "pnpm install --frozen-lockfile"
+
+[tasks.dev]
+description = "Start the Next.js development server"
+run = "npm run dev"
+
+[tasks.build]
+description = "Build the production site"
+run = "npm run build"
+
+[tasks.test]
+description = "Run the music integration tests"
+run = "npm test"
+
+[tasks."music:sync"]
+description = "Keep Apple Music playback synced; leave this terminal open"
+run = "npm run music:sync --"
+raw = true
