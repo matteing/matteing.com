@@ -8,66 +8,66 @@ import Redis from "ioredis";
 let redis: Redis | null = null;
 
 export function getRedis(): Redis | null {
-  const url = process.env.REDIS_URL;
-  if (!url) return null;
+	const url = process.env.REDIS_URL;
+	if (!url) return null;
 
-  if (!redis) {
-    redis = new Redis(url, {
-      maxRetriesPerRequest: 3,
-      retryStrategy: (times) => Math.min(times * 50, 2000),
-    });
-  }
+	if (!redis) {
+		redis = new Redis(url, {
+			maxRetriesPerRequest: 3,
+			retryStrategy: (times) => Math.min(times * 50, 2000),
+		});
+	}
 
-  return redis;
+	return redis;
 }
 
 /**
  * Generic JSON get/set helpers with optional TTL.
  */
 export async function getJSON<T>(key: string): Promise<T | null> {
-  const client = getRedis();
-  if (!client) return null;
+	const client = getRedis();
+	if (!client) return null;
 
-  try {
-    const data = await client.get(key);
-    return data ? JSON.parse(data) : null;
-  } catch (error) {
-    console.error(`Redis GET error for ${key}:`, error);
-    return null;
-  }
+	try {
+		const data = await client.get(key);
+		return data ? JSON.parse(data) : null;
+	} catch (error) {
+		console.error(`Redis GET error for ${key}:`, error);
+		return null;
+	}
 }
 
 export async function setJSON<T>(
-  key: string,
-  value: T,
-  ttlSeconds?: number
+	key: string,
+	value: T,
+	ttlSeconds?: number,
 ): Promise<boolean> {
-  const client = getRedis();
-  if (!client) return false;
+	const client = getRedis();
+	if (!client) return false;
 
-  try {
-    const json = JSON.stringify(value);
-    if (ttlSeconds) {
-      await client.setex(key, ttlSeconds, json);
-    } else {
-      await client.set(key, json);
-    }
-    return true;
-  } catch (error) {
-    console.error(`Redis SET error for ${key}:`, error);
-    return false;
-  }
+	try {
+		const json = JSON.stringify(value);
+		if (ttlSeconds) {
+			await client.setex(key, ttlSeconds, json);
+		} else {
+			await client.set(key, json);
+		}
+		return true;
+	} catch (error) {
+		console.error(`Redis SET error for ${key}:`, error);
+		return false;
+	}
 }
 
 export async function deleteKey(key: string): Promise<boolean> {
-  const client = getRedis();
-  if (!client) return false;
+	const client = getRedis();
+	if (!client) return false;
 
-  try {
-    await client.del(key);
-    return true;
-  } catch (error) {
-    console.error(`Redis DEL error for ${key}:`, error);
-    return false;
-  }
+	try {
+		await client.del(key);
+		return true;
+	} catch (error) {
+		console.error(`Redis DEL error for ${key}:`, error);
+		return false;
+	}
 }
