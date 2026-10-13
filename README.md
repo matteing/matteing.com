@@ -19,7 +19,31 @@ This website is built using the following technologies:
 - NextJS
 - TailwindCSS
 
+## Development
+
+Node and pnpm versions are managed by [mise](https://mise.jdx.dev/).
+
+```sh
+mise trust
+mise install node pnpm
+mise run setup
+mise run dev
+```
+
+Use `mise run build` for a production build and `mise run test` for tests.
+
 ## Apple Music configuration
 
-The now-playing endpoint requires valid `AM_DEV_TOKEN` and `AM_USER_TOKEN`
-environment variables.
+Configure `.env.local` using `.env.example`: Apple Music tokens, the blog's
+`MUSIC_SYNC_URL`, and a `MUSIC_SYNC_SECRET` matching the server. The server also
+needs `REDIS_URL` for playback state.
+
+From the repo in iTerm, run:
+
+```sh
+caffeinate -i mise run music:sync
+```
+
+Leave the tab open; Ctrl+C stops syncing. On macOS, `caffeinate` prevents idle
+sleep while it runs. Syncing needs no site dependency install. Playback is
+estimated from account history and starts after the next track change.
