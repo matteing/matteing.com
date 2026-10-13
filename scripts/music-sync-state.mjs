@@ -104,6 +104,6 @@ export function getObservation(state, nowMs) {
 	};
 }
 
-export function retryDelayMs(failureCount) {
-	return Math.min(5_000 * 2 ** Math.min(failureCount - 1, 3), 30_000);
+export function retryDelayMs(failureCount, maxDelayMs = 30_000) {
+	return Math.min(5_000 * 2 ** (failureCount - 1), maxDelayMs);
 }

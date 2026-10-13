@@ -125,8 +125,14 @@ test("malformed history is rejected without silently inventing an empty baseline
 
 test("retry delays are bounded", () => {
 	assert.deepEqual(
-		[1, 2, 3, 4, 100].map(retryDelayMs),
+		[1, 2, 3, 4, 100].map((count) => retryDelayMs(count)),
 		[5_000, 10_000, 20_000, 30_000, 30_000],
+	);
+	assert.deepEqual(
+		[1, 2, 3, 4, 5, 6, 7, 10_000].map((count) =>
+			retryDelayMs(count, 300_000),
+		),
+		[5_000, 10_000, 20_000, 40_000, 80_000, 160_000, 300_000, 300_000],
 	);
 });
 
@@ -181,6 +187,7 @@ async function runScenario(historyResponses, options = {}) {
 	const calls = [];
 	const errors = [];
 	const logs = [];
+	const delays = [];
 	let clock = 0;
 	let wallClock = 0;
 	let pollCount = 0;
@@ -208,6 +215,11 @@ async function runScenario(historyResponses, options = {}) {
 		now: () => clock,
 		wallNow: () => wallClock,
 		sleep: async (ms) => {
+			delays.push(ms);
+			if (pollCount === options.abortAfterPolls) {
+				controller.abort();
+				throw controller.signal.reason;
+			}
 			const sleepIndex = sleepCount++;
 			const monotonicDelta = options.sleepDelays?.[sleepIndex] ?? ms;
 			clock += monotonicDelta;
@@ -218,7 +230,7 @@ async function runScenario(historyResponses, options = {}) {
 		log: (message) => logs.push(message),
 		logError: (message) => errors.push(message),
 	});
-	return { calls, errors, logs };
+	return { calls, errors, logs, delays };
 }
 
 test("runner sends coherent heartbeats and clears its own session on shutdown", async () => {
@@ -347,15 +359,154 @@ test("dry run never writes to the blog", async () => {
 	assert.ok(calls.every((call) => call.url === RECENT_TRACKS_URL));
 });
 
-test("expired Apple credentials terminate with an actionable error", async () => {
+test("one Apple authentication rejection during playback recovers without restarting progress", async () => {
+	for (const status of [401, 403]) {
+		const { calls, errors, delays } = await runScenario([
+			{ data: [song("a")] },
+			{ data: [song("b")] },
+			new Response(null, { status }),
+			{ data: [song("b")] },
+		]);
+		const posts = calls
+			.filter((call) => call.method === "POST")
+			.map((call) => JSON.parse(call.body));
+		assert.equal(posts.length, 3);
+		assert.equal(posts[1].observationId, posts[2].observationId);
+		assert.equal(posts[2].track.id, "b");
+		assert.equal(posts[2].elapsedMs, 20_000);
+		assert.equal(delays[2], 5_000);
+		assert.match(
+			errors[0],
+			new RegExp(`HTTP ${status}.*Retrying.*AM_DEV_TOKEN`),
+		);
+		assert.equal(
+			calls.filter((call) => call.method === "DELETE").length,
+			1,
+		);
+		assert.equal(calls.at(-1).method, "DELETE");
+	}
+});
+
+test("persistent Apple authentication rejection backs off, stays alive, and rebaselines after recovery", async () => {
+	const { calls, errors, logs, delays } = await runScenario([
+		{ data: [song("a")] },
+		{ data: [song("b")] },
+		...Array.from({ length: 8 }, () => new Response(null, { status: 401 })),
+		{ data: [song("b")] },
+		{ data: [song("c")] },
+		new Response(null, { status: 401 }),
+		{ data: [song("c")] },
+	]);
+	const posts = calls
+		.filter((call) => call.method === "POST")
+		.map((call) => JSON.parse(call.body));
+	assert.deepEqual(
+		posts.map((post) => post.track?.id ?? null),
+		[null, "b", null, "c", "c"],
+	);
+	assert.equal(posts[3].elapsedMs, 0);
+	assert.notEqual(posts[3].observationId, posts[1].observationId);
+	assert.deepEqual(
+		delays.slice(2, 10),
+		[5_000, 10_000, 20_000, 40_000, 80_000, 160_000, 300_000, 300_000],
+	);
+	assert.equal(delays[12], 5_000);
+	assert.equal(posts[4].observationId, posts[3].observationId);
+	assert.equal(posts[4].elapsedMs, 20_000);
+	assert.equal(errors.length, 2);
+	assert.equal(errors[0], errors[1]);
+	assert.ok(logs.some((message) => message.includes("Connection recovered")));
+});
+
+test("prolonged authentication rejection at startup sends no heartbeat while retrying at the cap", async () => {
+	const { calls, delays, errors } = await runScenario(
+		Array.from({ length: 8 }, () => new Response(null, { status: 403 })),
+	);
+	assert.ok(calls.every((call) => call.url === RECENT_TRACKS_URL));
+	assert.deepEqual(delays.slice(-2), [300_000, 300_000]);
+	assert.equal(errors.length, 1);
+});
+
+test("Apple authentication rejection at startup retries and establishes a conservative baseline", async () => {
+	const { calls, delays } = await runScenario([
+		new Response(null, { status: 403 }),
+		{ data: [song("a")] },
+		{ data: [song("b")] },
+	]);
+	const posts = calls
+		.filter((call) => call.method === "POST")
+		.map((call) => JSON.parse(call.body));
+	assert.equal(delays[0], 5_000);
+	assert.deepEqual(
+		posts.map((post) => post.track?.id ?? null),
+		[null, "b"],
+	);
+});
+
+test("aborting during authentication backoff clears only the current session and stops polling", async () => {
+	const { calls, logs } = await runScenario(
+		[
+			{ data: [song("a")] },
+			{ data: [song("b")] },
+			new Response(null, { status: 401 }),
+			{ data: [song("c")] },
+		],
+		{ abortAfterPolls: 3 },
+	);
+	assert.equal(
+		calls.filter((call) => call.url === RECENT_TRACKS_URL).length,
+		3,
+	);
+	const posts = calls.filter((call) => call.method === "POST");
+	assert.equal(posts.length, 2);
+	const cleanup = calls.filter((call) => call.method === "DELETE");
+	assert.equal(cleanup.length, 1);
+	assert.equal(
+		JSON.parse(cleanup[0].body).sessionId,
+		JSON.parse(posts[0].body).sessionId,
+	);
+	assert.equal(logs.at(-1), "Music sync stopped.");
+});
+
+test("HTTP 408 is retryable from Apple and the blog", async () => {
+	const apple = await runScenario([
+		{ data: [song("a")] },
+		new Response(null, { status: 408 }),
+		{ data: [song("b")] },
+	]);
+	assert.equal(
+		apple.calls.filter((call) => call.method === "POST").length,
+		2,
+	);
+	assert.equal(apple.delays[1], 5_000);
+	let attempts = 0;
+	const blog = await runScenario(
+		[{ data: [song("a")] }, { data: [song("a")] }],
+		{
+			postResponse: () =>
+				new Response(null, { status: ++attempts === 1 ? 408 : 204 }),
+		},
+	);
+	assert.equal(attempts, 2);
+	assert.equal(blog.delays[0], 5_000);
+});
+
+test("other invalid Apple and blog requests remain fatal", async () => {
 	await assert.rejects(
-		runScenario([new Response(null, { status: 401 })]),
-		/Refresh AM_DEV_TOKEN and\/or AM_USER_TOKEN/,
+		runScenario([new Response(null, { status: 400 })]),
+		/Apple Music returned HTTP 400/,
+	);
+	await assert.rejects(
+		runScenario([{ data: [song("a")] }], {
+			postResponse: () => new Response(null, { status: 422 }),
+		}),
+		/Blog returned HTTP 422/,
 	);
 });
 
 test("blog authentication and competing sessions terminate clearly", async () => {
 	for (const [status, expected] of [
+		[401, /MUSIC_SYNC_SECRET/],
 		[403, /MUSIC_SYNC_SECRET/],
 		[409, /Another music:sync session/],
 	]) {

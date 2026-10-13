@@ -39,10 +39,11 @@ expires its heartbeat after ${HEARTBEAT_TTL_MS / 1000} seconds.
 `;
 
 class SyncError extends Error {
-	constructor(message, { fatal = false } = {}) {
+	constructor(message, { fatal = false, maxRetryDelayMs } = {}) {
 		super(message);
 		this.name = "SyncError";
 		this.fatal = fatal;
+		this.maxRetryDelayMs = maxRetryDelayMs;
 	}
 }
 
@@ -153,9 +154,9 @@ async function fetchChecked(fetchImpl, url, options, service, signal) {
 	if (response.status === 401 || response.status === 403) {
 		throw new SyncError(
 			service === "Apple Music"
-				? "Apple Music rejected your credentials. Refresh AM_DEV_TOKEN and/or AM_USER_TOKEN, then restart music:sync."
+				? `Apple Music returned HTTP ${response.status}. Retrying; if this persists, refresh AM_DEV_TOKEN and/or AM_USER_TOKEN, then restart music:sync.`
 				: "The blog rejected MUSIC_SYNC_SECRET. Check that it matches the deployed configuration.",
-			{ fatal: true },
+			{ fatal: service === "Blog", maxRetryDelayMs: 300_000 },
 		);
 	}
 	if (service === "Blog" && response.status === 409) {
@@ -175,7 +176,7 @@ async function fetchChecked(fetchImpl, url, options, service, signal) {
 				fatal:
 					response.status >= 400 &&
 					response.status < 500 &&
-					response.status !== 429,
+					![408, 429].includes(response.status),
 			},
 		);
 	}
@@ -316,7 +317,10 @@ export async function runSync(
 							);
 				if (safeError.fatal) throw safeError;
 				failureCount += 1;
-				nextDelay = retryDelayMs(failureCount);
+				nextDelay = retryDelayMs(
+					failureCount,
+					safeError.maxRetryDelayMs,
+				);
 				if (safeError.message !== lastError) {
 					logError(safeError.message);
 					lastError = safeError.message;
