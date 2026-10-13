@@ -37,9 +37,7 @@ export default async function Home() {
 				</Section>
 			)}
 
-			<Section id="now-playing" title="Apple Music">
-				<MusicPlayer />
-			</Section>
+			<MusicPlayer />
 		</>
 	);
 }

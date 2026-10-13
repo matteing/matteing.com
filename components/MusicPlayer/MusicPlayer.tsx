@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import useSWR from "swr";
 import { motion } from "motion/react";
+import { Section } from "@/components/Section";
 import type {
 	NowPlayingState,
 	RecentlyPlayedState,
@@ -94,74 +95,63 @@ export default function MusicPlayer() {
 	const recentUsable =
 		!!recent && !recent.unavailable && recentAge < RECENT_MAX_AGE_MS;
 	const albums = recentUsable ? recent.albums : [];
-	const recentStatus =
-		!history.data && !history.error
-			? "Fetching some tunes..."
-			: !recentUsable
-				? "Recent listening is temporarily unavailable."
-				: "No recently played music yet.";
+	if (!track && albums.length === 0) return null;
 
 	return (
-		<motion.div
-			layout
-			className="overflow-hidden rounded-xl"
-			style={{ minHeight: 330 }}
-			transition={{
-				layout: {
-					type: "spring",
-					stiffness: 260,
-					damping: 32,
-					mass: 0.8,
-				},
-			}}
-		>
-			{track ? (
-				<div
-					className="relative overflow-hidden rounded-lg"
-					style={{
-						backgroundColor: dominantColor || "#1f2937",
-						color: textColor,
-					}}
-				>
-					<div className="relative flex flex-col sm:flex-row">
-						<SoundBars />
-						<AlbumArt
-							album={{
-								...track.album,
-								videoUrl: video?.standard ?? null,
-								hqVideoUrl: video?.hq ?? null,
-							}}
-							dominantColor={dominantColor ?? undefined}
-						/>
-						<TrackInfo
-							name={track.name}
-							artist={track.artist}
-							url={track.url}
-							currentTime={currentTime}
-							duration={track.durationMs}
-						/>
+		<Section id="now-playing" title="Apple Music">
+			<motion.div
+				layout
+				className="overflow-hidden rounded-xl"
+				transition={{
+					layout: {
+						type: "spring",
+						stiffness: 260,
+						damping: 32,
+						mass: 0.8,
+					},
+				}}
+			>
+				{track ? (
+					<div
+						className="relative overflow-hidden rounded-lg"
+						style={{
+							backgroundColor: dominantColor || "#1f2937",
+							color: textColor,
+						}}
+					>
+						<div className="relative flex flex-col sm:flex-row">
+							<SoundBars />
+							<AlbumArt
+								album={{
+									...track.album,
+									videoUrl: video?.standard ?? null,
+									hqVideoUrl: video?.hq ?? null,
+								}}
+								dominantColor={dominantColor ?? undefined}
+							/>
+							<TrackInfo
+								name={track.name}
+								artist={track.artist}
+								url={track.url}
+								currentTime={currentTime}
+								duration={track.durationMs}
+							/>
+						</div>
+						{albums.length > 0 && (
+							<RecentlyPlayed
+								albums={albums.filter(
+									(album) => album.id !== track.album.id,
+								)}
+								maxItems={4}
+								backgroundColor={darkerColor}
+								textColor={textColor}
+							/>
+						)}
 					</div>
-					{albums.length > 0 && (
-						<RecentlyPlayed
-							albums={albums.filter(
-								(album) => album.id !== track.album.id,
-							)}
-							maxItems={4}
-							backgroundColor={darkerColor}
-							textColor={textColor}
-						/>
-					)}
-				</div>
-			) : albums.length > 0 ? (
-				<RecentlyPlayedExpanded albums={albums} />
-			) : (
-				<div
-					className="flex min-h-[330px] items-center justify-center rounded-lg bg-gray-100 p-4 text-sm text-gray-500 sm:p-5"
-					role="status"
-				>
-					{recentStatus}
-				</div>
-			)}
-		</motion.div>
+				) : (
+					<RecentlyPlayedExpanded albums={albums} />
+				)}
+			</motion.div>
+		</Section>
 	);
 }
