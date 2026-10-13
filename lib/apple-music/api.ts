@@ -1,13 +1,7 @@
 import { AM_DEV_TOKEN, AM_USER_TOKEN } from "../config";
 import { getAppleWebToken } from "./web-token";
-import type {
-	RecentTracksResult,
-	CatalogSongResponse,
-	AppleMusicAlbum,
-} from "./types";
-
-const RECENT_TRACKS_ENDPOINT = `https://api.music.apple.com/v1/me/recent/played/tracks?limit=10`;
-const REQUEST_TIMEOUT_MS = 10_000;
+import type { AppleMusicAlbum } from "./types";
+import { RECENT_TRACKS_URL, REQUEST_TIMEOUT_MS } from "./shared.mjs";
 
 /**
  * Builds the authentication headers required for Apple Music API requests.
@@ -29,54 +23,19 @@ const getHeaders = (): HeadersInit | null => {
  *
  * @returns The Apple Music response
  */
-export const getRecentTracks = async (): Promise<RecentTracksResult> => {
+export const getRecentTracks = async (): Promise<Response> => {
 	const headers = getHeaders();
 	if (!headers) {
 		throw new Error(
 			"Apple Music authentication is unavailable. Configure AM_DEV_TOKEN and AM_USER_TOKEN.",
 		);
 	}
-	return fetch(RECENT_TRACKS_ENDPOINT, {
+	return fetch(RECENT_TRACKS_URL, {
 		method: "GET",
 		headers,
 		cache: "no-store",
 		signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
 	});
-};
-
-/**
- * Fetches a song from the Apple Music catalog with album relationship data.
- *
- * @param songId - The Apple Music song ID
- * @param storefront - The storefront/region code (default: 'us')
- * @returns The song data with albums included, or null on error
- */
-export const getSongFromCatalog = async (
-	songId: string,
-	storefront: string = "us",
-): Promise<CatalogSongResponse | null> => {
-	const headers = getHeaders();
-	if (!headers) {
-		return null;
-	}
-
-	const url = `https://api.music.apple.com/v1/catalog/${storefront}/songs/${songId}?include=albums`;
-
-	try {
-		const response = await fetch(url, {
-			method: "GET",
-			headers,
-			cache: "no-store",
-			signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-		});
-
-		if (!response.ok) return null;
-
-		const data: CatalogSongResponse = await response.json();
-		return data;
-	} catch {
-		return null;
-	}
 };
 
 /**

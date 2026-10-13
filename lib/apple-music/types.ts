@@ -49,14 +49,18 @@ export interface Track extends Entity {
 export interface NowPlayingState {
 	track: Track | null;
 	isPlaying: boolean;
-	recentAlbums: Album[];
-	/** ISO date string of when the current song started playing */
-	startedAt: string | null;
-	/** Internal metadata - not persisted to blob or sent to clients */
-	_meta?: {
-		/** Whether this fetch detected a track change from the previous state */
-		trackChanged: boolean;
-	};
+	/** Inferred from history detection, never an actual playback timestamp. */
+	estimatedStartedAt: number | null;
+	expiresAt: number | null;
+	serverTime: number;
+}
+
+export interface RecentlyPlayedState {
+	albums: Album[];
+	fetchedAt: number | null;
+	stale: boolean;
+	unavailable: boolean;
+	serverTime: number;
 }
 
 // =============================================================================
@@ -86,9 +90,6 @@ export interface HLSStream {
 	/** URL to the media playlist */
 	url: string;
 }
-
-/** Response returned by the recently played tracks request. */
-export type RecentTracksResult = Response;
 
 // =============================================================================
 // Raw Apple Music API Types
@@ -121,50 +122,6 @@ export interface AppleMusicArtwork {
 }
 
 /**
- * Preview object from Apple Music API.
- */
-export interface AppleMusicPreview {
-	url: string;
-	hlsUrl?: string;
-}
-
-/**
- * Track attributes from Apple Music API.
- */
-export interface AppleMusicTrackAttributes {
-	name: string;
-	artistName: string;
-	albumName: string;
-	durationInMillis?: number;
-	artwork: AppleMusicArtwork;
-	editorialVideo?: AppleMusicEditorialVideo;
-	previews?: AppleMusicPreview[];
-	url: string;
-}
-
-/**
- * A track from the Apple Music API.
- */
-export interface AppleMusicTrack {
-	id: string;
-	type: "songs";
-	attributes: AppleMusicTrackAttributes;
-	relationships?: {
-		albums?: {
-			data: AppleMusicAlbumReference[];
-		};
-	};
-}
-
-/**
- * Album reference in track relationships.
- */
-export interface AppleMusicAlbumReference {
-	id: string;
-	type: "albums";
-}
-
-/**
  * Album attributes from Apple Music API.
  */
 export interface AppleMusicAlbumAttributes {
@@ -182,25 +139,4 @@ export interface AppleMusicAlbum {
 	id: string;
 	type: "albums";
 	attributes: AppleMusicAlbumAttributes;
-}
-
-/**
- * Response from the recent tracks endpoint.
- */
-export interface RecentTracksResponse {
-	data: AppleMusicTrack[];
-}
-
-/**
- * Response from the catalog song endpoint.
- */
-export interface CatalogSongResponse {
-	data: AppleMusicTrack[];
-}
-
-/**
- * Response from the catalog album endpoint.
- */
-export interface CatalogAlbumResponse {
-	data: AppleMusicAlbum[];
 }

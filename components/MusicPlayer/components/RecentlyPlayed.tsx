@@ -59,7 +59,7 @@ export function RecentlyPlayed({
 				{albums.slice(0, maxItems).map((album) => (
 					<a
 						key={album.id}
-						href={album.url}
+						href={album.url || undefined}
 						target="_blank"
 						rel="noopener noreferrer"
 						className={styles.albumItem}
@@ -89,7 +89,7 @@ export function RecentlyPlayedExpanded({ albums }: { albums: Album[] }) {
 				{albums.slice(0, 6).map((album) => (
 					<a
 						key={album.id}
-						href={album.url}
+						href={album.url || undefined}
 						target="_blank"
 						rel="noopener noreferrer"
 						className={styles.albumItem}

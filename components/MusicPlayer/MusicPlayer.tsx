@@ -1,23 +1,18 @@
 "use client";
 
-/**
- * MusicPlayer Component
- *
- * Displays the currently playing track from Apple Music with:
- * - Album artwork (with optional animated video)
- * - Track name and artist
- * - Real-time progress bar
- * - Recently played albums
- *
- * The component adapts its colors based on the album's dominant color.
- * Supports server-side preloading via initialData prop.
- */
-
-import { useMemo, useState, useCallback } from "react";
+import { useMemo } from "react";
 import useSWR from "swr";
 import { motion } from "motion/react";
-import type { NowPlayingState } from "@/lib/apple-music/types";
-
+import type {
+	NowPlayingState,
+	RecentlyPlayedState,
+	VideoUrls,
+} from "@/lib/apple-music/types";
+import {
+	POLL_INTERVAL_MS,
+	RECENT_FRESH_MS,
+	RECENT_MAX_AGE_MS,
+} from "@/lib/apple-music/shared.mjs";
 import { SoundBars } from "./components/SoundBars";
 import { AlbumArt } from "./components/AlbumArt";
 import { TrackInfo } from "./components/TrackInfo";
@@ -25,159 +20,89 @@ import {
 	RecentlyPlayed,
 	RecentlyPlayedExpanded,
 } from "./components/RecentlyPlayed";
-import { usePlaybackProgress } from "./hooks/usePlaybackProgress";
+import {
+	usePlaybackProgress,
+	type TimedResponse,
+} from "./hooks/usePlaybackProgress";
 import { shouldUseLightText, darkenColor } from "./utils/colors";
 
-// ============================================================================
-// Types
-// ============================================================================
-
-interface MusicPlayerProps {
-	/** Pre-fetched data from server for instant hydration */
-	initialData?: NowPlayingState;
+async function fetchJSON<T>(url: string): Promise<T> {
+	const response = await fetch(url, {
+		cache: "no-store",
+		signal: AbortSignal.timeout(15_000),
+	});
+	if (!response.ok)
+		throw new Error(`Music request failed (${response.status})`);
+	return response.json();
 }
 
-// ============================================================================
-// Constants
-// ============================================================================
-
-const DEFAULT_DURATION = 180000; // 3 minutes fallback
-const REFRESH_INTERVAL = 60000; // Refresh every 60 seconds (API caches for 1 min)
-
-// ============================================================================
-// Helpers
-// ============================================================================
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-/**
- * Check if a track is currently playing based on API state and elapsed time.
- */
-function isTrackPlaying(data: NowPlayingState | undefined): boolean {
-	if (!data?.isPlaying || !data.startedAt || !data.track) return false;
-
-	const startTime = new Date(data.startedAt).getTime();
-	const endTime = startTime + data.track.durationMs + 5000; // 5s buffer
-	return Date.now() < endTime;
+async function fetchTimed<T>(url: string): Promise<TimedResponse<T>> {
+	// Include request time conservatively so slow responses cannot extend a lease.
+	const requestedAt = performance.now();
+	const requestedWallTime = Date.now();
+	const value = await fetchJSON<T>(url);
+	return { value, requestedAt, requestedWallTime };
 }
 
-// ============================================================================
-// Main Component
-// ============================================================================
-
-export default function MusicPlayer({ initialData }: MusicPlayerProps) {
-	// Fetch now-playing data from API, with optional server-side preload
-	const { data, mutate } = useSWR<NowPlayingState>(
-		"/api/now-playing",
-		fetcher,
+export default function MusicPlayer() {
+	const playback = useSWR("/api/now-playing", fetchTimed<NowPlayingState>, {
+		refreshInterval: 5000,
+		dedupingInterval: 1000,
+		errorRetryInterval: 5000,
+	});
+	const history = useSWR(
+		"/api/recently-played",
+		fetchTimed<RecentlyPlayedState>,
 		{
-			fallbackData: initialData,
-			revalidateOnMount: true,
-			refreshInterval: REFRESH_INTERVAL,
-			dedupingInterval: 30000,
+			refreshInterval: POLL_INTERVAL_MS,
+			dedupingInterval: 1000,
+			errorRetryInterval: 15_000,
 		},
 	);
-
-	// Extract data
-	const track = data?.track;
-	const recentAlbums = data?.recentAlbums;
+	const { isPlaying, currentTime, elapsedSince } = usePlaybackProgress(
+		playback.data,
+	);
+	const track = isPlaying ? playback.data?.value.track : null;
+	const albumId = track?.album.id;
+	// Motion artwork is optional: its request can never delay playback or history.
+	const { data: video } = useSWR(
+		albumId && /^\d+$/.test(albumId)
+			? `/api/music/artwork?albumId=${albumId}`
+			: null,
+		fetchJSON<VideoUrls>,
+		{
+			dedupingInterval: 3_600_000,
+			revalidateOnFocus: false,
+			shouldRetryOnError: false,
+		},
+	);
 	const dominantColor = track?.dominantColor;
-	const durationMs = track?.durationMs ?? DEFAULT_DURATION;
-	const startedAt = data?.startedAt ?? null;
-
-	// API says playing, but check if client-side ended
-	const apiIsPlaying = isTrackPlaying(data);
-
-	// Track which startedAt we've marked as ended
-	const [endedTrackKey, setEndedTrackKey] = useState<string | null>(null);
-	const trackKey = startedAt ?? null;
-
-	// Only consider ended if it's the same track that ended
-	const hasEnded = endedTrackKey !== null && endedTrackKey === trackKey;
-	const isPlaying = apiIsPlaying && !hasEnded;
-
-	// Handle track end - mark this specific track as ended
-	const handleTrackEnd = useCallback(() => {
-		setEndedTrackKey(trackKey);
-		mutate();
-	}, [mutate, trackKey]);
-
-	// Track playback progress
-	const { currentTime } = usePlaybackProgress({
-		isPlaying,
-		startedAt,
-		durationMs,
-		onTrackEnd: handleTrackEnd,
-	});
-
-	// Calculate colors based on dominant color
-	// Use inline styles with explicit colors to avoid CSS variable inversion in dark mode
-	const { darkerColor, textColor } = useMemo(() => {
-		const useLightText = shouldUseLightText(dominantColor ?? null);
-		return {
+	const { darkerColor, textColor } = useMemo(
+		() => ({
 			darkerColor: darkenColor(dominantColor ?? null, 25),
-			textColor: useLightText ? "#ffffff" : "#1a1a1a",
-		};
-	}, [dominantColor]);
+			textColor: shouldUseLightText(dominantColor ?? null)
+				? "#ffffff"
+				: "#1a1a1a",
+		}),
+		[dominantColor],
+	);
 
-	// Determine what content to show
-	const isLoading = !data;
-	const showNowPlaying = !isLoading && isPlaying && track;
-	const showRecentlyPlayed =
-		!isLoading && !isPlaying && recentAlbums && recentAlbums.length > 0;
-
-	// Render content based on state
-	const renderContent = () => {
-		// Loading/fallback state
-		if (isLoading || (!showNowPlaying && !showRecentlyPlayed)) {
-			return (
-				<div className="flex h-full items-center justify-center rounded-lg bg-gray-100 p-4 text-gray-900 sm:p-5">
-					<span className="text-sm text-gray-500">
-						Fetching some tunes...
-					</span>
-				</div>
-			);
-		}
-
-		// Recently played (not currently playing)
-		if (showRecentlyPlayed) {
-			return <RecentlyPlayedExpanded albums={recentAlbums!} />;
-		}
-
-		// Now playing
-		return (
-			<div
-				className="relative overflow-hidden rounded-lg"
-				style={{
-					backgroundColor: dominantColor || "var(--color-white)",
-					color: textColor,
-				}}
-			>
-				<div className="relative flex flex-col sm:flex-row">
-					<SoundBars />
-					<AlbumArt
-						album={track!.album}
-						dominantColor={dominantColor ?? undefined}
-					/>
-					<TrackInfo
-						name={track!.name}
-						artist={track!.artist}
-						url={track!.url}
-						currentTime={currentTime}
-						duration={durationMs}
-					/>
-				</div>
-				{recentAlbums && recentAlbums.length > 0 && (
-					<RecentlyPlayed
-						albums={recentAlbums}
-						maxItems={4}
-						backgroundColor={darkerColor}
-						textColor={textColor}
-					/>
-				)}
-			</div>
-		);
-	};
+	const recent = history.data?.value;
+	const recentAge =
+		recent?.fetchedAt != null
+			? recent.serverTime - recent.fetchedAt + elapsedSince(history.data!)
+			: Infinity;
+	const recentUsable =
+		!!recent && !recent.unavailable && recentAge < RECENT_MAX_AGE_MS;
+	const albums = recentUsable ? recent.albums : [];
+	const recentStale =
+		recentUsable && (recent.stale || recentAge >= RECENT_FRESH_MS);
+	const recentStatus =
+		!history.data && !history.error
+			? "Fetching some tunes..."
+			: !recentUsable
+				? "Recent listening is temporarily unavailable."
+				: "No recently played music yet.";
 
 	return (
 		<motion.div
@@ -193,7 +118,58 @@ export default function MusicPlayer({ initialData }: MusicPlayerProps) {
 				},
 			}}
 		>
-			{renderContent()}
+			{track ? (
+				<div
+					className="relative overflow-hidden rounded-lg"
+					style={{
+						backgroundColor: dominantColor || "#1f2937",
+						color: textColor,
+					}}
+				>
+					<div className="relative flex flex-col sm:flex-row">
+						<SoundBars />
+						<AlbumArt
+							album={{
+								...track.album,
+								videoUrl: video?.standard ?? null,
+								hqVideoUrl: video?.hq ?? null,
+							}}
+							dominantColor={dominantColor ?? undefined}
+						/>
+						<TrackInfo
+							name={track.name}
+							artist={track.artist}
+							url={track.url}
+							currentTime={currentTime}
+							duration={track.durationMs}
+						/>
+					</div>
+					{albums.length > 0 && (
+						<RecentlyPlayed
+							albums={albums.filter(
+								(album) => album.id !== track.album.id,
+							)}
+							maxItems={4}
+							backgroundColor={darkerColor}
+							textColor={textColor}
+						/>
+					)}
+				</div>
+			) : albums.length > 0 ? (
+				<RecentlyPlayedExpanded albums={albums} />
+			) : (
+				<div
+					className="flex min-h-[330px] items-center justify-center rounded-lg bg-gray-100 p-4 text-sm text-gray-500 sm:p-5"
+					role="status"
+				>
+					{recentStatus}
+				</div>
+			)}
+			{recentStale && (
+				<p className="px-4 py-2 text-xs text-gray-500" role="status">
+					Recently played is temporarily out of date.
+				</p>
+			)}
 		</motion.div>
 	);
 }

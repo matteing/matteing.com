@@ -1,314 +1,166 @@
-import { getJSON, setJSON } from "@/lib/redis";
-import { getBlurFromRemoteSource, getDominantColor } from "@/lib/images";
-import {
-	getRecentTracks,
-	getSongFromCatalog,
-	getAlbumFromCatalog,
-} from "@/lib/apple-music/api";
-import { getVideoUrlFromM3u8 } from "@/lib/apple-music/m3u8";
-import type {
-	AppleMusicTrack,
-	Track,
-	Album,
-	NowPlayingState,
-} from "@/lib/apple-music/types";
+import { getRedis } from "@/lib/redis";
+import { normalizeTrack } from "./normalize";
+import { getPlaybackPosition } from "./playback.mjs";
+import { HEARTBEAT_TTL_MS } from "./shared.mjs";
+import type { NowPlayingState, Track } from "./types";
 
-// Single Redis key - a stack of recently played tracks
-const KEY_HISTORY = "now-playing:history";
+const KEY = "music:playback:v2";
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Max tracks to keep in history
-const MAX_HISTORY = 10;
-
-// =============================================================================
-// Types
-// =============================================================================
-
-interface StoredTrack {
-	id: string;
-	name: string;
-	artist: string;
-	albumName: string;
-	albumId: string | null;
-	coverUrl: string;
-	hqCoverUrl: string;
-	url: string;
-	durationMs: number;
-	blurDataUrl: string;
-	dominantColor: string | null;
-	previewUrl: string | null;
-	videoUrl: string | null;
-	hqVideoUrl: string | null;
-	startedAt: string;
+interface StoredPlayback {
+	sessionId: string;
+	sequence: number;
+	observationId: string | null;
+	track: Track | null;
+	estimatedStartedAt: number | null;
+	expiresAt: number;
 }
 
-// =============================================================================
-// Redis Operations (single stack)
-// =============================================================================
-
-async function getHistory(): Promise<StoredTrack[]> {
-	return (await getJSON<StoredTrack[]>(KEY_HISTORY)) ?? [];
+export class MusicSyncError extends Error {
+	status: number;
+	constructor(message: string, status: number) {
+		super(message);
+		this.status = status;
+	}
 }
 
-async function setHistory(history: StoredTrack[]): Promise<boolean> {
-	return setJSON(KEY_HISTORY, history);
+export function parseSessionId(body: unknown): string {
+	const sessionId = (body as { sessionId?: unknown } | null)?.sessionId;
+	if (typeof sessionId !== "string" || !UUID.test(sessionId)) {
+		throw new MusicSyncError("Invalid sessionId", 400);
+	}
+	return sessionId;
 }
 
-/**
- * Push a track to the front of history.
- * Dedupes by album name and caps at MAX_HISTORY.
- */
-async function pushTrack(track: StoredTrack): Promise<boolean> {
-	if (!track.coverUrl) return true;
-
-	const history = await getHistory();
-	const filtered = history.filter((t) => t.albumName !== track.albumName);
-	const updated = [track, ...filtered].slice(0, MAX_HISTORY);
-	return setHistory(updated);
-}
-
-// =============================================================================
-// Track Processing
-// =============================================================================
-
-async function processTrack(raw: AppleMusicTrack): Promise<StoredTrack | null> {
-	if (!raw.attributes.artwork?.url) return null;
-
-	const coverUrl = raw.attributes.artwork.url
-		.replace("{w}", "600")
-		.replace("{h}", "600");
-	const hqCoverUrl = raw.attributes.artwork.url
-		.replace("{w}", "1200")
-		.replace("{h}", "1200");
-
-	const [blurData, dominantColor, videoData] = await Promise.all([
-		getBlurFromRemoteSource(hqCoverUrl),
-		getDominantColor(hqCoverUrl),
-		fetchVideoUrls(raw.id),
-	]);
-
+export function parsePlaybackUpdate(
+	body: unknown,
+	now = Date.now(),
+): StoredPlayback {
+	const sessionId = parseSessionId(body);
+	const input = body as Record<string, unknown>;
+	if (
+		!Number.isSafeInteger(input.sequence) ||
+		(input.sequence as number) <= 0
+	) {
+		throw new MusicSyncError("Invalid sequence", 400);
+	}
+	if (
+		!Number.isSafeInteger(input.elapsedMs) ||
+		(input.elapsedMs as number) < 0 ||
+		(input.elapsedMs as number) > 86_400_000
+	) {
+		throw new MusicSyncError("Invalid elapsedMs", 400);
+	}
+	const track = input.track === null ? null : normalizeTrack(input.track);
+	if (input.track !== null && !track)
+		throw new MusicSyncError("Invalid track", 400);
+	if (
+		track
+			? typeof input.observationId !== "string" ||
+				!UUID.test(input.observationId)
+			: input.observationId !== null || input.elapsedMs !== 0
+	) {
+		throw new MusicSyncError("Invalid observation", 400);
+	}
 	return {
-		id: raw.id,
-		name: raw.attributes.name,
-		artist: raw.attributes.artistName,
-		albumName: raw.attributes.albumName,
-		albumId: videoData.albumId,
-		coverUrl,
-		hqCoverUrl,
-		url: raw.attributes.url,
-		durationMs: raw.attributes.durationInMillis || 180000,
-		blurDataUrl: blurData?.base64 ?? "",
-		dominantColor,
-		previewUrl: raw.attributes.previews?.[0]?.url || null,
-		videoUrl: videoData.videoUrl,
-		hqVideoUrl: videoData.hqVideoUrl,
-		startedAt: new Date().toISOString(),
+		sessionId,
+		sequence: input.sequence as number,
+		observationId: input.observationId as string | null,
+		track,
+		estimatedStartedAt: track ? now - (input.elapsedMs as number) : null,
+		expiresAt: now + HEARTBEAT_TTL_MS,
 	};
 }
 
-async function fetchVideoUrls(songId: string): Promise<{
-	albumId: string | null;
-	videoUrl: string | null;
-	hqVideoUrl: string | null;
-}> {
-	try {
-		const catalog = await getSongFromCatalog(songId);
-		const albumId =
-			catalog?.data?.[0]?.relationships?.albums?.data?.[0]?.id || null;
+// A single live writer and increasing sequence prevent late requests or a second
+// CLI from replacing fresher state. Repeated heartbeats never restart a song.
+const UPDATE = `
+if redis.call('EXISTS', KEYS[2]) == 1 then return -4 end
+local incoming = cjson.decode(ARGV[1])
+local previous = redis.call('GET', KEYS[1])
+if previous then
+  local old = cjson.decode(previous)
+  if old.sessionId ~= incoming.sessionId then return -1 end
+  if old.sequence >= incoming.sequence then return -2 end
+  if old.observationId ~= cjson.null and old.observationId == incoming.observationId then
+    if old.track.id ~= incoming.track.id then return -3 end
+    incoming.estimatedStartedAt = math.min(old.estimatedStartedAt, incoming.estimatedStartedAt)
+  end
+end
+redis.call('SET', KEYS[1], cjson.encode(incoming), 'PX', ARGV[2])
+return 1
+`;
 
-		if (!albumId)
-			return { albumId: null, videoUrl: null, hqVideoUrl: null };
-
-		const details = await getAlbumFromCatalog(albumId);
-		const video = details?.attributes?.editorialVideo;
-		const m3u8 =
-			video?.motionSquareVideo1x1?.video ||
-			video?.motionDetailSquare?.video;
-
-		if (m3u8) {
-			const urls = await getVideoUrlFromM3u8(m3u8);
-			return { albumId, videoUrl: urls.standard, hqVideoUrl: urls.hq };
-		}
-
-		return { albumId, videoUrl: null, hqVideoUrl: null };
-	} catch {
-		return { albumId: null, videoUrl: null, hqVideoUrl: null };
-	}
+export async function publishPlayback(body: unknown) {
+	const update = parsePlaybackUpdate(body);
+	const redis = getRedis();
+	if (!redis)
+		throw new MusicSyncError("Playback storage is not configured", 503);
+	const result = Number(
+		await redis.eval(
+			UPDATE,
+			2,
+			KEY,
+			`${KEY}:stopped:${update.sessionId}`,
+			JSON.stringify(update),
+			HEARTBEAT_TTL_MS,
+		),
+	);
+	if (result === -1)
+		throw new MusicSyncError(
+			"Another music sync process is active; stop it or wait 45 seconds",
+			409,
+		);
+	if (result === -2) throw new MusicSyncError("Out-of-order update", 409);
+	if (result === -4)
+		throw new MusicSyncError(
+			"This music sync session has stopped; restart the CLI",
+			409,
+		);
+	if (result !== 1)
+		throw new MusicSyncError("Observation does not match track", 400);
 }
 
-// =============================================================================
-// Helpers
-// =============================================================================
-
-/**
- * Check if a track is currently playing based on startedAt time.
- * Playing = started recently enough that it hasn't ended yet (with buffer).
- */
-function isTrackPlaying(track: StoredTrack): boolean {
-	const elapsed = Date.now() - new Date(track.startedAt).getTime();
-	return elapsed < track.durationMs + 4 * 60 * 1000; // 4 min buffer for pauses
+export async function clearPlayback(body: unknown) {
+	const sessionId = parseSessionId(body);
+	const redis = getRedis();
+	if (!redis)
+		throw new MusicSyncError("Playback storage is not configured", 503);
+	await redis.eval(
+		`
+    redis.call('SET', KEYS[2], '1', 'PX', 300000)
+    local previous = redis.call('GET', KEYS[1])
+    if previous and cjson.decode(previous).sessionId == ARGV[1] then
+      return redis.call('DEL', KEYS[1])
+    end
+    return 0
+  `,
+		2,
+		KEY,
+		`${KEY}:stopped:${sessionId}`,
+		sessionId,
+	);
 }
 
-function storedToTrack(stored: StoredTrack): Track {
-	return {
-		id: stored.id,
-		name: stored.name,
-		url: stored.url,
-		artist: stored.artist,
-		album: {
-			id:
-				stored.albumId ||
-				`album-${stored.albumName.toLowerCase().replace(/\s+/g, "-")}`,
-			name: stored.albumName,
-			url: stored.url,
-			artist: stored.artist,
-			coverUrl: stored.coverUrl,
-			hqCoverUrl: stored.hqCoverUrl,
-			videoUrl: stored.videoUrl,
-			hqVideoUrl: stored.hqVideoUrl,
-			previewUrl: stored.previewUrl,
-		},
-		blurDataUrl: stored.blurDataUrl,
-		previewUrl: stored.previewUrl,
-		dominantColor: stored.dominantColor,
-		durationMs: stored.durationMs,
-	};
-}
-
-function historyToAlbums(history: StoredTrack[], skip: number = 0): Album[] {
-	const seen = new Set<string>();
-	const albums: Album[] = [];
-
-	for (const track of history.slice(skip)) {
-		if (seen.has(track.albumName)) continue;
-		seen.add(track.albumName);
-
-		albums.push({
-			id:
-				track.albumId ||
-				`album-${track.albumName.toLowerCase().replace(/\s+/g, "-")}`,
-			name: track.albumName,
-			artist: track.artist,
-			url: track.url,
-			coverUrl: track.coverUrl.replace("600x600", "100x100"),
-			hqCoverUrl: track.coverUrl,
-			videoUrl: track.videoUrl,
-			hqVideoUrl: track.hqVideoUrl,
-			previewUrl: track.previewUrl,
-		});
-	}
-
-	return albums;
-}
-
-// =============================================================================
-// Public API
-// =============================================================================
-
-/**
- * Refresh from Apple Music and update the history stack.
- * New tracks get pushed to the front. That's it.
- */
-export async function refreshNowPlaying(): Promise<{
-	changed: boolean;
-	track: string | null;
-	isPlaying: boolean;
-}> {
-	try {
-		const response = await getRecentTracks();
-		if (!response.ok) {
-			throw new Error(
-				`Apple Music recent tracks returned ${response.status}`,
-			);
-		}
-
-		const { data } = await response.json();
-		if (!data?.length) {
-			const history = await getHistory();
-			const head = history[0];
-			return {
-				changed: false,
-				track: head?.name ?? null,
-				isPlaying: head ? isTrackPlaying(head) : false,
-			};
-		}
-
-		const latestTrack = data[0] as AppleMusicTrack;
-		const history = await getHistory();
-		const head = history[0];
-
-		// Same track as head? No change needed.
-		if (head?.id === latestTrack.id) {
-			return {
-				changed: false,
-				track: head.name,
-				isPlaying: isTrackPlaying(head),
-			};
-		}
-
-		// New track - process and push to history
-		const processed = await processTrack(latestTrack);
-		if (!processed) {
-			return {
-				changed: false,
-				track: head?.name ?? null,
-				isPlaying: head ? isTrackPlaying(head) : false,
-			};
-		}
-
-		await pushTrack(processed);
-		return { changed: true, track: processed.name, isPlaying: true };
-	} catch (error) {
-		console.error("Failed to refresh from Apple Music:", error);
-		const history = await getHistory();
-		const head = history[0];
-		return {
-			changed: false,
-			track: head?.name ?? null,
-			isPlaying: head ? isTrackPlaying(head) : false,
-		};
-	}
-}
-
-/**
- * Get the current now-playing state.
- *
- * - track: history[0] if it's fresh (playing), otherwise null
- * - isPlaying: whether history[0] is still playing
- * - recentAlbums: the rest of history (or all of it if not playing)
- */
 export async function getNowPlayingState(): Promise<NowPlayingState> {
-	const history = await getHistory();
-
-	if (!history.length) {
-		return {
-			track: null,
-			isPlaying: false,
-			recentAlbums: [],
-			startedAt: null,
-		};
-	}
-
-	const head = history[0];
-	const isPlaying = isTrackPlaying(head);
-
-	if (isPlaying) {
-		// Currently playing - head is the track, rest is recentAlbums
-		return {
-			track: storedToTrack(head),
-			isPlaying: true,
-			recentAlbums: historyToAlbums(history, 1), // skip head
-			startedAt: head.startedAt,
-		};
-	}
-
-	// Not playing - no current track, all history is recentAlbums
-	return {
+	const redis = getRedis();
+	const raw = redis ? await redis.get(KEY) : null;
+	const serverTime = Date.now();
+	const empty: NowPlayingState = {
 		track: null,
 		isPlaying: false,
-		recentAlbums: historyToAlbums(history, 0),
-		startedAt: null,
+		estimatedStartedAt: null,
+		expiresAt: null,
+		serverTime,
 	};
+	if (!raw) return empty;
+	const stored = JSON.parse(raw) as StoredPlayback;
+	const state: NowPlayingState = {
+		track: stored.track,
+		isPlaying: !!stored.track,
+		estimatedStartedAt: stored.estimatedStartedAt,
+		expiresAt: stored.expiresAt,
+		serverTime,
+	};
+	return getPlaybackPosition(state).isPlaying ? state : empty;
 }
-
-// Legacy export for page.tsx
-export const readState = getNowPlayingState;

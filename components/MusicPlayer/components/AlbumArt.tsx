@@ -47,7 +47,7 @@ export function AlbumArt({ album, dominantColor }: AlbumArtProps) {
 
 	return (
 		<a
-			href={album.url}
+			href={album.url || undefined}
 			target="_blank"
 			rel="noopener noreferrer"
 			className={styles.container}

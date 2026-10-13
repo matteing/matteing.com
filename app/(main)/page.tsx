@@ -6,7 +6,6 @@ import MusicPlayer from "@/components/MusicPlayer/MusicPlayer";
 import { Section } from "@/components/Section";
 import { FeaturedPosts } from "@/components/FeaturedPosts";
 import { ViewMoreLink } from "@/components/ViewMoreLink";
-import { getNowPlayingState } from "@/lib/apple-music/now-playing";
 
 export const metadata = {
 	title: "Sergio Mattei",
@@ -18,7 +17,6 @@ export const metadata = {
 export default async function Home() {
 	const displayedWork = workItems.slice(0, 3);
 	const featuredPosts = getFeaturedPosts(3);
-	const initialNowPlaying = await getNowPlayingState();
 
 	return (
 		<>
@@ -40,7 +38,7 @@ export default async function Home() {
 			)}
 
 			<Section id="now-playing" title="Apple Music">
-				<MusicPlayer initialData={initialNowPlaying} />
+				<MusicPlayer />
 			</Section>
 		</>
 	);

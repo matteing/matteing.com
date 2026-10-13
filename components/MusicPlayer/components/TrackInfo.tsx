@@ -27,7 +27,7 @@ export function TrackInfo({
 	return (
 		<div className={styles.container}>
 			<a
-				href={url}
+				href={url || undefined}
 				target="_blank"
 				rel="noopener noreferrer"
 				className={styles.content}
@@ -35,7 +35,15 @@ export function TrackInfo({
 				<h3 className={styles.name}>{name}</h3>
 				<p className={styles.artist}>{artist}</p>
 			</a>
-			<ProgressBar currentTime={currentTime} duration={duration} />
+			<p
+				className="mt-2 text-center text-xs opacity-70"
+				title="Estimated from Apple Music history. Pauses, seeks, and repeated plays cannot be detected."
+			>
+				Estimated playback
+			</p>
+			{duration > 0 && (
+				<ProgressBar currentTime={currentTime} duration={duration} />
+			)}
 		</div>
 	);
 }

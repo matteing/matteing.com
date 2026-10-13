@@ -21,12 +21,22 @@ function formatTime(ms: number): string {
  * Playback progress bar with current time and duration display.
  */
 export function ProgressBar({ currentTime, duration }: ProgressBarProps) {
-	const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+	const progressPercent =
+		duration > 0
+			? Math.max(0, Math.min(100, (currentTime / duration) * 100))
+			: 0;
 
 	return (
 		<div className={styles.container}>
 			{/* Progress track */}
-			<div className={styles.track}>
+			<div
+				className={styles.track}
+				role="progressbar"
+				aria-label="Estimated playback progress"
+				aria-valuemin={0}
+				aria-valuemax={100}
+				aria-valuenow={Math.round(progressPercent)}
+			>
 				<div
 					className={styles.progress}
 					style={{ width: `${progressPercent}%` }}

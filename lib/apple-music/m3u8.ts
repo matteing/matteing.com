@@ -37,7 +37,10 @@ const getMp4FromMediaPlaylist = async (
 	playlistUrl: string,
 ): Promise<string | null> => {
 	try {
-		const mediaResponse = await fetch(playlistUrl);
+		const mediaResponse = await fetch(playlistUrl, {
+			signal: AbortSignal.timeout(5000),
+		});
+		if (!mediaResponse.ok) return null;
 		const mediaText = await mediaResponse.text();
 		const mediaLines = mediaText.split("\n");
 
@@ -99,7 +102,10 @@ export const getVideoUrlFromM3u8 = async (
 	m3u8Url: string,
 ): Promise<VideoUrls> => {
 	try {
-		const response = await fetch(m3u8Url);
+		const response = await fetch(m3u8Url, {
+			signal: AbortSignal.timeout(5000),
+		});
+		if (!response.ok) return { standard: null, hq: null };
 		const text = await response.text();
 
 		// Parse the master m3u8 to extract all available quality streams

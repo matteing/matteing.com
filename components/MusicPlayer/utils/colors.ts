@@ -9,6 +9,14 @@
 export function parseRgb(
 	color: string,
 ): { r: number; g: number; b: number } | null {
+	const hex = color.match(/^#([0-9a-f]{6})$/i);
+	if (hex) {
+		return {
+			r: parseInt(hex[1].slice(0, 2), 16),
+			g: parseInt(hex[1].slice(2, 4), 16),
+			b: parseInt(hex[1].slice(4, 6), 16),
+		};
+	}
 	const match = color.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
 	if (!match) return null;
 	return {

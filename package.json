@@ -7,6 +7,8 @@
 		"build": "next build",
 		"start": "next start",
 		"lint": "eslint",
+		"test": "node --test scripts/*.test.mjs tests/*.test.mjs",
+		"music:sync": "node --env-file-if-exists=.env.local scripts/music-sync.mjs",
 		"format": "prettier --write ."
 	},
 	"engines": {
